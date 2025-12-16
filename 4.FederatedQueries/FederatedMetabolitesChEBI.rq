@@ -1,0 +1,27 @@
+PREFIX wp:   <http://vocabularies.wikipathways.org/wp#>
+PREFIX wdt:  <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?metabolite ?inchikey ?wd ?wdLabel ?chebi ?pubchem
+FROM <http://plantmetwiki.bioinformatics.nl/>
+WHERE {
+  {
+    # Take a small sample of metabolites in pathways (so it runs fast)
+    SELECT DISTINCT ?metabolite ?inchikey
+    FROM <http://plantmetwiki.bioinformatics.nl/>
+    WHERE {
+      ?interaction wp:participants ?metabolite .
+      FILTER(STRSTARTS(STR(?metabolite), "https://identifiers.org/inchikey/"))
+      BIND(STRAFTER(STR(?metabolite), "https://identifiers.org/inchikey/") AS ?inchikey)
+    }
+    LIMIT 10
+  }
+
+  SERVICE <https://query.wikidata.org/sparql> {
+    ?wd wdt:P235 ?inchikey .
+    OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") }
+    OPTIONAL { ?wd wdt:P683 ?chebi }     # ChEBI ID
+    OPTIONAL { ?wd wdt:P662 ?pubchem }   # PubChem CID
+  }
+}
+ORDER BY ?metabolite

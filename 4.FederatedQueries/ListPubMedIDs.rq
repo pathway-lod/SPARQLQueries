@@ -1,0 +1,11 @@
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX cito: <http://purl.org/spar/cito/>
+
+SELECT DISTINCT ?pubmed
+FROM <http://plantmetwiki.bioinformatics.nl/>
+WHERE {
+  VALUES ?reaction { <http://rdf-plantmetwiki.bioinformatics.nl/pathways/PC159_r20251206224344> }
+  ?reaction (dcterms:references|cito:cites) ?pubmed .
+  FILTER(STRSTARTS(STR(?pubmed), "https://identifiers.org/pubmed/"))
+}
+ORDER BY ?pubmed
