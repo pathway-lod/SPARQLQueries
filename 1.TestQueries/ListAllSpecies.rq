@@ -1,0 +1,8 @@
+PREFIX wp: <http://vocabularies.wikipathways.org/wp#>
+
+SELECT DISTINCT ?species
+FROM <http://plantmetwiki.bioinformatics.nl/>
+WHERE {
+  ?pw wp:organismName ?species .
+}
+ORDER BY ?species

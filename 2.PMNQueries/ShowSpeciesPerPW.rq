@@ -1,0 +1,10 @@
+PREFIX wp: <http://vocabularies.wikipathways.org/wp#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+
+SELECT ?species ?title
+FROM <http://plantmetwiki.bioinformatics.nl/>
+WHERE {
+  VALUES ?pw { <http://rdf-plantmetwiki.bioinformatics.nl/pathways/PC159_r20251206224344> }
+  OPTIONAL { ?pw wp:organismName ?species . }
+  OPTIONAL { ?pw dc:title ?title . }
+}

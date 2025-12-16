@@ -1,0 +1,9 @@
+PREFIX wp: <http://vocabularies.wikipathways.org/wp#>
+
+SELECT ?species (COUNT(DISTINCT ?pw) AS ?nPathways)
+FROM <http://plantmetwiki.bioinformatics.nl/>
+WHERE {
+  ?pw wp:organismName ?species .
+}
+GROUP BY ?species
+ORDER BY DESC(?nPathways)
