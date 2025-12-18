@@ -1,9 +1,0 @@
-PREFIX ro: <http://purl.obolibrary.org/obo/RO_>
-
-SELECT ?bgc ?gene
-FROM <http://plantmetwiki.bioinformatics.nl/>
-WHERE {
-  ?bgc ro:0000051 ?gene .
-}
-ORDER BY ?bgc ?gene
-LIMIT 200
