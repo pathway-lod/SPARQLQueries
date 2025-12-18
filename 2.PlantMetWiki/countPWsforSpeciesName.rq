@@ -20,13 +20,13 @@ PREFIX pmw:		<http://rdf-plantmetwiki.bioinformatics.nl/pathways/>
 SELECT DISTINCT ?pwID (STR(?titleLit) AS ?title) (count(DISTINCT ?dataNode) as ?nDataNodes)
 FROM <http://plantmetwiki.bioinformatics.nl/>
 WHERE {
-  ?pw rdf:type wp:Pathway ;                 #Filter for pathway type entries
-      dc:identifier ?pwID;                  #Find all pathway IDs
-      wp:organismName "Arabidopsis thaliana" ; #Example organism name using Latin Spelling, example "Arabidopsis thaliana, "Solanum tuberosum", etc.
-      dc:title ?titleLit .                  #Retrieve the pathway title
+  ?pw rdf:type wp:Pathway ;                    #Filter for pathway type entries
+      dc:identifier ?pwID;                     #Find all pathway IDs
+      wp:organismName "Arabidopsis thaliana" ; #Example organism name using Latin Spelling, example "Solanum tuberosum"
+      dc:title ?titleLit .                     #Retrieve the pathway title
   
-  ?dataNode rdf:type wp:DataNode;
-            dcterms:isPartOf ?pw .
+  ?dataNode rdf:type wp:DataNode;              #Find all type DataNode entries
+            dcterms:isPartOf ?pw .             #Connect DataNodes to pathways
 }
 GROUP BY ?pwID ?titleLit
 ORDER BY DESC(?nDataNodes)
