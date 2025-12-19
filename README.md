@@ -2,7 +2,7 @@
 
 Queries for the [PlantMetWiki SNORQL UI (SPARQL Explorer)](https://plantmetwiki.bioinformatics.nl/) automated loading .
 
-Relevant prefixes:
+Relevant prefixes from this knowledge graph:
 ```SPARQL
 PREFIX biopax:      <http://www.biopax.org/release/biopax-level3.owl#>
 PREFIX cito:        <http://purl.org/spar/cito/>
@@ -25,6 +25,16 @@ PREFIX pmw:         <http://rdf-plantmetwiki.bioinformatics.nl/pathways/>
 PREFIX ncbi:        <http://purl.obolibrary.org/obo/NCBITaxon_>
 PREFIX ro:          <http://purl.obolibrary.org/obo/RO_>
 PREFIX bioregistry: <https://bioregistry.io/mibig:>
+```
+
+Prefixes for fedreated queries:
+- Wikidata
+```SPARQL
+PREFIX wdt:  <http://www.wikidata.org/prop/direct/>
+```
+- Lotus
+```SPARQL
+#tba
 ```
 
 ## License 
