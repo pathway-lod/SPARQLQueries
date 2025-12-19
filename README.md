@@ -21,9 +21,10 @@ PREFIX void:    <http://rdfs.org/ns/void#>
 PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
 PREFIX wprdf:   <http://rdf.wikipathways.org/>
 PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
-PREFIX pmw:		<http://rdf-plantmetwiki.bioinformatics.nl/pathways/>
+PREFIX pmw:    <http://rdf-plantmetwiki.bioinformatics.nl/pathways/>
 PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>
-PREFIX ro:		<http://purl.obolibrary.org/obo/RO_>
+PREFIX ro:    <http://purl.obolibrary.org/obo/RO_>
+PREFIX bioregistry:    <https://bioregistry.io/mibig:>
 ```
 
 ## License 
