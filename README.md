@@ -22,6 +22,8 @@ PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
 PREFIX wprdf:   <http://rdf.wikipathways.org/>
 PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
 PREFIX pmw:		<http://rdf-plantmetwiki.bioinformatics.nl/pathways/>
+PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>
+PREFIX ro:		<http://purl.obolibrary.org/obo/RO_>
 ```
 
 ## License 
