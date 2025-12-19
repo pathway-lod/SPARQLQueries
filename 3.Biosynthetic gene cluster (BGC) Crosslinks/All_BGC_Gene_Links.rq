@@ -1,6 +1,7 @@
 PREFIX biopax:  <http://www.biopax.org/release/biopax-level3.owl#> PREFIX cito:    <http://purl.org/spar/cito/> PREFIX dc:      <http://purl.org/dc/elements/1.1/> PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX foaf:    <http://xmlns.com/foaf/0.1/> PREFIX freq:    <http://purl.org/cld/freq/> PREFIX gpml:    <http://vocabularies.wikipathways.org/gpml#>
 PREFIX owl:     <http://www.w3.org/2002/07/owl#> PREFIX pav:     <http://purl.org/pav/> PREFIX prov:    <http://www.w3.org/ns/prov#> PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#> PREFIX skos:    <http://www.w3.org/2004/02/skos/core#> PREFIX void:    <http://rdfs.org/ns/void#>
-PREFIX wp:      <http://vocabularies.wikipathways.org/wp#> PREFIX wprdf:   <http://rdf.wikipathways.org/> PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#> PREFIX pmw:		<http://rdf-plantmetwiki.bioinformatics.nl/pathways/> PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_> PREFIX ro:		<http://purl.obolibrary.org/obo/RO_>
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#> PREFIX wprdf:   <http://rdf.wikipathways.org/> PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#> PREFIX pmw:		<http://rdf-plantmetwiki.bioinformatics.nl/pathways/> PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_> PREFIX ro:		<http://purl.obolibrary.org/obo/RO_> 
+PREFIX bioregistry: <https://bioregistry.io/mibig:>
 
 SELECT ?bgc ?gene
 FROM <http://plantmetwiki.bioinformatics.nl/>
