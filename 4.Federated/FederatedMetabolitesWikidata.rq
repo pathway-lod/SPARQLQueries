@@ -4,7 +4,7 @@ PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX wdt:     <http://www.wikidata.org/prop/direct/>
 PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?pw ?title ?metabolite ?inchikey ?wd ?wdLabel
+SELECT DISTINCT ?pw ?title ?metabolite ?smilesDepict ?inchikey ?wd ?wdLabel
 FROM <http://plantmetwiki.bioinformatics.nl/>
 WHERE {
   {
@@ -26,6 +26,7 @@ WHERE {
 
   SERVICE <https://query.wikidata.org/sparql> {
     ?wd wdt:P235 ?inchikey .
+    OPTIONAL { ?wd wdt:P233 ?smilesDepict }
     OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") }
   }
 }
