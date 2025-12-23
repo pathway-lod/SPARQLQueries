@@ -3,14 +3,37 @@ PREFIX owl:     <http://www.w3.org/2002/07/owl#> PREFIX pav:     <http://purl.or
 PREFIX wp:      <http://vocabularies.wikipathways.org/wp#> PREFIX wprdf:   <http://rdf.wikipathways.org/> PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#> PREFIX pmw:		<http://rdf-plantmetwiki.bioinformatics.nl/pathways/> PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_> PREFIX ro:		<http://purl.obolibrary.org/obo/RO_> 
 PREFIX bioregistry: <https://bioregistry.io/mibig:> 
 
-##TODO: add federated element :)
+#Federated prefixes:
+PREFIX wd:          <http://www.wikidata.org/entity/> PREFIX wdt:         <http://www.wikidata.org/prop/direct/> PREFIX p:           <http://www.wikidata.org/prop/> PREFIX pq:          <http://www.wikidata.org/prop/qualifier/> 
+PREFIX wdtn: <http://www.wikidata.org/prop/direct-normalized/> 
 
-SELECT DISTINCT ?pwID ?title (COUNT(DISTINCT ?pubmed) AS ?nPublications)
+SELECT DISTINCT ?pwID ?title ?nPublications ?paperTitle ?pubmedWD ?DOI ?wd
 FROM <http://plantmetwiki.bioinformatics.nl/>
 WHERE {  
-  ?pw a wp:Pathway ;                #Define pathways
-      dc:title ?title ;             #Define pathway titles
-      dc:identifier ?pwID ;         #Define pathway IDs
-      (dcterms:references|cito:cites) ?pubmed .  #Collect total references for pathways  
+  {
+  
+  SELECT ?pwID ?title ?pubmedWD (COUNT(DISTINCT ?pubmed) AS ?nPublications)
+    WHERE {
+  		?pw a wp:Pathway ;                #Define pathways
+      		dc:title ?title ;             #Define pathway titles
+      		dc:identifier ?pwID ;         #Define pathway IDs
+      		(dcterms:references|cito:cites) ?pubmed .  #Collect total references for pathways
+      
+        ?pw (dcterms:references|cito:cites) ?pubmedWD .  #Keep PMIDs for downstream analysis
+      
+        }
+    GROUP BY ?pwID ?title ?pubmedWD                   #Results need to be aggregated to apply count
+    HAVING (COUNT(DISTINCT ?pubmed) <= 2)             #Retrieve pathways with a few publication
+                    
+    }
+  
+      BIND(STR(?pubmedWD) AS ?pubmedStr)
+      BIND(STRAFTER(?pubmedStr, "https://identifiers.org/pubmed/") AS ?pmid0raw)
+      
+SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
+  ?wd wdt:P698 ?pmid0raw ;
+      wdtn:P356 ?DOI ;
+      wdt:P1476 ?paperTitle .
 }
-ORDER BY DESC (?nPublications)
+}
+ORDER BY DESC (?nPublications) ?title 
