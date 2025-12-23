@@ -6,11 +6,11 @@ PREFIX bioregistry: <https://bioregistry.io/mibig:>
 #Federated against Wikidata, the following prefixes are handy:
 PREFIX wd:          <http://www.wikidata.org/entity/> PREFIX wdt:  <http://www.wikidata.org/prop/direct/>
 
-SELECT DISTINCT ?pw ?title ?metabolite ?smilesDepict ?inchikey ?wd ?wdLabel
+SELECT DISTINCT ?pwID ?title ?metabolite ?smilesDepict ?inchikey ?wd ?wdLabel
 FROM <http://plantmetwiki.bioinformatics.nl/>
 WHERE {
   {
-    SELECT DISTINCT ?pw ?title ?metabolite ?inchikey
+    SELECT DISTINCT ?pwID ?title ?metabolite ?inchikey
     FROM <http://plantmetwiki.bioinformatics.nl/>
     WHERE {
       ?metabolite a wp:Metabolite ;                #Retrieve all DataNodes of Type Metabolite
@@ -24,9 +24,7 @@ WHERE {
           wp:organismName "Solanum tuberosum" .
       BIND(STR(?titleLit) AS ?title)
 
-      #FILTER(STRSTARTS(STR(?metabolite), "https://identifiers.org/inchikey/"))
-      #BIND(STRAFTER(STR(?metabolite), "https://identifiers.org/inchikey/") AS ?inchikey)
-    }
+      }
     LIMIT 10
   }
 
