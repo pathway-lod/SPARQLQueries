@@ -6,25 +6,29 @@ PREFIX bioregistry: <https://bioregistry.io/mibig:>
 #Federated prefixes:
 PREFIX wd:          <http://www.wikidata.org/entity/> PREFIX wdt:         <http://www.wikidata.org/prop/direct/> PREFIX p:           <http://www.wikidata.org/prop/> PREFIX pq:          <http://www.wikidata.org/prop/qualifier/> 
 
-SELECT DISTINCT ?title (GROUP_CONCAT(DISTINCT ?species; separator=", ") as ?Species) ?inchikey ?wd ?wdLabel
+SELECT ?pwID (GROUP_CONCAT(DISTINCT ?species; separator=", ") as ?Species) ?name ?wd ?ingredientLabel
 FROM <http://plantmetwiki.bioinformatics.nl/>
 WHERE {
-      ?metabolite a wp:Metabolite ;
-                  dcterms:isPartOf ?pw ;
-                  dc:source "InChIKey";
-                  dcterms:identifier ?inchikey .
+  ?metabolite a wp:Metabolite ;                	#Retrieve all DataNodes of Type Metabolite
+              rdfs:label ?name ;				#To connect ot textLabels for chemical compounds/Metabolites
+              dcterms:isPartOf ?pw ;           	#Connect these to specific pathways for priority count later
+              dc:source "InChIKey" ;           	#Database for annotations is InChIKey
+              dcterms:identifier ?inchikey .   	#Retrieve InChIKey
   
-      FILTER(?inchikey IN (
-      "BGWGXPAPYGQALX-ARQDHWQXSA-L",
-      "CZMRCDWAGMRECN-UGDNZRGBSA-N",
-      "ASKKPQKSCFYPPP-FVLDFCIYSA-J")) ##metabolite list of interest
-
-      ?pw dc:title ?title ;
-           wp:organismName ?species .
-
+  ##metabolite list with names of interest 
+  FILTER(?name IN ( "caffeine",
+      		  "theobromine",
+      		  "xanthine",
+                    "7-methylxanthine")) 
+  
+   ?pw a wp:Pathway ;                          #Define pathways
+       dc:identifier ?pwID ; 				   #Collect the pathway IDs
+       wp:organismName ?species .			   #Retrieve the species in which this compound is produced/consumed
+  
+  
   SERVICE <https://query.wikidata.org/sparql> {
-   
-    ?wd wdt:P235 ?inchikey .
-    OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") }
+     ?wd wdt:P235  ?inchikey .
+     OPTIONAL {?wd wdt:P3780 ?ingredient .
+     ?ingredient rdfs:label ?ingredientLabel . FILTER(LANG(?ingredientLabel) = "en") }
   }
-} ORDER BY ?wd
+} ORDER BY ?name
