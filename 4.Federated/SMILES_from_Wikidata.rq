@@ -3,8 +3,8 @@ PREFIX owl:     <http://www.w3.org/2002/07/owl#> PREFIX pav:     <http://purl.or
 PREFIX wp:      <http://vocabularies.wikipathways.org/wp#> PREFIX wprdf:   <http://rdf.wikipathways.org/> PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#> PREFIX pmw:		<http://rdf-plantmetwiki.bioinformatics.nl/pathways/> PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_> PREFIX ro:		<http://purl.obolibrary.org/obo/RO_> 
 PREFIX bioregistry: <https://bioregistry.io/mibig:> 
 
-#Federated against Wikidata, the following prefixes are handy:
-PREFIX wd:          <http://www.wikidata.org/entity/> PREFIX wdt:  <http://www.wikidata.org/prop/direct/>
+#Federated prefixes:
+PREFIX wd:          <http://www.wikidata.org/entity/> PREFIX wdt:         <http://www.wikidata.org/prop/direct/> PREFIX p:           <http://www.wikidata.org/prop/> PREFIX pq:          <http://www.wikidata.org/prop/qualifier/> 
 
 SELECT DISTINCT ?pwID ?title ?metabolite ?smilesDepict ?inchikey ?wd ?wdLabel
 FROM <http://plantmetwiki.bioinformatics.nl/>
