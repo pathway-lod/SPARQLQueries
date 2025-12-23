@@ -27,11 +27,14 @@ PREFIX ro:          <http://purl.obolibrary.org/obo/RO_>
 PREFIX bioregistry: <https://bioregistry.io/mibig:>
 ```
 
-Prefixes for fedreated queries:
+Commonly used prefixes for federated queries:
 - Wikidata
 ```SPARQL
 PREFIX wd:          <http://www.wikidata.org/entity/>
 PREFIX wdt:         <http://www.wikidata.org/prop/direct/>
+PREFIX p:           <http://www.wikidata.org/prop/>
+PREFIX pq:          <http://www.wikidata.org/prop/qualifier/> 
+
 ```
 - Lotus
 ```SPARQL
