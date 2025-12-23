@@ -30,7 +30,8 @@ PREFIX bioregistry: <https://bioregistry.io/mibig:>
 Prefixes for fedreated queries:
 - Wikidata
 ```SPARQL
-PREFIX wdt:  <http://www.wikidata.org/prop/direct/>
+PREFIX wd:          <http://www.wikidata.org/entity/>
+PREFIX wdt:         <http://www.wikidata.org/prop/direct/>
 ```
 - Lotus
 ```SPARQL
