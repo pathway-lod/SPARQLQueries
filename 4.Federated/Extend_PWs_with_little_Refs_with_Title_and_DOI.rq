@@ -30,9 +30,9 @@ WHERE {
       BIND(STRAFTER(?pubmedStr, "https://identifiers.org/pubmed/") AS ?pmid0raw)
       
 SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
-  ?wd wdt:P698 ?pmid0raw ;
-      wdtn:P356 ?DOI ;
-      wdt:P1476 ?paperTitle .
+  ?wd wdt:P698 ?pmid0raw .                           #Connect PMID from pathways to Wikidata entries
+      OPTIONAL{ ?wd wdtn:P356 ?DOI ;                 #If there is a DOI, extract
+      wdt:P1476 ?paperTitle . }                      #If there is a title, extract
 }
 }
 ORDER BY DESC (?nPublications) ?title 
