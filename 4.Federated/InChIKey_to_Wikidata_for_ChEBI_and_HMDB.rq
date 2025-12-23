@@ -3,7 +3,8 @@ PREFIX owl:     <http://www.w3.org/2002/07/owl#> PREFIX pav:     <http://purl.or
 PREFIX wp:      <http://vocabularies.wikipathways.org/wp#> PREFIX wprdf:   <http://rdf.wikipathways.org/> PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#> PREFIX pmw:		<http://rdf-plantmetwiki.bioinformatics.nl/pathways/> PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_> PREFIX ro:		<http://purl.obolibrary.org/obo/RO_> 
 PREFIX bioregistry: <https://bioregistry.io/mibig:> 
 
-PREFIX wdt:  <http://www.wikidata.org/prop/direct/>
+#Federated prefixes:
+PREFIX wd:          <http://www.wikidata.org/entity/> PREFIX wdt:         <http://www.wikidata.org/prop/direct/> PREFIX p:           <http://www.wikidata.org/prop/> PREFIX pq:          <http://www.wikidata.org/prop/qualifier/> 
 
 SELECT DISTINCT ?inchikey ?nPWOcurrences ?wd ?wdLabel ?chebi ?pubchem
 FROM <http://plantmetwiki.bioinformatics.nl/>
@@ -20,15 +21,17 @@ WHERE {
           dc:identifier ?pwID .					   #Collect the pathway IDs
     }
     GROUP BY ?inchikey                             #Results need to be aggregated to apply count
-    HAVING (COUNT(DISTINCT ?pwID) <= 10)           #Filter out common metabolites (e.g. H+, H2O).
-    LIMIT 200       #Takes around 42 sec to retrieve; TODO: check faster trhough Qlever?
+    HAVING (COUNT(DISTINCT ?pwID) <= 1)            #Retrieve metabolites only found in 1 pathway
+    LIMIT 100                                      #100 items take around 14 sec to retrieve in Wikidata, 22 in Qlever
   }
 
   SERVICE <https://query.wikidata.org/sparql> {
     ?wd wdt:P235 ?inchikey .             #Connect pathway Metabolites to Wikidata entries via InChIKey
     OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") } #Retrieve the label from Wikidata for the metabolite
-    OPTIONAL { ?wd wdt:P683 ?chebi }     # Retrieve ChEBI ID if available
-    OPTIONAL { ?wd wdt:P662 ?pubchem }   # Retrieve PubChem CID if available
+    OPTIONAL {  ?wd wdt:P683 ?chebi ;
+                   p:P683 ?internalID .
+               ?internalID pq:P4390 wd:Q39893449 .}     # Retrieve ChEBI ID if available, but only 'exact match' (wd:Q39893449)
+    OPTIONAL { ?wd wdt:P662 ?pubchem . }   # Retrieve PubChem CID if available
   }  
 } 
 ORDER BY DESC (?nPWOcurrences)
