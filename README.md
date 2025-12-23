@@ -33,8 +33,8 @@ Commonly used prefixes for federated queries:
 PREFIX wd:          <http://www.wikidata.org/entity/>
 PREFIX wdt:         <http://www.wikidata.org/prop/direct/>
 PREFIX p:           <http://www.wikidata.org/prop/>
-PREFIX pq:          <http://www.wikidata.org/prop/qualifier/> 
-
+PREFIX pq:          <http://www.wikidata.org/prop/qualifier/>
+PREFIX wdtn: <http://www.wikidata.org/prop/direct-normalized/> 
 ```
 - Lotus
 ```SPARQL
