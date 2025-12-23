@@ -22,7 +22,8 @@ WHERE {
     }
     GROUP BY ?inchikey                             #Results need to be aggregated to apply count
     HAVING (COUNT(DISTINCT ?pwID) <= 1)            #Retrieve metabolites only found in 1 pathway
-    LIMIT 100                                      #100 items take around 14 sec to retrieve in Wikidata, 22 in Qlever
+    LIMIT 100 			                           #100 items take around 14 sec to retrieve in Wikidata, 22 in Qlever
+    OFFSET 100									   #To retrieve item 101-200, can be used in a script to collect data from all entries
   }
 
   SERVICE <https://query.wikidata.org/sparql> {
