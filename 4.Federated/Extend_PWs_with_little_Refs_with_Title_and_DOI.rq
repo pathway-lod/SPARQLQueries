@@ -4,8 +4,7 @@ PREFIX wp:      <http://vocabularies.wikipathways.org/wp#> PREFIX wprdf:   <http
 PREFIX bioregistry: <https://bioregistry.io/mibig:> 
 
 #Federated prefixes:
-PREFIX wd:          <http://www.wikidata.org/entity/> PREFIX wdt:         <http://www.wikidata.org/prop/direct/> PREFIX p:           <http://www.wikidata.org/prop/> PREFIX pq:          <http://www.wikidata.org/prop/qualifier/> 
-PREFIX wdtn: <http://www.wikidata.org/prop/direct-normalized/> 
+PREFIX wd: <http://www.wikidata.org/entity/> PREFIX wdt: <http://www.wikidata.org/prop/direct/> PREFIX p: <http://www.wikidata.org/prop/> PREFIX pq: <http://www.wikidata.org/prop/qualifier/>  PREFIX wdtn: <http://www.wikidata.org/prop/direct-normalized/> 
 
 SELECT DISTINCT ?pwID ?title ?nPublications ?paperTitle ?pubmedWD ?DOI ?wd
 FROM <http://plantmetwiki.bioinformatics.nl/>
