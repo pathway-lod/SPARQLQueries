@@ -26,7 +26,7 @@ WHERE {
     OFFSET 100									   #To retrieve item 101-200, can be used in a script to collect data from all entries
   }
 
-  SERVICE <https://query.wikidata.org/sparql> {
+  SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
     ?wd wdt:P235 ?inchikey .             #Connect pathway Metabolites to Wikidata entries via InChIKey
     OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") } #Retrieve the label from Wikidata for the metabolite
     OPTIONAL {  ?wd wdt:P683 ?chebi ;
