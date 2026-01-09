@@ -22,7 +22,7 @@ WHERE {
       ?pw dc:title ?title ;
            wp:organismName ?species .
 
-  SERVICE <https://query.wikidata.org/sparql> {
+  SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
    
     ?wd wdt:P235 ?inchikey .
     OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") }
