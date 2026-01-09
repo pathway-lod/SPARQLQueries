@@ -26,7 +26,7 @@ WHERE {
        wp:organismName ?species .			   #Retrieve the species in which this compound is produced/consumed
   
   
-  SERVICE <https://query.wikidata.org/sparql> {
+  SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
      ?wd wdt:P235  ?inchikey .
      OPTIONAL {?wd wdt:P3780 ?ingredient .
      ?ingredient rdfs:label ?ingredientLabel . FILTER(LANG(?ingredientLabel) = "en") }
