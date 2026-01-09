@@ -6,7 +6,7 @@ PREFIX bioregistry: <https://bioregistry.io/mibig:>
 SELECT ?bgc ?gene
 FROM <http://plantmetwiki.bioinformatics.nl/>
 WHERE {
-  ?bgc ro:0000051 ?gene .  #Find genes in clusters from MIBIG and PlantIsMash
+  ?bgc <http://purl.obolibrary.org/obo/RO_has_part> ?gene .  #Find genes in clusters from MIBIG and PlantIsMash
 }
 ORDER BY ?bgc ?gene
 LIMIT 1000
