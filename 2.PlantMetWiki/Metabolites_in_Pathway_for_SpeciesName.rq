@@ -11,5 +11,5 @@ WHERE {
   
   ?pw rdf:type wp:Pathway ;                    #Filter for pathway type entries
       dc:title ?titleLit ;                     #Retrieve the pathway title
-      wp:organismName "Solanum tuberosum" .    #Example organism name using Latin Spelling, example "Solanum tuberosum"
+      wp:organismName "Solanum tuberosum" .    #Example organism name using Latin Spelling, example "Solanum tuberosum". Add one species name at a time!!
 }ORDER BY ASC(?metabolite)
