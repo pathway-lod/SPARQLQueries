@@ -10,5 +10,5 @@ WHERE {
   
   ?pw rdf:type wp:Pathway ;                    #Filter for pathway type entries
       dc:title ?titleLit ;                     #Retrieve the pathway title
-      wp:organism ncbi:4113 .                  #Example NCBI taxonomy ID for species Solanum tuberosum (potato)
+      wp:organism ncbi:4113 .                  #Example NCBI taxonomy ID for species Solanum tuberosum (potato). Do not use in combination with wp:organismName!!
   }
