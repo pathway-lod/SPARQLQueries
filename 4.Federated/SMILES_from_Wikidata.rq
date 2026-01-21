@@ -21,7 +21,7 @@ WHERE {
       ?pw a wp:Pathway ;                           #Define pathways
           dc:identifier ?pwID ;					           #Collect the pathway IDs
           dc:title ?titleLit ;
-          wp:organismName "Solanum tuberosum" .
+          wp:organismName "Solanum tuberosum" .    #Do not use together with wp:organism. Update with NCBi taxon ttl file!!
       BIND(STR(?titleLit) AS ?title)
 
       }
