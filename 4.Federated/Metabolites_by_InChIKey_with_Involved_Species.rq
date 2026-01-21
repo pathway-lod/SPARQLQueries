@@ -20,7 +20,7 @@ WHERE {
       "ASKKPQKSCFYPPP-FVLDFCIYSA-J")) ##metabolite list of interest
 
       ?pw dc:title ?title ;
-           wp:organismName ?species .
+           wp:organismName ?species . ##Do not use together with wp:organism in same query. Update with NCBi taxon ttl file!!
 
   SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
    
