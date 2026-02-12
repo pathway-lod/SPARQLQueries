@@ -7,7 +7,6 @@ PREFIX bioregistry: <https://bioregistry.io/mibig:>
 PREFIX wd:          <http://www.wikidata.org/entity/> PREFIX wdt:         <http://www.wikidata.org/prop/direct/> PREFIX p:           <http://www.wikidata.org/prop/> PREFIX pq:          <http://www.wikidata.org/prop/qualifier/> 
 
 SELECT DISTINCT ?title (GROUP_CONCAT(DISTINCT ?species; separator=", ") as ?Species) ?inchikey ?wd ?wdLabel
-FROM <http://plantmetwiki.bioinformatics.nl/>
 WHERE {
       ?metabolite a wp:Metabolite ;
                   dcterms:isPartOf ?pw ;
