@@ -4,7 +4,6 @@ PREFIX wp:      <http://vocabularies.wikipathways.org/wp#> PREFIX wprdf:   <http
 PREFIX bioregistry: <https://bioregistry.io/mibig:>
 
 SELECT ?bgc ?gene
-FROM <http://plantmetwiki.bioinformatics.nl/>
 WHERE {
   ?bgc <http://purl.obolibrary.org/obo/RO_has_part> ?gene .  #Find genes in clusters from MIBIG and PlantIsMash
 }
