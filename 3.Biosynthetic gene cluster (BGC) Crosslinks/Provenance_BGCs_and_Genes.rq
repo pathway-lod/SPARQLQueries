@@ -4,7 +4,6 @@ PREFIX wp:      <http://vocabularies.wikipathways.org/wp#> PREFIX wprdf:   <http
 
 # dcterms:source "MIBIG" / "plantiSMASH" on the cluster nodes
 SELECT ?bgc ?gene ?provenance
-FROM <http://plantmetwiki.bioinformatics.nl/>
 WHERE {
   ?bgc ro:0000051 ?gene ;
        dcterms:source ?provenance .
