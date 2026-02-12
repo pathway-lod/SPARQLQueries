@@ -1,4 +1,3 @@
 # Count all triples in the PlantMetWiki named graph
 SELECT (COUNT(*) AS ?nTriples)
-FROM <http://plantmetwiki.bioinformatics.nl/>
 WHERE { ?s ?p ?o . }

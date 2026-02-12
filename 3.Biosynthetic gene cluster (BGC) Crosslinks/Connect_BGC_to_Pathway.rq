@@ -4,7 +4,6 @@ PREFIX wp:      <http://vocabularies.wikipathways.org/wp#> PREFIX wprdf:   <http
 PREFIX bioregistry: <https://bioregistry.io/mibig:>
 
 SELECT DISTINCT ?pwID ?gene (STR(?titleLit) AS ?title)
-FROM <http://plantmetwiki.bioinformatics.nl/>
 WHERE {
   bioregistry:BGC0000670 ro:0000051 ?gene .    #Find all genes from one specific cluster, e.g. 'BGC0000670'
 
