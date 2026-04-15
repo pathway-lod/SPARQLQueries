@@ -22,7 +22,8 @@ WHERE {
         }
     GROUP BY ?pwID ?title ?pubmedWD                   #Results need to be aggregated to apply count
     HAVING (COUNT(DISTINCT ?pubmed) <= 2)             #Retrieve pathways with a few publication
-                    
+    LIMIT 10                                          #To avoid timeouts
+    OFFSET 10                                         #To retrieve item 101-200, can be used in a script to collect data from all entries
     }
   
       BIND(STR(?pubmedWD) AS ?pubmedStr)
