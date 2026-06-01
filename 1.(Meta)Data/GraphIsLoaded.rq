@@ -1,3 +1,17 @@
-# Count all triples in the PlantMetWiki named graph
-SELECT (COUNT(*) AS ?nTriples)
-WHERE { ?s ?p ?o . }
+# Count triples per named graph in the PlantMetWiki triplestore.
+# Named graphs:
+#   graph/pathways              — core WikiPathways RDF (pathways + reactions)
+#   graph/gpml-taxonomy-extra   — per-entity species annotations (wp:organism)
+#   graph/gpml-properties-extra — PlantCyc key-value properties
+#   graph/bgc-mibig             — MIBiG curated biosynthetic gene clusters
+#   graph/bgc-plantismash       — plantiSMASH predicted biosynthetic gene clusters
+#   graph/ncbitaxon             — NCBITaxon ontology (OBO Foundry, CC0)
+#   void                        — VoID metadata for all datasets
+
+SELECT ?graph (COUNT(*) AS ?nTriples)
+WHERE {
+  GRAPH ?graph { ?s ?p ?o . }
+  FILTER(STRSTARTS(STR(?graph), "http://rdf-plantmetwiki.bioinformatics.nl/"))
+}
+GROUP BY ?graph
+ORDER BY DESC(?nTriples)

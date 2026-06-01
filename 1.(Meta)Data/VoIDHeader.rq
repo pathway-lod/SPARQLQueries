@@ -1,0 +1,18 @@
+# Inspect the VoID metadata header describing all PlantMetWiki datasets.
+# Shows dataset names, versions, triple counts, creation dates and source DOIs.
+PREFIX void:    <http://rdfs.org/ns/void#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX pav:     <http://purl.org/pav/>
+PREFIX dcat:    <http://www.w3.org/ns/dcat#>
+
+SELECT ?dataset ?title ?version ?triples ?created ?sourceURI
+FROM <http://rdf-plantmetwiki.bioinformatics.nl/void>
+WHERE {
+  ?dataset a void:Dataset ;
+           dcterms:title ?title ;
+           dcterms:hasVersion ?version ;
+           pav:createdOn ?created .
+  OPTIONAL { ?dataset void:triples ?triples . }
+  OPTIONAL { ?dataset dcterms:source ?sourceURI . }
+}
+ORDER BY ?title

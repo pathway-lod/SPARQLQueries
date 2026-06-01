@@ -10,7 +10,7 @@ SELECT DISTINCT ?pwID ?title ?metabolite ?smilesDepict ?inchikey ?wd ?wdLabel
 WHERE {
   {
     SELECT DISTINCT ?pwID ?title ?metabolite ?inchikey
-    FROM <http://plantmetwiki.bioinformatics.nl/>
+    FROM <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways>
     WHERE {
       ?metabolite a wp:Metabolite ;                #Retrieve all DataNodes of Type Metabolite
                   dcterms:isPartOf ?pw ;           #Connect these to specific pathways for priority count later

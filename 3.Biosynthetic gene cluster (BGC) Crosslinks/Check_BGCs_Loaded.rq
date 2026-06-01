@@ -1,24 +1,26 @@
-# Show BGC provenance: which clusters come from MIBiG and which from plantiSMASH,
-# with their gene counts and species annotations.
+# Verify that BGC data is loaded in Virtuoso.
+# Returns cluster count, gene-link count, and species count per source.
+# Expected: MIBiG ≈ 43 clusters · plantiSMASH ≈ 128 Arabidopsis + 63 Solanum clusters.
 PREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>
 PREFIX ro:      <http://purl.obolibrary.org/obo/RO_>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
-PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
 
-SELECT ?source ?species ?bgc ?bgc_page (COUNT(?gene) AS ?nGenes)
+SELECT ?source
+       (COUNT(DISTINCT ?bgc)     AS ?nClusters)
+       (COUNT(DISTINCT ?gene)    AS ?nGeneLinks)
+       (COUNT(DISTINCT ?species) AS ?nSpecies)
 WHERE {
   GRAPH ?g {
     ?bgc a pmw:BiosyntheticGeneCluster ;
          dcterms:source ?source ;
          ro:0000051 ?gene .
     OPTIONAL { ?bgc wp:organismName ?species . }
-    OPTIONAL { ?bgc foaf:page ?bgc_page . }
   }
   FILTER(?g IN (
     <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,
     <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>
   ))
 }
-GROUP BY ?source ?species ?bgc ?bgc_page
-ORDER BY ?source ?species ?bgc
+GROUP BY ?source
+ORDER BY ?source

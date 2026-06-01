@@ -1,0 +1,9 @@
+# List all named graphs in PlantMetWiki with their triple counts.
+# Useful to verify which datasets are loaded in Virtuoso.
+
+SELECT ?graph (COUNT(*) AS ?nTriples)
+WHERE {
+  GRAPH ?graph { ?s ?p ?o . }
+}
+GROUP BY ?graph
+ORDER BY DESC(?nTriples)
