@@ -1,0 +1,43 @@
+# Find taxa in PlantMetWiki that cannot be resolved to a label in the local
+# NCBITaxon ontology graph (graph/ncbitaxon).
+#
+# A "mismatch" means the OBO Foundry IRI (e.g. NCBITaxon_48038) exists in
+# our taxonomy annotations but has no rdfs:label in the loaded ontology.
+# This typically happens when using the taxslim subset, which covers only
+# common model organisms. Loading the full NCBITaxon release resolves all
+# taxa from PlantCyc 17.0.
+#
+# Columns:
+#   ?taxon      — the unresolved OBO Foundry IRI
+#   ?nNodes     — how many annotated DataNodes carry this taxon
+#   ?ncbiID     — the numeric NCBI Taxonomy ID (extracted from the IRI)
+#
+# Use the NCBI Taxonomy Browser to look up missing taxa:
+#   https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=<ncbiID>
+#
+# Resolution: load the full NCBITaxon release instead of taxslim:
+#   bash scripts/load-graphs/load-ncbitaxon.sh  (default = full)
+#   bash scripts/load-graphs/load-ncbitaxon.sh --subset taxslim  (smaller)
+
+PREFIX wp:   <http://vocabularies.wikipathways.org/wp#>
+PREFIX ncbi: <http://purl.obolibrary.org/obo/NCBITaxon_>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?taxon
+       (STRAFTER(STR(?taxon), "NCBITaxon_") AS ?ncbiID)
+       (COUNT(DISTINCT ?node) AS ?nNodes)
+WHERE {
+  # Step 1: collect all species-specific taxa from our data
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {
+    ?node wp:organism ?taxon .
+    FILTER(?taxon != ncbi:33090)  # exclude Viridiplantae (pathway-level)
+  }
+  # Step 2: keep only those that have NO label in the NCBITaxon graph
+  FILTER NOT EXISTS {
+    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {
+      ?taxon rdfs:label ?label .
+    }
+  }
+}
+GROUP BY ?taxon
+ORDER BY DESC(?nNodes)
