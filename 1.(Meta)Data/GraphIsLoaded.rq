@@ -8,10 +8,23 @@
 #   graph/ncbitaxon             — NCBITaxon ontology (OBO Foundry, CC0)
 #   void                        — VoID metadata for all datasets
 
+# Uses VALUES to enumerate only the known PlantMetWiki graphs — fast because
+# Virtuoso can use per-graph statistics instead of scanning every triple.
+# (A FILTER on ?graph after GRAPH ?g { ?s ?p ?o } forces a full scan of all
+# graphs including the 21.7M-triple NCBITaxon graph before filtering.)
+
 SELECT ?graph (COUNT(*) AS ?nTriples)
 WHERE {
+  VALUES ?graph {
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways>
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra>
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra>
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon>
+    <http://rdf-plantmetwiki.bioinformatics.nl/void>
+  }
   GRAPH ?graph { ?s ?p ?o . }
-  FILTER(STRSTARTS(STR(?graph), "http://rdf-plantmetwiki.bioinformatics.nl/"))
 }
 GROUP BY ?graph
 ORDER BY DESC(?nTriples)
