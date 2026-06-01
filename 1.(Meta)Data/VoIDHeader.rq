@@ -1,11 +1,12 @@
 # Inspect the VoID metadata header describing all PlantMetWiki datasets.
-# Shows dataset names, versions, triple counts, creation dates and source DOIs.
+# Shows dataset names, versions, triple counts, creation dates,
+# clickable Zenodo deposit DOIs (foaf:page), and source provenance.
 PREFIX void:    <http://rdfs.org/ns/void#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX pav:     <http://purl.org/pav/>
-PREFIX dcat:    <http://www.w3.org/ns/dcat#>
+PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
 
-SELECT ?dataset ?title ?version ?triples ?created ?sourceURI
+SELECT ?dataset ?title ?version ?triples ?created ?depositDOI ?sourceURI
 FROM <http://rdf-plantmetwiki.bioinformatics.nl/void>
 WHERE {
   ?dataset a void:Dataset ;
@@ -13,6 +14,9 @@ WHERE {
            dcterms:hasVersion ?version ;
            pav:createdOn ?created .
   OPTIONAL { ?dataset void:triples ?triples . }
+  # Zenodo deposit DOI — concept DOI always resolves to the latest version
+  OPTIONAL { ?dataset foaf:page ?depositDOI .
+             FILTER(CONTAINS(STR(?depositDOI), "zenodo")) }
   OPTIONAL { ?dataset dcterms:source ?sourceURI . }
 }
 ORDER BY ?title
