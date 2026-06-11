@@ -6,24 +6,45 @@ PREFIX bioregistry: <https://bioregistry.io/mibig:>
 #Federated prefixes:
 PREFIX wd:          <http://www.wikidata.org/entity/> PREFIX wdt:         <http://www.wikidata.org/prop/direct/> PREFIX p:           <http://www.wikidata.org/prop/> PREFIX pq:          <http://www.wikidata.org/prop/qualifier/> 
 
-SELECT DISTINCT ?title (GROUP_CONCAT(DISTINCT ?species; separator=", ") as ?Species) ?inchikey ?wd ?wdLabel
+# Species are now at the DataNode level (not the pathway level).
+# wp:organismName on pathways only returns "Viridiplantae".
+# Strategy: find all entities annotated with a specific species in the same
+# pathway as the metabolite, then look up their label in the NCBITaxon graph.
+# This gives the plant species that co-occur with the metabolite in a pathway.
+
+SELECT DISTINCT ?title (GROUP_CONCAT(DISTINCT ?species; separator=", ") AS ?Species) ?inchikey ?wd ?wdLabel
+FROM <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways>
 WHERE {
-      ?metabolite a wp:Metabolite ;
-                  dcterms:isPartOf ?pw ;
-                  dc:source "InChIKey";
-                  dcterms:identifier ?inchikey .
-  
-      FILTER(?inchikey IN (
-      "BGWGXPAPYGQALX-ARQDHWQXSA-L",
-      "CZMRCDWAGMRECN-UGDNZRGBSA-N",
-      "ASKKPQKSCFYPPP-FVLDFCIYSA-J")) ##metabolite list of interest
+  # Find the metabolite by InChIKey
+  ?metabolite a wp:Metabolite ;
+              dcterms:isPartOf ?pw ;
+              dc:source "InChIKey" ;
+              dcterms:identifier ?inchikey .
 
-      ?pw dc:title ?title ;
-           wp:organismName ?species . ##Do not use together with wp:organism in same query. Update with NCBi taxon ttl file!!
+  FILTER(?inchikey IN (
+    "BGWGXPAPYGQALX-ARQDHWQXSA-L",
+    "CZMRCDWAGMRECN-UGDNZRGBSA-N",
+    "ASKKPQKSCFYPPP-FVLDFCIYSA-J"))  # metabolite list of interest
 
+  ?pw dc:title ?title .
+
+  # Get species from other annotated DataNodes co-occurring in the same pathway
+  # (metabolites are rarely species-specific, so we look at genes/proteins)
+  OPTIONAL {
+    ?speciesNode dcterms:isPartOf ?pw .
+    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {
+      ?speciesNode wp:organism ?taxon .
+      FILTER(?taxon != ncbi:33090)   # exclude pathway-level Viridiplantae
+    }
+    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {
+      ?taxon rdfs:label ?species .
+    }
+  }
+
+  # Federated: enrich with Wikidata entry via InChIKey
   SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
-   
     ?wd wdt:P235 ?inchikey .
     OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") }
   }
-} ORDER BY ?wd
+}
+ORDER BY ?wd

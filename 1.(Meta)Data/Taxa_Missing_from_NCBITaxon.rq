@@ -1,0 +1,58 @@
+# Find taxa in PlantMetWiki that cannot be resolved to a label in the local
+# NCBITaxon ontology graph (graph/ncbitaxon).
+#
+# Even with the full OBO Foundry NCBITaxon release loaded, some taxa may be
+# absent because:
+#   - The NCBI taxon ID has been deprecated/merged (e.g. NCBITaxon_283673
+#     = Lycopersicon hirsutum, now merged into Solanum habrochaites NCBI 62890)
+#   - The OBO Foundry release does not include every NCBI taxon (it focuses
+#     on biologically relevant taxa used in ontology annotation)
+#
+# Results for PlantCyc 17.0 with the full NCBITaxon release (v2026-05-13):
+#   6 unresolvable taxa · 54 affected GeneProduct/Protein nodes
+#   (all are gene/enzyme annotations, no metabolites affected)
+#
+# Columns:
+#   ?taxon      — the unresolved OBO Foundry IRI
+#   ?ncbiID     — numeric NCBI Taxonomy ID (extracted from IRI)
+#   ?nNodes     — number of GeneProduct/Protein nodes with this taxon
+#   ?nodeTypes  — entity types (GeneProduct, Protein)
+#
+# Look up deprecated/merged taxa:
+#   https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=<ncbiID>
+
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+SELECT ?taxon
+       (STRAFTER(STR(?taxon), "NCBITaxon_") AS ?ncbiID)
+       (COUNT(DISTINCT ?node) AS ?nNodes)
+       (GROUP_CONCAT(DISTINCT STRAFTER(STR(?nodeType), "wp#"); separator=", ") AS ?nodeTypes)
+WHERE {
+  # Step 1: collect all species-specific taxa from our taxonomy annotations
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {
+    ?node wp:organism ?taxon .
+    FILTER(?taxon != ncbi:33090)  # exclude Viridiplantae (pathway-level annotation)
+  }
+  # Step 2: keep only those with NO label in the NCBITaxon ontology graph
+  FILTER NOT EXISTS {
+    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {
+      ?taxon rdfs:label ?label .
+    }
+  }
+  # Step 3: look up entity type (GeneProduct / Protein) from the pathways graph
+  # Uses UNION to handle both direct typing and DataNode → wp:isAbout indirection
+  OPTIONAL {
+    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+      { ?dn wp:isAbout ?node ; a ?nodeType . }
+      UNION
+      { ?node a ?nodeType . }
+      FILTER(STRSTARTS(STR(?nodeType), "http://vocabularies.wikipathways.org/wp#"))
+      FILTER(?nodeType != wp:DataNode)
+    }
+  }
+}
+GROUP BY ?taxon
+ORDER BY DESC(?nNodes)

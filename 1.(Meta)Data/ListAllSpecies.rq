@@ -1,7 +1,19 @@
-PREFIX wp: <http://vocabularies.wikipathways.org/wp#>
+# List all species that have at least one annotated DataNode in PlantMetWiki.
+# Species names are resolved via the local NCBITaxon ontology graph.
+# Note: species are annotated at the DataNode level (graph/gpml-taxonomy-extra),
+# not at the pathway level. The pathway level only carries Viridiplantae.
+PREFIX wp:   <http://vocabularies.wikipathways.org/wp#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ncbi: <http://purl.obolibrary.org/obo/NCBITaxon_>
 
-SELECT DISTINCT ?species
+SELECT DISTINCT ?taxonID ?species
 WHERE {
-  ?pw wp:organismName ?species .
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {
+    ?node wp:organism ?taxonID .
+    FILTER(?taxonID != ncbi:33090)  # exclude pathway-level Viridiplantae
+  }
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {
+    ?taxonID rdfs:label ?species .
+  }
 }
 ORDER BY ?species
