@@ -1,6 +1,6 @@
 # Verify that BGC data is loaded in Virtuoso.
 # Returns cluster count, gene-link count, and species count per source.
-# Expected: MIBiG ≈ 43 clusters · plantiSMASH ≈ 128 Arabidopsis + 63 Solanum clusters.
+# Expected: MIBiG ≈ 43 clusters (9 A. thaliana + 34 untyped) · plantiSMASH ≈ 65 A. thaliana clusters.
 PREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>
 PREFIX ro:      <http://purl.obolibrary.org/obo/RO_>
 PREFIX dcterms: <http://purl.org/dc/terms/>
