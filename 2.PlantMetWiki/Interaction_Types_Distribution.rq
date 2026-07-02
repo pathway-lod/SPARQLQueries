@@ -1,0 +1,26 @@
+# Count the number of interactions of each wp:Interaction subtype across the whole knowledge base.
+# Subtypes counted: Catalysis, Conversion, TranscriptionTranslation, Inhibition,
+#                   Stimulation, Binding, ComplexBinding.
+#
+# Named graphs used:
+#   graph/pathways — all interaction triples
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?interactionType (COUNT(DISTINCT ?interaction) AS ?nInteractions)
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?interaction rdf:type ?interactionType .
+    VALUES ?interactionType {
+      wp:Catalysis
+      wp:Conversion
+      wp:TranscriptionTranslation
+      wp:Inhibition
+      wp:Stimulation
+      wp:Binding
+      wp:ComplexBinding
+    }
+  }
+}
+GROUP BY ?interactionType
+ORDER BY DESC(?nInteractions)

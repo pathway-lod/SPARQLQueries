@@ -22,10 +22,11 @@ WHERE {
     <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>
   ))
 
-  # 2. Same gene participates in a pathway (in pathways graph)
+  # 2. Same gene is part of a pathway (in pathways graph)
+  # wp:GeneProduct DataNodes link directly to pathways via dcterms:isPartOf
   GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
-    ?interaction wp:participants ?gene ;
-                 dcterms:isPartOf ?pw .
+    ?gene a wp:GeneProduct ;
+          dcterms:isPartOf ?pw .
     ?pw dc:title ?title ;
         dc:identifier ?pwID .
   }

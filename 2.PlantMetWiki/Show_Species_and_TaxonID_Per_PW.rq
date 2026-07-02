@@ -1,19 +1,22 @@
 # Show all species (with NCBI taxon IDs and labels) present in a given pathway.
 # Species are identified from DataNode-level annotations in the taxonomy-extra graph.
-# Replace pmw:PC159 with the pathway ID of interest.
+# Named graphs used:
+#   graph/pathways            — pathway and DataNode triples
+#   graph/gpml-taxonomy-extra — wp:organism annotations per DataNode
+#   graph/ncbitaxon           — taxon labels
+# Editable placeholder: change "/PC159_" to any other internal pathway ID fragment.
 PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
 PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX dc:      <http://purl.org/dc/elements/1.1/>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>
-PREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/pathways/>
 
 SELECT DISTINCT ?taxonID ?species ?title
 WHERE {
-  # Find the pathway
+  # Find the pathway by internal sequential ID fragment
   GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
-    ?pw dc:identifier pmw:PC159 ;  # change pathway ID here
-        dc:title ?title .
+    ?pw dc:title ?title .
+    FILTER(CONTAINS(STR(?pw), '/PC159_'))  # change pathway ID fragment here
     ?dataNode dcterms:isPartOf ?pw .
   }
   # Get species annotation on DataNodes in this pathway

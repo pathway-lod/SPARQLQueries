@@ -1,0 +1,32 @@
+# List the top N pathways ranked by the number of gene/protein DataNodes they contain.
+# Includes stable PlantCyc PWY/RXN accession from graph/gpml-properties-extra.
+#
+# Named graphs used:
+#   graph/pathways              — pathway, wp:GeneProduct, wp:Protein triples
+#   graph/gpml-properties-extra — dcterms:identifier = stable PWY/RXN accession
+#
+# Editable placeholder: adjust LIMIT to change how many top pathways are returned.
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+SELECT ?pw ?internalID ?stablePWY_ID ?title (COUNT(DISTINCT ?entity) AS ?nGeneProducts)
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?pw a wp:Pathway ;
+        dc:identifier ?internalID ;
+        dc:title ?title .
+
+    ?entity dcterms:isPartOf ?pw .
+    { ?entity a wp:GeneProduct } UNION { ?entity a wp:Protein }
+  }
+  OPTIONAL {
+    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {
+      ?pw dcterms:identifier ?stablePWY_ID .
+      FILTER(STRSTARTS(?stablePWY_ID, "PWY") || STRSTARTS(?stablePWY_ID, "RXN"))
+    }
+  }
+}
+GROUP BY ?pw ?internalID ?stablePWY_ID ?title
+ORDER BY DESC(?nGeneProducts)
+LIMIT 20

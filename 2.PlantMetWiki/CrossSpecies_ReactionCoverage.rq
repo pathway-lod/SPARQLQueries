@@ -1,0 +1,50 @@
+# Cross-species inference: for a given pathway, list every Conversion reaction and which
+# species have an annotated enzyme (GeneProduct or Protein) that catalyses it.
+# This mirrors the cross-species coverage analysis in notebook 03.
+#
+# Named graphs used:
+#   graph/pathways              — pathway, reaction, catalysis, and DataNode triples
+#   graph/gpml-properties-extra — dcterms:identifier = stable PWY/RXN accession for lookup
+#   graph/gpml-taxonomy-extra   — wp:organism annotations per DataNode
+#   graph/ncbitaxon             — taxon labels
+#
+# Editable placeholder: change "PWY-5710" to any other stable PlantCyc PWY accession.
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>
+
+SELECT ?reactionID ?reaction ?species
+WHERE {
+  # Identify the pathway by stable PWY ID
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {
+    ?pw dcterms:identifier "PWY-5710" .  # Editable: stable PlantCyc PWY accession
+  }
+
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    # Get all Conversion reactions in this pathway
+    ?reaction a wp:Conversion ;
+              dcterms:isPartOf ?pw ;
+              dc:identifier ?reactionID .
+
+    # Find catalysis interactions linking an enzyme to this reaction
+    ?catalysis a wp:Catalysis ;
+               wp:source ?enzyme ;
+               wp:target ?reaction ;
+               dcterms:isPartOf ?pw .
+
+    # The enzyme must be a GeneProduct or Protein DataNode
+    { ?enzyme a wp:GeneProduct } UNION { ?enzyme a wp:Protein }
+  }
+
+  # Get species annotation for the enzyme
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {
+    ?enzyme wp:organism ?taxon .
+    FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae
+  }
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {
+    ?taxon rdfs:label ?species .
+  }
+}
+ORDER BY ?reactionID ?species

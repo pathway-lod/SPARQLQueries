@@ -1,0 +1,35 @@
+# Find BGCs that have NO shared gene with any PlantCyc pathway in graph/pathways.
+# Uses FILTER NOT EXISTS to identify disconnected clusters.
+# Useful for identifying BGCs whose enzymes are not yet represented in PlantCyc.
+#
+# Named graphs used:
+#   graph/bgc-mibig       — MIBiG 4.0 curated clusters
+#   graph/bgc-plantismash — plantiSMASH v2 predicted clusters
+#   graph/pathways        — wp:GeneProduct DataNodes linked to pathways
+PREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>
+PREFIX ro:      <http://purl.obolibrary.org/obo/RO_>
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT ?bgc ?bgcSource (COUNT(DISTINCT ?gene) AS ?nGenes)
+WHERE {
+  # Get BGC and its member genes
+  GRAPH ?bgcGraph {
+    ?bgc a pmw:BiosyntheticGeneCluster ;
+         dcterms:source ?bgcSource ;
+         ro:0000051 ?gene .
+  }
+  FILTER(?bgcGraph IN (
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>
+  ))
+
+  # Exclude BGCs where at least one gene is in graph/pathways as a GeneProduct
+  FILTER NOT EXISTS {
+    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+      ?gene a wp:GeneProduct .
+    }
+  }
+}
+GROUP BY ?bgc ?bgcSource
+ORDER BY ?bgcSource ?bgc
