@@ -1,31 +1,51 @@
 # Count all major entity types in PlantMetWiki.
 # PC* pathways = WikiPathways-style pathway entries (sequential internal IDs starting with PC).
 # RC* reactions = reaction-level pathway entries (sequential internal IDs starting with RC).
+#
 # Named graphs used:
 #   graph/pathways — all DataNodes, pathways, and interactions
-PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
-PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+#
+# Implementation note: uses UNION instead of multiple OPTIONAL patterns.
+# Multiple OPTIONAL patterns in a single query time out in Virtuoso because the
+# optimizer cannot push each OPTIONAL into an independent scan.
+# UNION allows each entity type to be counted separately and efficiently.
 
-SELECT
-  (COUNT(DISTINCT ?pc_pathway)    AS ?nPC_Pathways)
-  (COUNT(DISTINCT ?rc_pathway)    AS ?nRC_Reactions)
-  (COUNT(DISTINCT ?gene)          AS ?nGeneProducts)
-  (COUNT(DISTINCT ?protein)       AS ?nProteins)
-  (COUNT(DISTINCT ?metabolite)    AS ?nMetabolites)
-  (COUNT(DISTINCT ?complex)       AS ?nComplexes)
-  (COUNT(DISTINCT ?interaction)   AS ?nInteractions)
-  (COUNT(DISTINCT ?catalysis)     AS ?nCatalysis)
-  (COUNT(DISTINCT ?conversion)    AS ?nConversions)
+PREFIX wp: <http://vocabularies.wikipathways.org/wp#>
+
+SELECT ?entityType (COUNT(DISTINCT ?entity) AS ?count)
 WHERE {
   GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
-    OPTIONAL { ?pc_pathway a wp:Pathway . FILTER(CONTAINS(STR(?pc_pathway), '/PC')) }
-    OPTIONAL { ?rc_pathway a wp:Pathway . FILTER(CONTAINS(STR(?rc_pathway), '/RC')) }
-    OPTIONAL { ?gene       a wp:GeneProduct }
-    OPTIONAL { ?protein    a wp:Protein }
-    OPTIONAL { ?metabolite a wp:Metabolite }
-    OPTIONAL { ?complex    a wp:Complex }
-    OPTIONAL { ?interaction a wp:Interaction }
-    OPTIONAL { ?catalysis   a wp:Catalysis }
-    OPTIONAL { ?conversion  a wp:Conversion }
+    {
+      ?entity a wp:Pathway .
+      FILTER(CONTAINS(STR(?entity), '/PC'))
+      BIND("1_PC_Pathways" AS ?entityType)
+    } UNION {
+      ?entity a wp:Pathway .
+      FILTER(CONTAINS(STR(?entity), '/RC'))
+      BIND("2_RC_Reactions" AS ?entityType)
+    } UNION {
+      ?entity a wp:GeneProduct .
+      BIND("3_GeneProducts" AS ?entityType)
+    } UNION {
+      ?entity a wp:Protein .
+      BIND("4_Proteins" AS ?entityType)
+    } UNION {
+      ?entity a wp:Metabolite .
+      BIND("5_Metabolites" AS ?entityType)
+    } UNION {
+      ?entity a wp:Complex .
+      BIND("6_Complexes" AS ?entityType)
+    } UNION {
+      ?entity a wp:Interaction .
+      BIND("7_Interactions_total" AS ?entityType)
+    } UNION {
+      ?entity a wp:Catalysis .
+      BIND("8_Catalysis" AS ?entityType)
+    } UNION {
+      ?entity a wp:Conversion .
+      BIND("9_Conversions" AS ?entityType)
+    }
   }
 }
+GROUP BY ?entityType
+ORDER BY ?entityType

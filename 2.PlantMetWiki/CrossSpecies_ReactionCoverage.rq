@@ -1,48 +1,57 @@
-# Cross-species inference: for a given pathway, list every Conversion reaction and which
-# species have an annotated enzyme (GeneProduct or Protein) that catalyses it.
-# This mirrors the cross-species coverage analysis in notebook 03.
+# Cross-species inference: for a given pathway, list every Conversion reaction
+# and which species have an annotated enzyme (GeneProduct or Protein) that catalyses it.
+# Mirrors the cross-species coverage analysis in notebook 03.
 #
 # Named graphs used:
+#   graph/gpml-properties-extra — stable PWY/RXN accession lookup
 #   graph/pathways              — pathway, reaction, catalysis, and DataNode triples
-#   graph/gpml-properties-extra — dcterms:identifier = stable PWY/RXN accession for lookup
-#   graph/gpml-taxonomy-extra   — wp:organism annotations per DataNode
+#   graph/gpml-taxonomy-extra   — wp:organism annotations per entity
 #   graph/ncbitaxon             — taxon labels
 #
-# Editable placeholder: change "PWY-5710" to any other stable PlantCyc PWY accession.
+# Editable placeholder: change "PWY-5710" to any stable PlantCyc PWY accession.
+# Browse available PWY IDs with the PlantCyc_PWY_ID_Lookup.rq query.
+#
+# Note: wp:Conversion nodes do not carry dc:identifier. The reaction ID is extracted
+# from the IRI tail (e.g. ".../Interaction/RXN_21443" -> "RXN-21443").
+# GPML anchor sub-nodes (IRI contains "_anchor_") are diagram artefacts, not
+# biochemical reactions, and are excluded.
+
 PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
 PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX dc:      <http://purl.org/dc/elements/1.1/>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>
 
-SELECT ?reactionID ?reaction ?species
+SELECT ?reactionID ?species
 WHERE {
-  # Identify the pathway by stable PWY ID
+  # Identify pathway by stable PWY ID stored in graph/gpml-properties-extra
   GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {
-    ?pw dcterms:identifier "PWY-5710" .  # Editable: stable PlantCyc PWY accession
+    ?pw dcterms:identifier "PWY-5710" .  # change to any PWY/RXN accession
   }
 
   GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
-    # Get all Conversion reactions in this pathway
+    # Real Conversion reactions only (exclude GPML anchor helper sub-nodes)
     ?reaction a wp:Conversion ;
-              dcterms:isPartOf ?pw ;
-              dc:identifier ?reactionID .
+              dcterms:isPartOf ?pw .
+    FILTER(!CONTAINS(STR(?reaction), "_anchor_"))
+    # Extract reaction ID from IRI tail: RXN_21443 -> RXN-21443
+    BIND(REPLACE(STRAFTER(STR(?reaction), "/Interaction/"), "_", "-") AS ?reactionID)
 
-    # Find catalysis interactions linking an enzyme to this reaction
+    # Catalysis linking enzyme -> reaction
     ?catalysis a wp:Catalysis ;
                wp:source ?enzyme ;
                wp:target ?reaction ;
                dcterms:isPartOf ?pw .
 
-    # The enzyme must be a GeneProduct or Protein DataNode
     { ?enzyme a wp:GeneProduct } UNION { ?enzyme a wp:Protein }
   }
 
-  # Get species annotation for the enzyme
+  # Species annotation on the enzyme (identifiers.org IRI, same across graphs)
   GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {
     ?enzyme wp:organism ?taxon .
     FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae
   }
+
+  # Resolve taxon IRI to readable species name
   GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {
     ?taxon rdfs:label ?species .
   }
