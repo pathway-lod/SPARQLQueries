@@ -1,37 +1,56 @@
-PREFIX biopax:  <http://www.biopax.org/release/biopax-level3.owl#> PREFIX cito:    <http://purl.org/spar/cito/> PREFIX dc:      <http://purl.org/dc/elements/1.1/> PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX foaf:    <http://xmlns.com/foaf/0.1/> PREFIX freq:    <http://purl.org/cld/freq/> PREFIX gpml:    <http://vocabularies.wikipathways.org/gpml#>
-PREFIX owl:     <http://www.w3.org/2002/07/owl#> PREFIX pav:     <http://purl.org/pav/> PREFIX prov:    <http://www.w3.org/ns/prov#> PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#> PREFIX skos:    <http://www.w3.org/2004/02/skos/core#> PREFIX void:    <http://rdfs.org/ns/void#>
-PREFIX wp:      <http://vocabularies.wikipathways.org/wp#> PREFIX wprdf:   <http://rdf.wikipathways.org/> PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#> PREFIX pmw:		<http://rdf-plantmetwiki.bioinformatics.nl/pathways/> PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_> PREFIX ro:		<http://purl.obolibrary.org/obo/RO_> 
-PREFIX bioregistry: <https://bioregistry.io/mibig:> 
+# Retrieve Wikidata entries, ChEBI IDs, and PubChem CIDs for metabolites
+# in PlantMetWiki, matched via InChIKey (wdt:P235).
+# Returns metabolites that occur in at most one pathway (rare/specialised compounds).
+#
+# Named graphs used:
+#   graph/pathways — metabolite DataNodes with InChIKey identifiers
+#
+# Federation:
+#   https://query.wikidata.org/sparql — chemical metadata via InChIKey
+#
+# Editable parameters:
+#   HAVING clause: change <= 1 to restrict/expand pathway occurrence filter
+#   LIMIT/OFFSET: paginate through results (100 items per page)
 
-#Federated prefixes:
-PREFIX wd:          <http://www.wikidata.org/entity/> PREFIX wdt:         <http://www.wikidata.org/prop/direct/> PREFIX p:           <http://www.wikidata.org/prop/> PREFIX pq:          <http://www.wikidata.org/prop/qualifier/> 
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX wd:      <http://www.wikidata.org/entity/>
+PREFIX wdt:     <http://www.wikidata.org/prop/direct/>
+PREFIX p:       <http://www.wikidata.org/prop/>
+PREFIX pq:      <http://www.wikidata.org/prop/qualifier/>
 
 SELECT DISTINCT ?inchikey ?nPWOcurrences ?wd ?wdLabel ?chebi ?pubchem
 WHERE {
   {
     SELECT ?inchikey (COUNT(DISTINCT ?pwID) AS ?nPWOcurrences)
     WHERE {
-      ?metabolite a wp:Metabolite ;                #Retrieve all DataNodes of Type Metabolite
-                  dcterms:isPartOf ?pw ;           #Connect these to specific pathways for priority count later
-                  dc:source "InChIKey" ;           #Database for annotations is InChIKey
-                  dcterms:identifier ?inchikey .   #Retrieve InChIKey
-      
-      ?pw a wp:Pathway ;                           #Define pathways
-          dc:identifier ?pwID .					   #Collect the pathway IDs
+      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+        ?metabolite a wp:Metabolite ;
+                    dcterms:isPartOf ?pw ;
+                    dc:source "InChIKey" ;
+                    dcterms:identifier ?inchikey .
+        ?pw a wp:Pathway ;
+            dc:identifier ?pwID .
+      }
     }
-    GROUP BY ?inchikey                             #Results need to be aggregated to apply count
-    HAVING (COUNT(DISTINCT ?pwID) <= 1)            #Retrieve metabolites only found in 1 pathway
-    LIMIT 100 			                           #100 items take around 14 sec to retrieve in Wikidata, 22 in Qlever
-    OFFSET 100									   #To retrieve item 101-200, can be used in a script to collect data from all entries
+    GROUP BY ?inchikey
+    HAVING (COUNT(DISTINCT ?pwID) <= 1)   # specialised metabolites (change limit here)
+    LIMIT 100                              # page size
+    OFFSET 0                              # increment by 100 for next page
   }
 
-  SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
-    ?wd wdt:P235 ?inchikey .             #Connect pathway Metabolites to Wikidata entries via InChIKey
-    OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") } #Retrieve the label from Wikidata for the metabolite
-    OPTIONAL {  ?wd wdt:P683 ?chebi ;
-                   p:P683 ?internalID .
-               ?internalID pq:P4390 wd:Q39893449 .}     # Retrieve ChEBI ID if available, but only 'exact match' (wd:Q39893449)
-    OPTIONAL { ?wd wdt:P662 ?pubchem . }   # Retrieve PubChem CID if available
-  }  
-} 
-ORDER BY DESC (?nPWOcurrences)
+  # Federated: enrich with Wikidata chemical metadata via InChIKey
+  SERVICE <https://query.wikidata.org/sparql> {
+    ?wd wdt:P235 ?inchikey .
+    OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") }
+    OPTIONAL {
+      ?wd wdt:P683 ?chebi ;
+          p:P683 ?internalID .
+      ?internalID pq:P4390 wd:Q39893449 .  # ChEBI exact match only
+    }
+    OPTIONAL { ?wd wdt:P662 ?pubchem . }
+  }
+}
+ORDER BY DESC(?nPWOcurrences)
