@@ -1,0 +1,22 @@
+# List PlantMetWiki metabolites with the external cross-references materialised
+# by BridgeDb (wp:bdb* predicates: ChEBI, Wikidata, PubChem, HMDB, KEGG, ...).
+# These links are stored directly in the graph, so no federation is needed to
+# resolve a metabolite to its ChEBI / Wikidata / PubChem entries.
+# Added by the BridgeDb metabolite ID mapping (release v3.2, build 20260102).
+PREFIX wp:   <http://vocabularies.wikipathways.org/wp#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?name ?ChEBI ?Wikidata ?PubChem ?HMDB ?KEGG
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?m a wp:Metabolite .
+    OPTIONAL { ?m rdfs:label        ?name }
+    OPTIONAL { ?m wp:bdbChEBI        ?ChEBI }
+    OPTIONAL { ?m wp:bdbWikidata     ?Wikidata }
+    OPTIONAL { ?m wp:bdbPubChem      ?PubChem }
+    OPTIONAL { ?m wp:bdbHmdb         ?HMDB }
+    OPTIONAL { ?m wp:bdbKeggCompound ?KEGG }
+    FILTER(BOUND(?ChEBI) || BOUND(?Wikidata) || BOUND(?PubChem))
+  }
+}
+LIMIT 100
