@@ -1,0 +1,36 @@
+# Search PlantMetWiki starting from an external database identifier — here a
+# PubChem Compound ID — and return the metabolite, its pathways and the species
+# with annotated enzymes in those pathways.
+# Enabled by BridgeDb: the PubChem link is stored directly in the graph, so this
+# resolves without a federated query. Before BridgeDb this was not possible.
+# Example CID 28523 = alpha-tomatine. Change the CID URI to search another compound
+# (or swap wp:bdbPubChem for wp:bdbChEBI / wp:bdbHmdb / wp:bdbWikidata to search
+# from a different database).
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>
+
+SELECT DISTINCT ?metabolite ?pathway ?species
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?m a wp:Metabolite ;
+       wp:bdbPubChem <http://rdf.ncbi.nlm.nih.gov/pubchem/compound/CID28523> .  # change CID here
+    OPTIONAL { ?m rdfs:label ?metabolite }
+    OPTIONAL {
+      ?m dcterms:isPartOf ?pw .
+      ?pw a wp:Pathway ; dc:title ?pathway .
+      OPTIONAL {
+        ?node dcterms:isPartOf ?pw .
+        GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {
+          ?node wp:organism ?taxon . FILTER(?taxon != ncbi:33090)
+        }
+        GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {
+          ?taxon rdfs:label ?species
+        }
+      }
+    }
+  }
+}
+ORDER BY ?pathway ?species
