@@ -1,0 +1,45 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix param: <https://w3id.org/snorql/param#> .
+@prefix pmwcat: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/> .
+@prefix pmwq: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix snorql: <https://w3id.org/snorql/ns#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+pmwq:PMWQ009 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
+    dcterms:identifier "PMWQ009" ;
+    rdfs:label "VoID metadata of the datasets"@en ;
+    rdfs:comment "Inspect the VoID metadata header describing all PlantMetWiki datasets. Shows dataset names, versions, triple counts, creation dates, clickable Zenodo deposit DOIs (foaf:page), and source provenance."@en ;
+    schema:version "1.0.0" ;
+    dcterms:created "2026-06-01"^^xsd:date ;
+    dcterms:creator <https://orcid.org/0000-0002-9472-918X> ;
+    dcterms:license <https://www.gnu.org/licenses/gpl-3.0.html> ;
+    dcterms:subject pmwcat:Metadata ;
+    schema:keywords "metadata" ;
+    schema:target <https://plantmetwiki.bioinformatics.nl/sparql> ;
+    snorql:alias "1.(Meta)Data/VoIDHeader.rq" ;
+    prov:wasDerivedFrom <https://github.com/pathway-lod/SPARQLQueries/blob/51aa48f8bcd49888688bfabc8599d8a8aa50f528/1.%28Meta%29Data/VoIDHeader.rq> ;
+    snorql:expect [ snorql:minResults 1 ] ;
+    sh:select """PREFIX void:    <http://rdfs.org/ns/void#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX pav:     <http://purl.org/pav/>
+PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+
+SELECT ?dataset ?title ?version ?triples ?created ?depositDOI ?sourceURI
+FROM <http://rdf-plantmetwiki.bioinformatics.nl/void>
+WHERE {
+  ?dataset a void:Dataset ;
+           dcterms:title ?title ;
+           dcterms:hasVersion ?version ;
+           pav:createdOn ?created .
+  OPTIONAL { ?dataset void:triples ?triples . }
+  # Zenodo deposit DOI — concept DOI always resolves to the latest version
+  OPTIONAL { ?dataset foaf:page ?depositDOI .
+             FILTER(CONTAINS(STR(?depositDOI), "zenodo")) }
+  OPTIONAL { ?dataset dcterms:source ?sourceURI . }
+}
+ORDER BY ?title""" .

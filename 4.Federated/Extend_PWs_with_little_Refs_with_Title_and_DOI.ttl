@@ -1,0 +1,86 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix param: <https://w3id.org/snorql/param#> .
+@prefix pmwcat: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/> .
+@prefix pmwq: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix snorql: <https://w3id.org/snorql/ns#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+pmwq:PMWQ031 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
+    dcterms:identifier "PMWQ031" ;
+    rdfs:label "Title and DOI of the references of pathways with few references"@en ;
+    rdfs:comment "Pathways with at most two references, with the title and DOI of each reference from Wikidata (through QLever). Returns 10 pathways at a time (LIMIT and OFFSET)."@en ;
+    schema:version "1.0.0" ;
+    dcterms:created "2025-12-23"^^xsd:date ;
+    dcterms:creator <https://orcid.org/0000-0001-8449-1318> ;
+    dcterms:license <https://www.gnu.org/licenses/gpl-3.0.html> ;
+    dcterms:subject pmwcat:Federated ;
+    schema:keywords "federated" ;
+    schema:target <https://plantmetwiki.bioinformatics.nl/sparql> ;
+    spex:federatesWith <https://qlever.cs.uni-freiburg.de/api/wikidata> ;
+    snorql:alias "4.Federated/Extend_PWs_with_little_Refs_with_Title_and_DOI.rq" ;
+    prov:wasDerivedFrom <https://github.com/pathway-lod/SPARQLQueries/blob/8fe05ebacf878e606c16252705984acd452019e9/4.Federated/Extend_PWs_with_little_Refs_with_Title_and_DOI.rq> ;
+    snorql:expect [ snorql:minResults 1 ] ;
+    sh:select """PREFIX biopax:  <http://www.biopax.org/release/biopax-level3.owl#>
+PREFIX cito:    <http://purl.org/spar/cito/>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+PREFIX freq:    <http://purl.org/cld/freq/>
+PREFIX gpml:    <http://vocabularies.wikipathways.org/gpml#>
+PREFIX owl:     <http://www.w3.org/2002/07/owl#>
+PREFIX pav:     <http://purl.org/pav/>
+PREFIX prov:    <http://www.w3.org/ns/prov#>
+PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX void:    <http://rdfs.org/ns/void#>
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX wprdf:   <http://rdf.wikipathways.org/>
+PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
+PREFIX pmw:		<http://rdf-plantmetwiki.bioinformatics.nl/pathways/>
+PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>
+PREFIX ro:		<http://purl.obolibrary.org/obo/RO_> 
+PREFIX bioregistry: <https://bioregistry.io/mibig:> 
+
+#Federated prefixes:
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX p: <http://www.wikidata.org/prop/>
+PREFIX pq: <http://www.wikidata.org/prop/qualifier/>
+PREFIX wdtn: <http://www.wikidata.org/prop/direct-normalized/> 
+
+SELECT DISTINCT ?pwID ?title ?nPublications ?paperTitle ?pubmedWD ?DOI ?wd
+WHERE {  
+  {
+  
+  SELECT ?pwID ?title ?pubmedWD (COUNT(DISTINCT ?pubmed) AS ?nPublications)
+    WHERE {
+  		?pw a wp:Pathway ;                #Define pathways
+      		dc:title ?title ;             #Define pathway titles
+      		dc:identifier ?pwID ;         #Define pathway IDs
+      		(dcterms:references|cito:cites) ?pubmed .  #Collect total references for pathways
+      
+        ?pw (dcterms:references|cito:cites) ?pubmedWD .  #Keep PMIDs for downstream analysis
+      
+        }
+    GROUP BY ?pwID ?title ?pubmedWD                   #Results need to be aggregated to apply count
+    HAVING (COUNT(DISTINCT ?pubmed) <= 2)             #Retrieve pathways with a few publication
+    LIMIT 10                                          #To avoid timeouts
+    OFFSET 10                                         #To retrieve item 101-200, can be used in a script to collect data from all entries
+    }
+  
+      BIND(STR(?pubmedWD) AS ?pubmedStr)
+      BIND(STRAFTER(?pubmedStr, "https://identifiers.org/pubmed/") AS ?pmid0raw)
+      
+SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
+  ?wd wdt:P698 ?pmid0raw .                           #Connect PMID from pathways to Wikidata entries
+      OPTIONAL{ ?wd wdtn:P356 ?DOI ;                 #If there is a DOI, extract
+      wdt:P1476 ?paperTitle . }                      #If there is a title, extract
+}
+}
+ORDER BY DESC (?nPublications) ?title""" .

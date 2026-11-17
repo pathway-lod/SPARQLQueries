@@ -1,0 +1,69 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix param: <https://w3id.org/snorql/param#> .
+@prefix pmwcat: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/> .
+@prefix pmwq: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix snorql: <https://w3id.org/snorql/ns#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+pmwq:PMWQ030 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
+    dcterms:identifier "PMWQ030" ;
+    rdfs:label "Pathways with the most gene cluster genes"@en ;
+    rdfs:comment "List pathways ranked by the number of BGC-linked genes they contain. For each pathway, reports: stable PWY ID, title, number of connected distinct BGCs, and number of shared genes. Mirrors the analysis in notebook 07, section 6."@en ;
+    schema:version "1.0.0" ;
+    dcterms:created "2026-07-02"^^xsd:date ;
+    dcterms:creator <https://orcid.org/0000-0002-9472-918X> ;
+    dcterms:license <https://www.gnu.org/licenses/gpl-3.0.html> ;
+    dcterms:subject pmwcat:BGC ;
+    schema:keywords "biosynthetic gene cluster", "MIBiG", "plantiSMASH" ;
+    schema:target <https://plantmetwiki.bioinformatics.nl/sparql> ;
+    snorql:alias "3.Biosynthetic gene cluster (BGC) Crosslinks/Top_Pathways_by_BGC_Genes.rq" ;
+    prov:wasDerivedFrom <https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/Top_Pathways_by_BGC_Genes.rq> ;
+    snorql:expect [ snorql:minResults 1 ] ;
+    sh:select """# Named graphs used:
+#   graph/bgc-mibig         — MIBiG 4.0 curated clusters
+#   graph/bgc-plantismash   — plantiSMASH v2 predicted clusters
+#   graph/pathways          — wp:GeneProduct DataNodes linked to pathways
+#   graph/gpml-properties-extra — dcterms:identifier = stable PWY/RXN accession
+
+PREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>
+PREFIX ro:      <http://purl.obolibrary.org/obo/RO_>
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+SELECT ?pw ?stablePWY_ID ?pwTitle
+  (COUNT(DISTINCT ?bgc)  AS ?nBGCs)
+  (COUNT(DISTINCT ?gene) AS ?nSharedGenes)
+WHERE {
+  # Get BGC → gene links from either BGC graph
+  GRAPH ?bgcGraph {
+    ?bgc a pmw:BiosyntheticGeneCluster ;
+         ro:0000051 ?gene .
+  }
+  FILTER(?bgcGraph IN (
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>
+  ))
+
+  # Same gene must be a GeneProduct DataNode in a pathway
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?gene a wp:GeneProduct ;
+          dcterms:isPartOf ?pw .
+    ?pw dc:title ?pwTitle .
+  }
+
+  # Enrich with stable PlantCyc accession
+  OPTIONAL {
+    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {
+      ?pw dcterms:identifier ?stablePWY_ID .
+      FILTER(STRSTARTS(?stablePWY_ID, "PWY") || STRSTARTS(?stablePWY_ID, "RXN"))
+    }
+  }
+}
+GROUP BY ?pw ?stablePWY_ID ?pwTitle
+ORDER BY DESC(COUNT(DISTINCT ?gene))""" .

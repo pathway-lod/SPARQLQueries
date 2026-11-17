@@ -1,0 +1,58 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix param: <https://w3id.org/snorql/param#> .
+@prefix pmwcat: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/> .
+@prefix pmwq: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix snorql: <https://w3id.org/snorql/ns#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+pmwq:PMWQ028 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
+    dcterms:identifier "PMWQ028" ;
+    rdfs:label "Pathways of a gene cluster"@en ;
+    rdfs:comment "Connect a specific BGC cluster to metabolic pathways via shared genes. BGC membership (ro:0000051) and pathway participant data live in separate graphs; the join is done across three named graphs."@en ;
+    schema:version "1.0.0" ;
+    dcterms:created "2025-12-19"^^xsd:date ;
+    dcterms:creator <https://orcid.org/0000-0001-8449-1318> ;
+    dcterms:contributor <https://orcid.org/0000-0002-9472-918X> ;
+    dcterms:license <https://www.gnu.org/licenses/gpl-3.0.html> ;
+    dcterms:subject pmwcat:BGC ;
+    schema:keywords "biosynthetic gene cluster", "MIBiG", "plantiSMASH" ;
+    schema:target <https://plantmetwiki.bioinformatics.nl/sparql> ;
+    snorql:alias "3.Biosynthetic gene cluster (BGC) Crosslinks/Connect_BGC_to_Pathway.rq" ;
+    prov:wasDerivedFrom <https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/Connect_BGC_to_Pathway.rq> ;
+    snorql:expect [ snorql:minResults 1 ] ;
+    sh:select """# Replace BGC0000670 with any MIBiG accession of interest.
+
+PREFIX pmw:       <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>
+PREFIX ro:        <http://purl.obolibrary.org/obo/RO_>
+PREFIX wp:        <http://vocabularies.wikipathways.org/wp#>
+PREFIX dc:        <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms:   <http://purl.org/dc/terms/>
+PREFIX bioregistry: <https://bioregistry.io/mibig:>
+
+SELECT DISTINCT ?pwID ?title ?gene ?source
+WHERE {
+  # 1. Gene is a member of the BGC (in bgc-mibig or bgc-plantismash graph)
+  GRAPH ?bgc_graph {
+    bioregistry:BGC0000670 ro:0000051 ?gene ;
+                            dcterms:source ?source .
+  }
+  FILTER(?bgc_graph IN (
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>
+  ))
+
+  # 2. Same gene is part of a pathway (in pathways graph)
+  # wp:GeneProduct DataNodes link directly to pathways via dcterms:isPartOf
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?gene a wp:GeneProduct ;
+          dcterms:isPartOf ?pw .
+    ?pw dc:title ?title ;
+        dc:identifier ?pwID .
+  }
+}
+ORDER BY ?title""" .

@@ -1,0 +1,85 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix param: <https://w3id.org/snorql/param#> .
+@prefix pmwcat: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/> .
+@prefix pmwq: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix snorql: <https://w3id.org/snorql/ns#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+pmwq:PMWQ035 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
+    dcterms:identifier "PMWQ035" ;
+    rdfs:label "Pathways and species of metabolites, by name"@en ;
+    rdfs:comment "Find metabolites by name, list the pathways they appear in, and which plant species are annotated in those pathways (via DataNode-level taxonomy, not pathway-level wp:organismName). Also enriches each metabolite with Wikidata active ingredient info (federated query)."@en ;
+    schema:version "1.0.0" ;
+    dcterms:created "2025-12-23"^^xsd:date ;
+    dcterms:creator <https://orcid.org/0000-0001-8449-1318> ;
+    dcterms:contributor <https://orcid.org/0000-0002-9472-918X> ;
+    dcterms:license <https://www.gnu.org/licenses/gpl-3.0.html> ;
+    dcterms:subject pmwcat:Federated ;
+    schema:keywords "federated" ;
+    schema:target <https://plantmetwiki.bioinformatics.nl/sparql> ;
+    spex:federatesWith <https://qlever.cs.uni-freiburg.de/api/wikidata> ;
+    snorql:alias "4.Federated/Metabolites_by_Name_with_Involved_Species.rq" ;
+    prov:wasDerivedFrom <https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/4.Federated/Metabolites_by_Name_with_Involved_Species.rq> ;
+    snorql:expect [ snorql:minResults 1 ] ;
+    sh:select """# Named graphs used:
+#   graph/pathways            — metabolite and pathway triples
+#   graph/gpml-taxonomy-extra — wp:organism annotations per DataNode
+#   graph/ncbitaxon           — taxon labels
+# Federated endpoint: https://qlever.cs.uni-freiburg.de/api/wikidata
+#
+# Editable placeholder: update the FILTER values with metabolite names of interest.
+
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>
+PREFIX wd:      <http://www.wikidata.org/entity/>
+PREFIX wdt:     <http://www.wikidata.org/prop/direct/>
+
+SELECT ?pwID (GROUP_CONCAT(DISTINCT ?species; separator=", ") AS ?Species) ?name ?wd ?ingredientLabel
+WHERE {
+  # Find metabolites by name in the pathways graph
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?metabolite a wp:Metabolite ;
+                rdfs:label ?name ;
+                dcterms:isPartOf ?pw ;
+                dc:source "InChIKey" ;
+                dcterms:identifier ?inchikey .
+
+    ?pw a wp:Pathway ;
+        dc:identifier ?pwID .
+
+    # Editable: metabolite names of interest
+    FILTER(?name IN ("caffeine", "theobromine", "xanthine", "7-methylxanthine"))
+  }
+
+  # Get species from DataNodes co-occurring in the same pathway
+  OPTIONAL {
+    ?speciesNode dcterms:isPartOf ?pw .
+    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {
+      ?speciesNode wp:organism ?taxon .
+      FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae
+    }
+    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {
+      ?taxon rdfs:label ?species .
+    }
+  }
+
+  # Federated: enrich with Wikidata active ingredient info via InChIKey
+  SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
+    ?wd wdt:P235 ?inchikey .
+    OPTIONAL {
+      ?wd wdt:P3780 ?ingredient .
+      ?ingredient rdfs:label ?ingredientLabel .
+      FILTER(LANG(?ingredientLabel) = "en")
+    }
+  }
+}
+GROUP BY ?pwID ?name ?wd ?ingredientLabel
+ORDER BY ?name""" .

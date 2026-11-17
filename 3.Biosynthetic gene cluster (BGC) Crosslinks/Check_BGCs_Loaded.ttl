@@ -1,0 +1,51 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix param: <https://w3id.org/snorql/param#> .
+@prefix pmwcat: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/> .
+@prefix pmwq: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix snorql: <https://w3id.org/snorql/ns#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+pmwq:PMWQ027 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
+    dcterms:identifier "PMWQ027" ;
+    rdfs:label "Gene cluster data per source"@en ;
+    rdfs:comment "Verify that BGC data is loaded in Virtuoso. Returns cluster count, gene-link count, and species count per source."@en ;
+    schema:version "1.0.0" ;
+    dcterms:created "2026-06-01"^^xsd:date ;
+    dcterms:creator <https://orcid.org/0000-0002-9472-918X> ;
+    dcterms:license <https://www.gnu.org/licenses/gpl-3.0.html> ;
+    dcterms:subject pmwcat:BGC ;
+    schema:keywords "biosynthetic gene cluster", "MIBiG", "plantiSMASH" ;
+    schema:target <https://plantmetwiki.bioinformatics.nl/sparql> ;
+    snorql:alias "3.Biosynthetic gene cluster (BGC) Crosslinks/Check_BGCs_Loaded.rq" ;
+    prov:wasDerivedFrom <https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/Check_BGCs_Loaded.rq> ;
+    snorql:expect [ snorql:minResults 1 ] ;
+    sh:select """# Expected: MIBiG ≈ 43 clusters (9 A. thaliana + 34 untyped) · plantiSMASH ≈ 65 A. thaliana clusters.
+
+PREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>
+PREFIX ro:      <http://purl.obolibrary.org/obo/RO_>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+
+SELECT ?source
+       (COUNT(DISTINCT ?bgc)     AS ?nClusters)
+       (COUNT(DISTINCT ?gene)    AS ?nGeneLinks)
+       (COUNT(DISTINCT ?species) AS ?nSpecies)
+WHERE {
+  GRAPH ?g {
+    ?bgc a pmw:BiosyntheticGeneCluster ;
+         dcterms:source ?source ;
+         ro:0000051 ?gene .
+    OPTIONAL { ?bgc wp:organismName ?species . }
+  }
+  FILTER(?g IN (
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>
+  ))
+}
+GROUP BY ?source
+ORDER BY ?source""" .

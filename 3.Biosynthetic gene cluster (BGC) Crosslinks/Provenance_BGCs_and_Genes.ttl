@@ -1,0 +1,49 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix param: <https://w3id.org/snorql/param#> .
+@prefix pmwcat: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/> .
+@prefix pmwq: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix snorql: <https://w3id.org/snorql/ns#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+pmwq:PMWQ029 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
+    dcterms:identifier "PMWQ029" ;
+    rdfs:label "Source of each gene cluster"@en ;
+    rdfs:comment "Show BGC provenance: which clusters come from MIBiG and which from plantiSMASH, with their gene counts and species annotations."@en ;
+    schema:version "1.0.0" ;
+    dcterms:created "2025-12-19"^^xsd:date ;
+    dcterms:creator <https://orcid.org/0000-0001-8449-1318> ;
+    dcterms:contributor <https://orcid.org/0000-0002-9472-918X> ;
+    dcterms:license <https://www.gnu.org/licenses/gpl-3.0.html> ;
+    dcterms:subject pmwcat:BGC ;
+    schema:keywords "biosynthetic gene cluster", "MIBiG", "plantiSMASH" ;
+    schema:target <https://plantmetwiki.bioinformatics.nl/sparql> ;
+    snorql:alias "3.Biosynthetic gene cluster (BGC) Crosslinks/Provenance_BGCs_and_Genes.rq" ;
+    prov:wasDerivedFrom <https://github.com/pathway-lod/SPARQLQueries/blob/93df31e091003c59df6883fb7d974387c1b45008/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/Provenance_BGCs_and_Genes.rq> ;
+    snorql:expect [ snorql:minResults 1 ] ;
+    sh:select """PREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>
+PREFIX ro:      <http://purl.obolibrary.org/obo/RO_>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+
+SELECT ?source ?species ?bgc ?bgc_page (COUNT(?gene) AS ?nGenes)
+WHERE {
+  GRAPH ?g {
+    ?bgc a pmw:BiosyntheticGeneCluster ;
+         dcterms:source ?source ;
+         ro:0000051 ?gene .
+    OPTIONAL { ?bgc wp:organismName ?species . }
+    OPTIONAL { ?bgc foaf:page ?bgc_page . }
+  }
+  FILTER(?g IN (
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>
+  ))
+}
+GROUP BY ?source ?species ?bgc ?bgc_page
+ORDER BY ?source ?species ?bgc""" .
