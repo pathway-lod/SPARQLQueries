@@ -6,6 +6,9 @@
 #   row per (reaction, Rhea participant) to avoid GROUP_CONCAT overflow.
 # param: pathwayId | string | PC302 | Pathway ID
 #
+# Pre-filled below with the example pathway (PC302, phytosterol biosynthesis)
+# so this runs as-is when pasted directly into the SPARQL Explorer. Edit:
+# replace "PC302" with any other PlantMetWiki pathway ID to query it instead.
 # Join path: wp:Pathway -> wp:Conversion (dcterms:isPartOf) -> wp:isAbout -> the
 # plain gpml:Interaction twin, which carries gpml:xrefDataSource "Rhea" and
 # gpml:xrefId (a bare Rhea accession number, e.g. "33463"). That number is used
@@ -20,7 +23,7 @@ PREFIX rh:      <http://rdf.rhea-db.org/>
 SELECT DISTINCT ?title ?rheaAccession ?equation ?chebiName ?chebi
 WHERE {
   GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
-    ?pw a wp:Pathway ; dcterms:identifier "{{pathwayId}}" ; dc:title ?title .
+    ?pw a wp:Pathway ; dcterms:identifier "PC302" ; dc:title ?title .
     ?conv a wp:Conversion ; dcterms:isPartOf ?pw ; wp:isAbout ?interaction .
     ?interaction gpml:xrefDataSource "Rhea" ; gpml:xrefId ?rheaId .
   }
