@@ -1,0 +1,39 @@
+# title: Rhea Reaction Enrichment
+# category: Chemistry
+# description: For a pathway's reactions that carry a Rhea cross-reference,
+#   federates to the Rhea SPARQL endpoint (sparql.rhea-db.org) to retrieve the
+#   full reaction equation and every participating ChEBI compound. Returns one
+#   row per (reaction, Rhea participant) to avoid GROUP_CONCAT overflow.
+# param: pathwayId | string | PC302 | Pathway ID
+#
+# Join path: wp:Pathway -> wp:Conversion (dcterms:isPartOf) -> wp:isAbout -> the
+# plain gpml:Interaction twin, which carries gpml:xrefDataSource "Rhea" and
+# gpml:xrefId (a bare Rhea accession number, e.g. "33463"). That number is used
+# to build the Rhea reaction IRI (http://rdf.rhea-db.org/<id>) federated below.
+
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX gpml:    <http://vocabularies.wikipathways.org/gpml#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX rh:      <http://rdf.rhea-db.org/>
+
+SELECT DISTINCT ?title ?rheaAccession ?equation ?chebiName ?chebi
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?pw a wp:Pathway ; dcterms:identifier "{{pathwayId}}" ; dc:title ?title .
+    ?conv a wp:Conversion ; dcterms:isPartOf ?pw ; wp:isAbout ?interaction .
+    ?interaction gpml:xrefDataSource "Rhea" ; gpml:xrefId ?rheaId .
+  }
+  BIND(IRI(CONCAT("http://rdf.rhea-db.org/", ?rheaId)) AS ?reaction)
+
+  SERVICE <https://sparql.rhea-db.org/sparql> {
+    ?reaction rh:accession ?rheaAccession ;
+              rh:equation ?equation ;
+              rh:side ?side .
+    ?side rh:contains ?participant .
+    ?participant rh:compound ?compound .
+    ?compound rh:name ?chebiName ;
+              rh:chebi ?chebi .
+  }
+}
+ORDER BY ?rheaAccession ?chebiName
