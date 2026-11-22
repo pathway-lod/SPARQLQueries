@@ -1,0 +1,37 @@
+# title: SwissLipids Enrichment
+# category: Chemistry
+# description: For a pathway's metabolites identified by InChIKey, federates to
+#   the SwissLipids SPARQL endpoint (beta.sparql.swisslipids.org) to check
+#   whether the compound is a registered lipid species, returning its SwissLipids
+#   name and equivalent ChEBI class. Matches both lipids proper (fatty acyl-CoAs,
+#   phospholipids, ...) and shared cofactors SwissLipids also curates (ATP, CoA,
+#   NAD(P)(H), water, diphosphate) because they appear in lipid-metabolism
+#   reactions too.
+# param: pathwayId | string | PC880 | Pathway ID
+#
+# Pre-filled below with the example pathway (PC880, palmitate biosynthesis II)
+# so this runs as-is when pasted directly into the SPARQL Explorer. Edit:
+# replace "PC880" with any other PlantMetWiki pathway ID to query it instead.
+#
+# Join path: wp:Metabolite's own InChIKey literal is federated directly against
+# SwissLipids' obo/chebi/inchikey property — no transformation needed.
+
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?title ?inchikey ?slmLipid ?slmLabel ?chebi
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?pw a wp:Pathway ; dcterms:identifier "PC880" ; dc:title ?title .
+    ?m a wp:Metabolite ; dcterms:isPartOf ?pw ; dc:source "InChIKey" ; dcterms:identifier ?inchikey .
+  }
+
+  SERVICE <https://beta.sparql.swisslipids.org/sparql> {
+    ?slmLipid <http://purl.obolibrary.org/obo/chebi/inchikey> ?inchikey ;
+              rdfs:label ?slmLabel .
+    OPTIONAL { ?slmLipid <http://www.w3.org/2002/07/owl#equivalentClass> ?chebi }
+  }
+}
+ORDER BY ?inchikey
