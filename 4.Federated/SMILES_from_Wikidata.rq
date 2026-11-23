@@ -49,7 +49,10 @@ WHERE {
     LIMIT 10
   }
 
-  SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
+  # SILENT: QLever's public Wikidata endpoint frequently rate-limits (429 Too
+  # Many Requests) this query; when that happens this returns the base
+  # metabolites unenriched instead of failing the whole query.
+  SERVICE SILENT <https://qlever.cs.uni-freiburg.de/api/wikidata> {
     ?wd wdt:P235 ?inchikey .
     OPTIONAL { ?wd wdt:P233 ?smilesDepict }
     OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") }

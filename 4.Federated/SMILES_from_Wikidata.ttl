@@ -14,7 +14,7 @@ pmwq:PMWQ036 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
     dcterms:identifier "PMWQ036" ;
     rdfs:label "SMILES from Wikidata for metabolites of a species"@en ;
     rdfs:comment "Retrieve metabolites (with InChIKey and SMILES) from pathways that have a specific species annotated at the DataNode level, enriched via Wikidata federated query. Species filtering uses graph/gpml-taxonomy-extra + graph/ncbitaxon (NOT wp:organismName, which only returns \"Viridiplantae\" at pathway level)."@en ;
-    schema:version "1.0.0" ;
+    schema:version "1.1.0" ;
     dcterms:created "2025-12-23"^^xsd:date ;
     dcterms:creator <https://orcid.org/0000-0001-8449-1318> ;
     dcterms:contributor <https://orcid.org/0000-0002-9472-918X> ;
@@ -72,7 +72,10 @@ WHERE {
     LIMIT 10
   }
 
-  SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
+  # SILENT: QLever's public Wikidata endpoint frequently rate-limits (429 Too
+  # Many Requests) this query; when that happens this returns the base
+  # metabolites unenriched instead of failing the whole query.
+  SERVICE SILENT <https://qlever.cs.uni-freiburg.de/api/wikidata> {
     ?wd wdt:P235 ?inchikey .
     OPTIONAL { ?wd wdt:P233 ?smilesDepict }
     OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") }

@@ -14,7 +14,7 @@ pmwq:PMWQ035 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
     dcterms:identifier "PMWQ035" ;
     rdfs:label "Pathways and species of metabolites, by name"@en ;
     rdfs:comment "Find metabolites by name, list the pathways they appear in, and which plant species are annotated in those pathways (via DataNode-level taxonomy, not pathway-level wp:organismName). Also enriches each metabolite with Wikidata active ingredient info (federated query)."@en ;
-    schema:version "1.0.0" ;
+    schema:version "1.1.0" ;
     dcterms:created "2025-12-23"^^xsd:date ;
     dcterms:creator <https://orcid.org/0000-0001-8449-1318> ;
     dcterms:contributor <https://orcid.org/0000-0002-9472-918X> ;
@@ -71,8 +71,11 @@ WHERE {
     }
   }
 
-  # Federated: enrich with Wikidata active ingredient info via InChIKey
-  SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
+  # Federated: enrich with Wikidata active ingredient info via InChIKey.
+  # SILENT: QLever's public Wikidata endpoint occasionally rate-limits or times
+  # out; when that happens this returns the base metabolites unenriched instead
+  # of failing the whole query.
+  SERVICE SILENT <https://qlever.cs.uni-freiburg.de/api/wikidata> {
     ?wd wdt:P235 ?inchikey .
     OPTIONAL {
       ?wd wdt:P3780 ?ingredient .

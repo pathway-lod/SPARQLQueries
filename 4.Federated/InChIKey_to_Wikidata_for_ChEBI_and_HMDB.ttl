@@ -14,7 +14,7 @@ pmwq:PMWQ033 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
     dcterms:identifier "PMWQ033" ;
     rdfs:label "Wikidata, ChEBI and PubChem for metabolites, by InChIKey"@en ;
     rdfs:comment "Retrieve Wikidata entries, ChEBI IDs, and PubChem CIDs for metabolites in PlantMetWiki, matched via InChIKey (wdt:P235). Returns metabolites that occur in at most one pathway (rare/specialised compounds)."@en ;
-    schema:version "1.0.0" ;
+    schema:version "1.1.0" ;
     dcterms:created "2025-12-19"^^xsd:date ;
     dcterms:creator <https://orcid.org/0000-0001-8449-1318> ;
     dcterms:contributor <https://orcid.org/0000-0002-9472-918X> ;
@@ -65,8 +65,11 @@ WHERE {
     OFFSET 0                              # increment by 100 for next page
   }
 
-  # Federated: enrich with Wikidata chemical metadata via InChIKey
-  SERVICE <https://query.wikidata.org/sparql> {
+  # Federated: enrich with Wikidata chemical metadata via InChIKey.
+  # SILENT: Wikidata's public endpoint is occasionally too busy to answer within
+  # the request timeout; when that happens this returns the base metabolites
+  # unenriched instead of failing the whole query.
+  SERVICE SILENT <https://query.wikidata.org/sparql> {
     ?wd wdt:P235 ?inchikey .
     OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") }
     OPTIONAL {

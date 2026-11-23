@@ -46,8 +46,11 @@ WHERE {
     }
   }
 
-  # Federated: enrich with Wikidata active ingredient info via InChIKey
-  SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {
+  # Federated: enrich with Wikidata active ingredient info via InChIKey.
+  # SILENT: QLever's public Wikidata endpoint occasionally rate-limits or times
+  # out; when that happens this returns the base metabolites unenriched instead
+  # of failing the whole query.
+  SERVICE SILENT <https://qlever.cs.uni-freiburg.de/api/wikidata> {
     ?wd wdt:P235 ?inchikey .
     OPTIONAL {
       ?wd wdt:P3780 ?ingredient .
