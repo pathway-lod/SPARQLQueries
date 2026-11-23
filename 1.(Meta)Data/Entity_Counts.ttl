@@ -1,0 +1,76 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix param: <https://w3id.org/snorql/param#> .
+@prefix pmwcat: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/> .
+@prefix pmwq: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix snorql: <https://w3id.org/snorql/ns#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+pmwq:PMWQ002 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
+    dcterms:identifier "PMWQ002" ;
+    rdfs:label "Number of entities per type"@en ;
+    rdfs:comment "Count all major entity types in PlantMetWiki."@en ;
+    schema:version "1.0.0" ;
+    dcterms:created "2026-07-02"^^xsd:date ;
+    dcterms:creator <https://orcid.org/0000-0002-9472-918X> ;
+    dcterms:license <https://www.gnu.org/licenses/gpl-3.0.html> ;
+    dcterms:subject pmwcat:Metadata ;
+    schema:keywords "metadata" ;
+    schema:target <https://plantmetwiki.bioinformatics.nl/sparql> ;
+    snorql:alias "1.(Meta)Data/Entity_Counts.rq" ;
+    prov:wasDerivedFrom <https://github.com/pathway-lod/SPARQLQueries/blob/7ea07a36e43adc4890b6081ff81c0e2b0ec1a221/1.%28Meta%29Data/Entity_Counts.rq> ;
+    snorql:expect [ snorql:minResults 1 ] ;
+    sh:select """# PC* pathways = WikiPathways-style pathway entries (sequential internal IDs starting with PC).
+# RC* reactions = reaction-level pathway entries (sequential internal IDs starting with RC).
+#
+# Named graphs used:
+#   graph/pathways — all DataNodes, pathways, and interactions
+#
+# Implementation note: uses UNION instead of multiple OPTIONAL patterns.
+# Multiple OPTIONAL patterns in a single query time out in Virtuoso because the
+# optimizer cannot push each OPTIONAL into an independent scan.
+# UNION allows each entity type to be counted separately and efficiently.
+
+PREFIX wp: <http://vocabularies.wikipathways.org/wp#>
+
+SELECT ?entityType (COUNT(DISTINCT ?entity) AS ?count)
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    {
+      ?entity a wp:Pathway .
+      FILTER(CONTAINS(STR(?entity), '/PC'))
+      BIND("1_PC_Pathways" AS ?entityType)
+    } UNION {
+      ?entity a wp:Pathway .
+      FILTER(CONTAINS(STR(?entity), '/RC'))
+      BIND("2_RC_Reactions" AS ?entityType)
+    } UNION {
+      ?entity a wp:GeneProduct .
+      BIND("3_GeneProducts" AS ?entityType)
+    } UNION {
+      ?entity a wp:Protein .
+      BIND("4_Proteins" AS ?entityType)
+    } UNION {
+      ?entity a wp:Metabolite .
+      BIND("5_Metabolites" AS ?entityType)
+    } UNION {
+      ?entity a wp:Complex .
+      BIND("6_Complexes" AS ?entityType)
+    } UNION {
+      ?entity a wp:Interaction .
+      BIND("7_Interactions_total" AS ?entityType)
+    } UNION {
+      ?entity a wp:Catalysis .
+      BIND("8_Catalysis" AS ?entityType)
+    } UNION {
+      ?entity a wp:Conversion .
+      BIND("9_Conversions" AS ?entityType)
+    }
+  }
+}
+GROUP BY ?entityType
+ORDER BY ?entityType""" .

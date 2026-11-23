@@ -1,0 +1,38 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix param: <https://w3id.org/snorql/param#> .
+@prefix pmwcat: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/> .
+@prefix pmwq: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix snorql: <https://w3id.org/snorql/ns#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+pmwq:PMWQ010 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
+    dcterms:identifier "PMWQ010" ;
+    rdfs:label "BridgeDb cross-references per database"@en ;
+    rdfs:comment "Count how many wp:Metabolite nodes carry a BridgeDb-materialised cross-reference to each external chemical database. Shows the reach of the BridgeDb metabolite mapping in PlantMetWiki (release v3.2): e.g. Wikidata, PubChem and ChEBI each reach ~3,000 metabolites, up from a handful of source identifiers."@en ;
+    schema:version "1.0.0" ;
+    dcterms:created "2026-07-24"^^xsd:date ;
+    dcterms:creator <https://orcid.org/0000-0002-9472-918X> ;
+    dcterms:license <https://www.gnu.org/licenses/gpl-3.0.html> ;
+    dcterms:subject pmwcat:PlantMetWiki ;
+    schema:keywords "plantmetwiki" ;
+    schema:target <https://plantmetwiki.bioinformatics.nl/sparql> ;
+    snorql:alias "2.PlantMetWiki/BridgeDb_Coverage_Summary.rq" ;
+    prov:wasDerivedFrom <https://github.com/pathway-lod/SPARQLQueries/blob/e6b89812e5438e6d4ae7e708ae88c83298eb52e5/2.PlantMetWiki/BridgeDb_Coverage_Summary.rq> ;
+    sh:select """PREFIX wp: <http://vocabularies.wikipathways.org/wp#>
+
+SELECT ?database (COUNT(DISTINCT ?m) AS ?nMetabolites)
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?m a wp:Metabolite ; ?p ?o .
+    VALUES ?p { wp:bdbChEBI wp:bdbWikidata wp:bdbPubChem wp:bdbHmdb
+                wp:bdbKeggCompound wp:bdbChemspider wp:bdbLipidMaps wp:bdbInChIKey }
+    BIND(REPLACE(STR(?p), ".*#bdb", "") AS ?database)
+  }
+}
+GROUP BY ?database
+ORDER BY DESC(?nMetabolites)""" .

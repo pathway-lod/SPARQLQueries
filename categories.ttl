@@ -1,0 +1,23 @@
+@prefix pmwcat: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+# Categories of the examples. The query editor builds its tree of examples from
+# these: top-level categories in sh:order, subcategories through skos:broader.
+# An example names its category with dcterms:subject (more than one is fine).
+# Folders in this repository are only for keeping the files tidy.
+
+pmwcat: a skos:ConceptScheme ;
+    skos:prefLabel "Categories of PlantMetWiki SPARQL examples"@en .
+
+pmwcat:Metadata a skos:Concept ; skos:inScheme pmwcat: ; sh:order 1 ;
+    skos:prefLabel "(Meta)Data"@en .
+
+pmwcat:PlantMetWiki a skos:Concept ; skos:inScheme pmwcat: ; sh:order 2 ;
+    skos:prefLabel "PlantMetWiki"@en .
+
+pmwcat:BGC a skos:Concept ; skos:inScheme pmwcat: ; sh:order 3 ;
+    skos:prefLabel "Biosynthetic gene cluster (BGC) crosslinks"@en .
+
+pmwcat:Federated a skos:Concept ; skos:inScheme pmwcat: ; sh:order 4 ;
+    skos:prefLabel "Federated"@en .

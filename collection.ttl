@@ -1,0 +1,17 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix schema: <https://schema.org/> .
+@prefix snorql: <https://w3id.org/snorql/ns#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+
+# The collection of PlantMetWiki SPARQL examples in this repository. Every example
+# has a permanent identifier PMWQnnn; its IRI is the uriSpace below followed by the
+# identifier. Files can be renamed or moved without breaking links.
+
+<https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples> a snorql:ExampleCollection, schema:Dataset ;
+    schema:name "PlantMetWiki SPARQL examples" ;
+    schema:description "Example SPARQL queries for the PlantMetWiki SPARQL endpoint, shown in the SPARQL Explorer at https://plantmetwiki.bioinformatics.nl/."@en ;
+    schema:url <https://plantmetwiki.bioinformatics.nl/> ;
+    schema:codeRepository <https://github.com/pathway-lod/SPARQLQueries> ;
+    dcterms:license <https://www.gnu.org/licenses/gpl-3.0.html> ;
+    void:uriSpace "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/" ;
+    snorql:identifierPrefix "PMWQ" .

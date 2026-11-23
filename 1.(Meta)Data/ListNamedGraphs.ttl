@@ -1,0 +1,32 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix param: <https://w3id.org/snorql/param#> .
+@prefix pmwcat: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/> .
+@prefix pmwq: <https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix snorql: <https://w3id.org/snorql/ns#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+pmwq:PMWQ006 a sh:SPARQLExecutable, sh:SPARQLSelectExecutable ;
+    dcterms:identifier "PMWQ006" ;
+    rdfs:label "All named graphs with their triple counts"@en ;
+    rdfs:comment "List all named graphs in PlantMetWiki with their triple counts. Useful to verify which datasets are loaded in Virtuoso."@en ;
+    schema:version "1.0.0" ;
+    dcterms:created "2026-06-01"^^xsd:date ;
+    dcterms:creator <https://orcid.org/0000-0002-9472-918X> ;
+    dcterms:license <https://www.gnu.org/licenses/gpl-3.0.html> ;
+    dcterms:subject pmwcat:Metadata ;
+    schema:keywords "metadata" ;
+    schema:target <https://plantmetwiki.bioinformatics.nl/sparql> ;
+    snorql:alias "1.(Meta)Data/ListNamedGraphs.rq" ;
+    prov:wasDerivedFrom <https://github.com/pathway-lod/SPARQLQueries/blob/93df31e091003c59df6883fb7d974387c1b45008/1.%28Meta%29Data/ListNamedGraphs.rq> ;
+    snorql:expect [ snorql:minResults 1 ] ;
+    sh:select """SELECT ?graph (COUNT(*) AS ?nTriples)
+WHERE {
+  GRAPH ?graph { ?s ?p ?o . }
+}
+GROUP BY ?graph
+ORDER BY DESC(?nTriples)""" .

@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use these example queries, please cite them as below."
+title: "PlantMetWiki SPARQL examples"
+type: dataset
+abstract: >-
+  Example SPARQL queries for the PlantMetWiki SPARQL endpoint, each with a permanent
+  identifier, a version and metadata, in the format of SIB's sparql-examples.
+authors:
+  - family-names: Del Pup
+    given-names: Elena
+    orcid: "https://orcid.org/0000-0002-9472-918X"
+  - family-names: Slenter
+    given-names: Denise
+    orcid: "https://orcid.org/0000-0001-8449-1318"
+license: GPL-3.0-only
+repository-code: "https://github.com/pathway-lod/SPARQLQueries"
+url: "https://plantmetwiki.bioinformatics.nl/"
+keywords:
+  - SPARQL
+  - PlantMetWiki
+  - plant metabolism
+  - RDF
+  - example queries
