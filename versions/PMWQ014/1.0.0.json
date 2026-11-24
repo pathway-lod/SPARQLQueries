@@ -1,0 +1,44 @@
+{
+ "id": "PMWQ014",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ014",
+ "label": "Genes and enzymes per species",
+ "description": "For every species annotated in PlantMetWiki, the number of gene products, proteins and pathways, sorted by the number of genes and proteins.",
+ "version": "1.0.0",
+ "created": "2026-07-02",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+ ],
+ "keywords": [
+  "plantmetwiki"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/2.PlantMetWiki/Genes_and_Enzymes_per_Species.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "#   - number of distinct wp:GeneProduct DataNodes\n#   - number of distinct wp:Protein DataNodes\n#   - total gene/protein entities (nTotal)\n#   - number of distinct pathways covered\n# Results sorted by total entity count descending.\n#\n# Named graphs used:\n#   graph/pathways            — DataNode types and pathway membership\n#   graph/gpml-taxonomy-extra — wp:organism annotations per DataNode\n#   graph/ncbitaxon           — taxon labels\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT ?taxon ?species\n  (COUNT(DISTINCT ?gene)     AS ?nGenes)\n  (COUNT(DISTINCT ?protein)  AS ?nProteins)\n  (COUNT(DISTINCT ?pathway)  AS ?nPathways)\nWHERE {\n  # DataNode annotated to a specific species\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?entity wp:organism ?taxon .\n    FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n    ?taxon rdfs:label ?species .\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?entity dcterms:isPartOf ?pathway .\n    OPTIONAL { ?gene a wp:GeneProduct . FILTER(?gene = ?entity) }\n    OPTIONAL { ?protein a wp:Protein . FILTER(?protein = ?entity) }\n  }\n}\nGROUP BY ?taxon ?species\nORDER BY DESC(COUNT(DISTINCT ?entity))",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "2.PlantMetWiki/Genes_and_Enzymes_per_Species.ttl",
+ "aliases": [
+  "2.PlantMetWiki/Genes_and_Enzymes_per_Species.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

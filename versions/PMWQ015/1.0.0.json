@@ -1,0 +1,44 @@
+{
+ "id": "PMWQ015",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ015",
+ "label": "Number of interactions per type",
+ "description": "Count the number of interactions of each wp:Interaction subtype across the whole knowledge base: Catalysis, Conversion, TranscriptionTranslation, Inhibition, Stimulation, Binding and ComplexBinding.",
+ "version": "1.0.0",
+ "created": "2026-07-02",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+ ],
+ "keywords": [
+  "plantmetwiki"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/2.PlantMetWiki/Interaction_Types_Distribution.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "#                   Stimulation, Binding, ComplexBinding.\n#\n# Named graphs used:\n#   graph/pathways — all interaction triples\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n\nSELECT ?interactionType (COUNT(DISTINCT ?interaction) AS ?nInteractions)\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?interaction rdf:type ?interactionType .\n    VALUES ?interactionType {\n      wp:Catalysis\n      wp:Conversion\n      wp:TranscriptionTranslation\n      wp:Inhibition\n      wp:Stimulation\n      wp:Binding\n      wp:ComplexBinding\n    }\n  }\n}\nGROUP BY ?interactionType\nORDER BY DESC(?nInteractions)",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "2.PlantMetWiki/Interaction_Types_Distribution.ttl",
+ "aliases": [
+  "2.PlantMetWiki/Interaction_Types_Distribution.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

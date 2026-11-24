@@ -1,0 +1,38 @@
+# title: Pathways of a gene cluster
+# category: Biosynthetic gene cluster (BGC) crosslinks
+# description: Connect a specific BGC cluster to metabolic pathways via shared genes. BGC membership (ro:0000051) and pathway participant data live in separate graphs; the join is done across three named graphs.
+#
+# PMWQ028 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ028
+# Generated from 3.Biosynthetic gene cluster (BGC) Crosslinks/Connect_BGC_to_Pathway.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+# Replace BGC0000670 with any MIBiG accession of interest.
+
+PREFIX pmw:       <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>
+PREFIX ro:        <http://purl.obolibrary.org/obo/RO_>
+PREFIX wp:        <http://vocabularies.wikipathways.org/wp#>
+PREFIX dc:        <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms:   <http://purl.org/dc/terms/>
+PREFIX bioregistry: <https://bioregistry.io/mibig:>
+
+SELECT DISTINCT ?pwID ?title ?gene ?source
+WHERE {
+  # 1. Gene is a member of the BGC (in bgc-mibig or bgc-plantismash graph)
+  GRAPH ?bgc_graph {
+    bioregistry:BGC0000670 ro:0000051 ?gene ;
+                            dcterms:source ?source .
+  }
+  FILTER(?bgc_graph IN (
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>
+  ))
+
+  # 2. Same gene is part of a pathway (in pathways graph)
+  # wp:GeneProduct DataNodes link directly to pathways via dcterms:isPartOf
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?gene a wp:GeneProduct ;
+          dcterms:isPartOf ?pw .
+    ?pw dc:title ?title ;
+        dc:identifier ?pwID .
+  }
+}
+ORDER BY ?title

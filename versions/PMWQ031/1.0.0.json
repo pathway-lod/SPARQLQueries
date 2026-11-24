@@ -1,0 +1,46 @@
+{
+ "id": "PMWQ031",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ031",
+ "label": "Title and DOI of the references of pathways with few references",
+ "description": "Pathways with at most two references, with the title and DOI of each reference from Wikidata (through QLever). Returns 10 pathways at a time (LIMIT and OFFSET).",
+ "version": "1.0.0",
+ "created": "2025-12-23",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+ ],
+ "keywords": [
+  "federated"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [
+  "https://qlever.cs.uni-freiburg.de/api/wikidata"
+ ],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/8fe05ebacf878e606c16252705984acd452019e9/4.Federated/Extend_PWs_with_little_Refs_with_Title_and_DOI.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "PREFIX biopax:  <http://www.biopax.org/release/biopax-level3.owl#>\nPREFIX cito:    <http://purl.org/spar/cito/>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX foaf:    <http://xmlns.com/foaf/0.1/>\nPREFIX freq:    <http://purl.org/cld/freq/>\nPREFIX gpml:    <http://vocabularies.wikipathways.org/gpml#>\nPREFIX owl:     <http://www.w3.org/2002/07/owl#>\nPREFIX pav:     <http://purl.org/pav/>\nPREFIX prov:    <http://www.w3.org/ns/prov#>\nPREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX void:    <http://rdfs.org/ns/void#>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX wprdf:   <http://rdf.wikipathways.org/>\nPREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>\nPREFIX pmw:\t\t<http://rdf-plantmetwiki.bioinformatics.nl/pathways/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\nPREFIX ro:\t\t<http://purl.obolibrary.org/obo/RO_> \nPREFIX bioregistry: <https://bioregistry.io/mibig:> \n\n#Federated prefixes:\nPREFIX wd: <http://www.wikidata.org/entity/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX p: <http://www.wikidata.org/prop/>\nPREFIX pq: <http://www.wikidata.org/prop/qualifier/>\nPREFIX wdtn: <http://www.wikidata.org/prop/direct-normalized/> \n\nSELECT DISTINCT ?pwID ?title ?nPublications ?paperTitle ?pubmedWD ?DOI ?wd\nWHERE {  \n  {\n  \n  SELECT ?pwID ?title ?pubmedWD (COUNT(DISTINCT ?pubmed) AS ?nPublications)\n    WHERE {\n  \t\t?pw a wp:Pathway ;                #Define pathways\n      \t\tdc:title ?title ;             #Define pathway titles\n      \t\tdc:identifier ?pwID ;         #Define pathway IDs\n      \t\t(dcterms:references|cito:cites) ?pubmed .  #Collect total references for pathways\n      \n        ?pw (dcterms:references|cito:cites) ?pubmedWD .  #Keep PMIDs for downstream analysis\n      \n        }\n    GROUP BY ?pwID ?title ?pubmedWD                   #Results need to be aggregated to apply count\n    HAVING (COUNT(DISTINCT ?pubmed) <= 2)             #Retrieve pathways with a few publication\n    LIMIT 10                                          #To avoid timeouts\n    OFFSET 10                                         #To retrieve item 101-200, can be used in a script to collect data from all entries\n    }\n  \n      BIND(STR(?pubmedWD) AS ?pubmedStr)\n      BIND(STRAFTER(?pubmedStr, \"https://identifiers.org/pubmed/\") AS ?pmid0raw)\n      \nSERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {\n  ?wd wdt:P698 ?pmid0raw .                           #Connect PMID from pathways to Wikidata entries\n      OPTIONAL{ ?wd wdtn:P356 ?DOI ;                 #If there is a DOI, extract\n      wdt:P1476 ?paperTitle . }                      #If there is a title, extract\n}\n}\nORDER BY DESC (?nPublications) ?title",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "4.Federated/Extend_PWs_with_little_Refs_with_Title_and_DOI.ttl",
+ "aliases": [
+  "4.Federated/Extend_PWs_with_little_Refs_with_Title_and_DOI.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

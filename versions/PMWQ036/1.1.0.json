@@ -1,0 +1,49 @@
+{
+ "id": "PMWQ036",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ036",
+ "label": "SMILES from Wikidata for metabolites of a species",
+ "description": "Retrieve metabolites (with InChIKey and SMILES) from pathways that have a specific species annotated at the DataNode level, enriched via Wikidata federated query. Species filtering uses graph/gpml-taxonomy-extra + graph/ncbitaxon (NOT wp:organismName, which only returns \"Viridiplantae\" at pathway level).",
+ "version": "1.1.0",
+ "created": "2025-12-23",
+ "modified": "2026-11-24",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+ ],
+ "keywords": [
+  "federated"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [
+  "https://qlever.cs.uni-freiburg.de/api/wikidata"
+ ],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/4.Federated/SMILES_from_Wikidata.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Named graphs used:\n#   graph/pathways            — metabolite and pathway triples\n#   graph/gpml-taxonomy-extra — wp:organism annotations per DataNode\n#   graph/ncbitaxon           — taxon labels\n# Federated endpoint: https://qlever.cs.uni-freiburg.de/api/wikidata\n#\n# Editable placeholder: change the FILTER on ?speciesLabel to another species name.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\nPREFIX wd:      <http://www.wikidata.org/entity/>\nPREFIX wdt:     <http://www.wikidata.org/prop/direct/>\n\nSELECT DISTINCT ?pwID ?title ?metabolite ?smilesDepict ?inchikey ?wd ?wdLabel\nWHERE {\n  {\n    SELECT DISTINCT ?pwID ?title ?metabolite ?inchikey\n    WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n        ?metabolite a wp:Metabolite ;\n                    dcterms:isPartOf ?pw ;\n                    dc:source \"InChIKey\" ;\n                    dcterms:identifier ?inchikey .\n\n        ?pw a wp:Pathway ;\n            dc:identifier ?pwID ;\n            dc:title ?titleLit .\n        BIND(STR(?titleLit) AS ?title)\n      }\n\n      # Find pathways that contain at least one DataNode annotated to the species of interest\n      ?annotatedNode dcterms:isPartOf ?pw .\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n        ?annotatedNode wp:organism ?taxon .\n        FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae\n      }\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n        ?taxon rdfs:label ?speciesLabel .\n        FILTER(?speciesLabel = \"Solanum tuberosum\")  # Editable: change species name here\n      }\n    }\n    LIMIT 10\n  }\n\n  # SILENT: QLever's public Wikidata endpoint frequently rate-limits (429 Too\n  # Many Requests) this query; when that happens this returns the base\n  # metabolites unenriched instead of failing the whole query.\n  SERVICE SILENT <https://qlever.cs.uni-freiburg.de/api/wikidata> {\n    ?wd wdt:P235 ?inchikey .\n    OPTIONAL { ?wd wdt:P233 ?smilesDepict }\n    OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = \"en\") }\n  }\n}\nORDER BY ?title ?metabolite",
+ "params": [],
+ "expect": null,
+ "path": "4.Federated/SMILES_from_Wikidata.ttl",
+ "aliases": [
+  "4.Federated/SMILES_from_Wikidata.rq"
+ ],
+ "commit": "d1bc97e6f915cab6bf6348c6a5306bc8f240e76f"
+}

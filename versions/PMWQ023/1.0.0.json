@@ -1,0 +1,44 @@
+{
+ "id": "PMWQ023",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ023",
+ "label": "Pathways with the most genes",
+ "description": "List the top N pathways ranked by the number of gene/protein DataNodes they contain. Includes stable PlantCyc PWY/RXN accession from graph/gpml-properties-extra.",
+ "version": "1.0.0",
+ "created": "2026-07-02",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+ ],
+ "keywords": [
+  "plantmetwiki"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/2.PlantMetWiki/TopPathways_by_GeneCount.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Named graphs used:\n#   graph/pathways              — pathway, wp:GeneProduct, wp:Protein triples\n#   graph/gpml-properties-extra — dcterms:identifier = stable PWY/RXN accession\n#\n# Editable placeholder: adjust LIMIT to change how many top pathways are returned.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT ?pw ?internalID ?stablePWY_ID ?title (COUNT(DISTINCT ?entity) AS ?nGeneProducts)\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?pw a wp:Pathway ;\n        dc:identifier ?internalID ;\n        dc:title ?title .\n\n    ?entity dcterms:isPartOf ?pw .\n    { ?entity a wp:GeneProduct } UNION { ?entity a wp:Protein }\n  }\n  OPTIONAL {\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {\n      ?pw dcterms:identifier ?stablePWY_ID .\n      FILTER(STRSTARTS(?stablePWY_ID, \"PWY\") || STRSTARTS(?stablePWY_ID, \"RXN\"))\n    }\n  }\n}\nGROUP BY ?pw ?internalID ?stablePWY_ID ?title\nORDER BY DESC(?nGeneProducts)\nLIMIT 20",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "2.PlantMetWiki/TopPathways_by_GeneCount.ttl",
+ "aliases": [
+  "2.PlantMetWiki/TopPathways_by_GeneCount.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

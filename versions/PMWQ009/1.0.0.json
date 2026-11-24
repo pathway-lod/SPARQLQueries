@@ -1,0 +1,44 @@
+{
+ "id": "PMWQ009",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ009",
+ "label": "VoID metadata of the datasets",
+ "description": "Inspect the VoID metadata header describing all PlantMetWiki datasets. Shows dataset names, versions, triple counts, creation dates, clickable Zenodo deposit DOIs (foaf:page), and source provenance.",
+ "version": "1.0.0",
+ "created": "2026-06-01",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+ ],
+ "keywords": [
+  "metadata"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/51aa48f8bcd49888688bfabc8599d8a8aa50f528/1.%28Meta%29Data/VoIDHeader.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "PREFIX void:    <http://rdfs.org/ns/void#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX pav:     <http://purl.org/pav/>\nPREFIX foaf:    <http://xmlns.com/foaf/0.1/>\n\nSELECT ?dataset ?title ?version ?triples ?created ?depositDOI ?sourceURI\nFROM <http://rdf-plantmetwiki.bioinformatics.nl/void>\nWHERE {\n  ?dataset a void:Dataset ;\n           dcterms:title ?title ;\n           dcterms:hasVersion ?version ;\n           pav:createdOn ?created .\n  OPTIONAL { ?dataset void:triples ?triples . }\n  # Zenodo deposit DOI — concept DOI always resolves to the latest version\n  OPTIONAL { ?dataset foaf:page ?depositDOI .\n             FILTER(CONTAINS(STR(?depositDOI), \"zenodo\")) }\n  OPTIONAL { ?dataset dcterms:source ?sourceURI . }\n}\nORDER BY ?title",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "1.(Meta)Data/VoIDHeader.ttl",
+ "aliases": [
+  "1.(Meta)Data/VoIDHeader.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

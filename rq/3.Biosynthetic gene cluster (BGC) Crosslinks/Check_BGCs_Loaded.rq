@@ -1,0 +1,32 @@
+# title: Gene cluster data per source
+# category: Biosynthetic gene cluster (BGC) crosslinks
+# description: Verify that BGC data is loaded in Virtuoso. Returns cluster count, gene-link count, and species count per source.
+#
+# PMWQ027 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ027
+# Generated from 3.Biosynthetic gene cluster (BGC) Crosslinks/Check_BGCs_Loaded.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+# Expected: MIBiG ≈ 43 clusters (9 A. thaliana + 34 untyped) · plantiSMASH ≈ 65 A. thaliana clusters.
+
+PREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>
+PREFIX ro:      <http://purl.obolibrary.org/obo/RO_>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+
+SELECT ?source
+       (COUNT(DISTINCT ?bgc)     AS ?nClusters)
+       (COUNT(DISTINCT ?gene)    AS ?nGeneLinks)
+       (COUNT(DISTINCT ?species) AS ?nSpecies)
+WHERE {
+  GRAPH ?g {
+    ?bgc a pmw:BiosyntheticGeneCluster ;
+         dcterms:source ?source ;
+         ro:0000051 ?gene .
+    OPTIONAL { ?bgc wp:organismName ?species . }
+  }
+  FILTER(?g IN (
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>
+  ))
+}
+GROUP BY ?source
+ORDER BY ?source

@@ -1,0 +1,46 @@
+{
+ "id": "PMWQ025",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ025",
+ "label": "Genes shared by gene clusters and pathways",
+ "description": "List all (BGC, gene, pathway) crosslinks across both BGC sources and the pathway graph.",
+ "version": "1.0.0",
+ "created": "2026-07-02",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+ ],
+ "keywords": [
+  "biosynthetic gene cluster",
+  "MIBiG",
+  "plantiSMASH"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/BGC_Pathway_Gene_Crosslinks.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Join is via shared identifiers.org IRIs: genes typed as wp:GeneProduct in graph/pathways\n# are also listed as ro:0000051 members of BGC clusters in the BGC graphs.\n#\n# Named graphs used:\n#   graph/bgc-mibig       — MIBiG 4.0 curated clusters\n#   graph/bgc-plantismash — plantiSMASH v2 predicted clusters\n#   graph/pathways        — wp:GeneProduct DataNodes linked to pathways via dcterms:isPartOf\n#   graph/gpml-properties-extra — dcterms:identifier = stable PWY/RXN accession\n\nPREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:      <http://purl.obolibrary.org/obo/RO_>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\n\nSELECT DISTINCT ?bgc ?bgcSource ?gene ?internalPwID ?stablePWY_ID ?pwTitle\nWHERE {\n  # Get BGC → gene links from either BGC graph\n  GRAPH ?bgcGraph {\n    ?bgc a pmw:BiosyntheticGeneCluster ;\n         dcterms:source ?bgcSource ;\n         ro:0000051 ?gene .\n  }\n  FILTER(?bgcGraph IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n\n  # Same gene IRI must be a GeneProduct DataNode in a pathway\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?gene a wp:GeneProduct ;\n          dcterms:isPartOf ?pw .\n    ?pw dc:identifier ?internalPwID ;\n        dc:title ?pwTitle .\n  }\n\n  # Enrich with stable PlantCyc accession\n  OPTIONAL {\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {\n      ?pw dcterms:identifier ?stablePWY_ID .\n      FILTER(STRSTARTS(?stablePWY_ID, \"PWY\") || STRSTARTS(?stablePWY_ID, \"RXN\"))\n    }\n  }\n}\nORDER BY ?bgcSource ?bgc ?gene",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/BGC_Pathway_Gene_Crosslinks.ttl",
+ "aliases": [
+  "3.Biosynthetic gene cluster (BGC) Crosslinks/BGC_Pathway_Gene_Crosslinks.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

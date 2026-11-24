@@ -1,0 +1,46 @@
+{
+ "id": "PMWQ027",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ027",
+ "label": "Gene cluster data per source",
+ "description": "Verify that BGC data is loaded in Virtuoso. Returns cluster count, gene-link count, and species count per source.",
+ "version": "1.0.0",
+ "created": "2026-06-01",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+ ],
+ "keywords": [
+  "biosynthetic gene cluster",
+  "MIBiG",
+  "plantiSMASH"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/Check_BGCs_Loaded.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Expected: MIBiG ≈ 43 clusters (9 A. thaliana + 34 untyped) · plantiSMASH ≈ 65 A. thaliana clusters.\n\nPREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:      <http://purl.obolibrary.org/obo/RO_>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\n\nSELECT ?source\n       (COUNT(DISTINCT ?bgc)     AS ?nClusters)\n       (COUNT(DISTINCT ?gene)    AS ?nGeneLinks)\n       (COUNT(DISTINCT ?species) AS ?nSpecies)\nWHERE {\n  GRAPH ?g {\n    ?bgc a pmw:BiosyntheticGeneCluster ;\n         dcterms:source ?source ;\n         ro:0000051 ?gene .\n    OPTIONAL { ?bgc wp:organismName ?species . }\n  }\n  FILTER(?g IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n}\nGROUP BY ?source\nORDER BY ?source",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/Check_BGCs_Loaded.ttl",
+ "aliases": [
+  "3.Biosynthetic gene cluster (BGC) Crosslinks/Check_BGCs_Loaded.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

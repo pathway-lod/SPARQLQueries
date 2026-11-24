@@ -1,0 +1,51 @@
+{
+ "id": "PMWQ033",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ033",
+ "label": "Wikidata, ChEBI and PubChem for metabolites, by InChIKey",
+ "description": "Retrieve Wikidata entries, ChEBI IDs, and PubChem CIDs for metabolites in PlantMetWiki, matched via InChIKey (wdt:P235). Returns metabolites that occur in at most one pathway (rare/specialised compounds).",
+ "version": "1.0.0",
+ "created": "2025-12-19",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+ ],
+ "keywords": [
+  "federated"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [
+  "https://query.wikidata.org/sparql"
+ ],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/7ea07a36e43adc4890b6081ff81c0e2b0ec1a221/4.Federated/InChIKey_to_Wikidata_for_ChEBI_and_HMDB.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Named graphs used:\n#   graph/pathways — metabolite DataNodes with InChIKey identifiers\n#\n# Federation:\n#   https://query.wikidata.org/sparql — chemical metadata via InChIKey\n#\n# Editable parameters:\n#   HAVING clause: change <= 1 to restrict/expand pathway occurrence filter\n#   LIMIT/OFFSET: paginate through results (100 items per page)\n\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX wd:      <http://www.wikidata.org/entity/>\nPREFIX wdt:     <http://www.wikidata.org/prop/direct/>\nPREFIX p:       <http://www.wikidata.org/prop/>\nPREFIX pq:      <http://www.wikidata.org/prop/qualifier/>\n\nSELECT DISTINCT ?inchikey ?nPWOcurrences ?wd ?wdLabel ?chebi ?pubchem\nWHERE {\n  {\n    SELECT ?inchikey (COUNT(DISTINCT ?pwID) AS ?nPWOcurrences)\n    WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n        ?metabolite a wp:Metabolite ;\n                    dcterms:isPartOf ?pw ;\n                    dc:source \"InChIKey\" ;\n                    dcterms:identifier ?inchikey .\n        ?pw a wp:Pathway ;\n            dc:identifier ?pwID .\n      }\n    }\n    GROUP BY ?inchikey\n    HAVING (COUNT(DISTINCT ?pwID) <= 1)   # specialised metabolites (change limit here)\n    LIMIT 100                              # page size\n    OFFSET 0                              # increment by 100 for next page\n  }\n\n  # Federated: enrich with Wikidata chemical metadata via InChIKey\n  SERVICE <https://query.wikidata.org/sparql> {\n    ?wd wdt:P235 ?inchikey .\n    OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = \"en\") }\n    OPTIONAL {\n      ?wd wdt:P683 ?chebi ;\n          p:P683 ?internalID .\n      ?internalID pq:P4390 wd:Q39893449 .  # ChEBI exact match only\n    }\n    OPTIONAL { ?wd wdt:P662 ?pubchem . }\n  }\n}\nORDER BY DESC(?nPWOcurrences)",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "4.Federated/InChIKey_to_Wikidata_for_ChEBI_and_HMDB.ttl",
+ "aliases": [
+  "4.Federated/InChIKey_to_Wikidata_for_ChEBI_and_HMDB.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

@@ -1,0 +1,44 @@
+{
+ "id": "PMWQ002",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ002",
+ "label": "Number of entities per type",
+ "description": "Count all major entity types in PlantMetWiki.",
+ "version": "1.0.0",
+ "created": "2026-07-02",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+ ],
+ "keywords": [
+  "metadata"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/7ea07a36e43adc4890b6081ff81c0e2b0ec1a221/1.%28Meta%29Data/Entity_Counts.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# PC* pathways = WikiPathways-style pathway entries (sequential internal IDs starting with PC).\n# RC* reactions = reaction-level pathway entries (sequential internal IDs starting with RC).\n#\n# Named graphs used:\n#   graph/pathways — all DataNodes, pathways, and interactions\n#\n# Implementation note: uses UNION instead of multiple OPTIONAL patterns.\n# Multiple OPTIONAL patterns in a single query time out in Virtuoso because the\n# optimizer cannot push each OPTIONAL into an independent scan.\n# UNION allows each entity type to be counted separately and efficiently.\n\nPREFIX wp: <http://vocabularies.wikipathways.org/wp#>\n\nSELECT ?entityType (COUNT(DISTINCT ?entity) AS ?count)\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    {\n      ?entity a wp:Pathway .\n      FILTER(CONTAINS(STR(?entity), '/PC'))\n      BIND(\"1_PC_Pathways\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Pathway .\n      FILTER(CONTAINS(STR(?entity), '/RC'))\n      BIND(\"2_RC_Reactions\" AS ?entityType)\n    } UNION {\n      ?entity a wp:GeneProduct .\n      BIND(\"3_GeneProducts\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Protein .\n      BIND(\"4_Proteins\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Metabolite .\n      BIND(\"5_Metabolites\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Complex .\n      BIND(\"6_Complexes\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Interaction .\n      BIND(\"7_Interactions_total\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Catalysis .\n      BIND(\"8_Catalysis\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Conversion .\n      BIND(\"9_Conversions\" AS ?entityType)\n    }\n  }\n}\nGROUP BY ?entityType\nORDER BY ?entityType",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "1.(Meta)Data/Entity_Counts.ttl",
+ "aliases": [
+  "1.(Meta)Data/Entity_Counts.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

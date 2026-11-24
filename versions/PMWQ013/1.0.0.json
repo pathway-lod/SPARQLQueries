@@ -1,0 +1,44 @@
+{
+ "id": "PMWQ013",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ013",
+ "label": "Species with an enzyme for each reaction of a pathway",
+ "description": "Cross-species inference: for a given pathway, list every Conversion reaction and which species have an annotated enzyme (GeneProduct or Protein) that catalyses it.",
+ "version": "1.0.0",
+ "created": "2026-07-02",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+ ],
+ "keywords": [
+  "plantmetwiki"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/7ea07a36e43adc4890b6081ff81c0e2b0ec1a221/2.PlantMetWiki/CrossSpecies_ReactionCoverage.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Mirrors the cross-species coverage analysis in notebook 03.\n#\n# Named graphs used:\n#   graph/gpml-properties-extra — stable PWY/RXN accession lookup\n#   graph/pathways              — pathway, reaction, catalysis, and DataNode triples\n#   graph/gpml-taxonomy-extra   — wp:organism annotations per entity\n#   graph/ncbitaxon             — taxon labels\n#\n# Editable placeholder: change \"PWY-5710\" to any stable PlantCyc PWY accession.\n# Browse available PWY IDs with the PlantCyc_PWY_ID_Lookup.rq query.\n#\n# Note: wp:Conversion nodes do not carry dc:identifier. The reaction ID is extracted\n# from the IRI tail (e.g. \".../Interaction/RXN_21443\" -> \"RXN-21443\").\n# GPML anchor sub-nodes (IRI contains \"_anchor_\") are diagram artefacts, not\n# biochemical reactions, and are excluded.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT ?reactionID ?species\nWHERE {\n  # Identify pathway by stable PWY ID stored in graph/gpml-properties-extra\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {\n    ?pw dcterms:identifier \"PWY-5710\" .  # change to any PWY/RXN accession\n  }\n\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    # Real Conversion reactions only (exclude GPML anchor helper sub-nodes)\n    ?reaction a wp:Conversion ;\n              dcterms:isPartOf ?pw .\n    FILTER(!CONTAINS(STR(?reaction), \"_anchor_\"))\n    # Extract reaction ID from IRI tail: RXN_21443 -> RXN-21443\n    BIND(REPLACE(STRAFTER(STR(?reaction), \"/Interaction/\"), \"_\", \"-\") AS ?reactionID)\n\n    # Catalysis linking enzyme -> reaction\n    ?catalysis a wp:Catalysis ;\n               wp:source ?enzyme ;\n               wp:target ?reaction ;\n               dcterms:isPartOf ?pw .\n\n    { ?enzyme a wp:GeneProduct } UNION { ?enzyme a wp:Protein }\n  }\n\n  # Species annotation on the enzyme (identifiers.org IRI, same across graphs)\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?enzyme wp:organism ?taxon .\n    FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae\n  }\n\n  # Resolve taxon IRI to readable species name\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n    ?taxon rdfs:label ?species .\n  }\n}\nORDER BY ?reactionID ?species",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "2.PlantMetWiki/CrossSpecies_ReactionCoverage.ttl",
+ "aliases": [
+  "2.PlantMetWiki/CrossSpecies_ReactionCoverage.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

@@ -1,0 +1,49 @@
+{
+ "id": "PMWQ003",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ003",
+ "label": "Triples per named graph",
+ "description": "Count triples per named graph in the PlantMetWiki triplestore.",
+ "version": "1.0.0",
+ "created": "2025-12-18",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+ ],
+ "keywords": [
+  "metadata"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/68fcd95df2f3b86dffc64d962f7d037d6bae6785/1.%28Meta%29Data/GraphIsLoaded.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Named graphs:\n#   graph/pathways              — core WikiPathways RDF (pathways + reactions)\n#   graph/gpml-taxonomy-extra   — per-entity species annotations (wp:organism)\n#   graph/gpml-properties-extra — PlantCyc key-value properties\n#   graph/bgc-mibig             — MIBiG curated biosynthetic gene clusters\n#   graph/bgc-plantismash       — plantiSMASH predicted biosynthetic gene clusters\n#   graph/ncbitaxon             — NCBITaxon ontology (OBO Foundry, CC0)\n#   graph/vocabularies          — pmw:/wp:/gpml: term definitions (self-describing schema)\n#   void                        — VoID metadata for all datasets\n\n# Uses VALUES to enumerate only the known PlantMetWiki graphs — fast because\n# Virtuoso can use per-graph statistics instead of scanning every triple.\n# (A FILTER on ?graph after GRAPH ?g { ?s ?p ?o } forces a full scan of all\n# graphs including the 21.7M-triple NCBITaxon graph before filtering.)\n\nSELECT ?graph (COUNT(*) AS ?nTriples)\nWHERE {\n  VALUES ?graph {\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways>\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra>\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra>\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon>\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/vocabularies>\n    <http://rdf-plantmetwiki.bioinformatics.nl/void>\n  }\n  GRAPH ?graph { ?s ?p ?o . }\n}\nGROUP BY ?graph\nORDER BY DESC(?nTriples)",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "1.(Meta)Data/GraphIsLoaded.ttl",
+ "aliases": [
+  "1.(Meta)Data/GraphIsLoaded.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

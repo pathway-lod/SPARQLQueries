@@ -1,0 +1,46 @@
+{
+ "id": "PMWQ026",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ026",
+ "label": "Gene clusters without a pathway",
+ "description": "Find BGCs that have NO shared gene with any PlantCyc pathway in graph/pathways. Uses FILTER NOT EXISTS to identify disconnected clusters. Useful for identifying BGCs whose enzymes are not yet represented in PlantCyc.",
+ "version": "1.0.0",
+ "created": "2026-07-02",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+ ],
+ "keywords": [
+  "biosynthetic gene cluster",
+  "MIBiG",
+  "plantiSMASH"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/BGCs_Without_Pathway_Connection.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Named graphs used:\n#   graph/bgc-mibig       — MIBiG 4.0 curated clusters\n#   graph/bgc-plantismash — plantiSMASH v2 predicted clusters\n#   graph/pathways        — wp:GeneProduct DataNodes linked to pathways\n\nPREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:      <http://purl.obolibrary.org/obo/RO_>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT DISTINCT ?bgc ?bgcSource (COUNT(DISTINCT ?gene) AS ?nGenes)\nWHERE {\n  # Get BGC and its member genes\n  GRAPH ?bgcGraph {\n    ?bgc a pmw:BiosyntheticGeneCluster ;\n         dcterms:source ?bgcSource ;\n         ro:0000051 ?gene .\n  }\n  FILTER(?bgcGraph IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n\n  # Exclude BGCs where at least one gene is in graph/pathways as a GeneProduct\n  FILTER NOT EXISTS {\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n      ?gene a wp:GeneProduct .\n    }\n  }\n}\nGROUP BY ?bgc ?bgcSource\nORDER BY ?bgcSource ?bgc",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/BGCs_Without_Pathway_Connection.ttl",
+ "aliases": [
+  "3.Biosynthetic gene cluster (BGC) Crosslinks/BGCs_Without_Pathway_Connection.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

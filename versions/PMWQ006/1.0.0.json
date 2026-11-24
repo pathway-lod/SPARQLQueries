@@ -1,0 +1,44 @@
+{
+ "id": "PMWQ006",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ006",
+ "label": "All named graphs with their triple counts",
+ "description": "List all named graphs in PlantMetWiki with their triple counts. Useful to verify which datasets are loaded in Virtuoso.",
+ "version": "1.0.0",
+ "created": "2026-06-01",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+ ],
+ "keywords": [
+  "metadata"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/93df31e091003c59df6883fb7d974387c1b45008/1.%28Meta%29Data/ListNamedGraphs.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "SELECT ?graph (COUNT(*) AS ?nTriples)\nWHERE {\n  GRAPH ?graph { ?s ?p ?o . }\n}\nGROUP BY ?graph\nORDER BY DESC(?nTriples)",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "1.(Meta)Data/ListNamedGraphs.ttl",
+ "aliases": [
+  "1.(Meta)Data/ListNamedGraphs.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

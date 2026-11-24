@@ -1,0 +1,49 @@
+{
+ "id": "PMWQ012",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ012",
+ "label": "Pathways of a species, with data node counts",
+ "description": "Find all pathways containing DataNodes annotated for a given species, and count annotated DataNodes per pathway.",
+ "version": "1.0.0",
+ "created": "2025-12-18",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+ ],
+ "keywords": [
+  "plantmetwiki"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/8efab1d98ac2c492b8531868dbb3a1536f7ba54a/2.PlantMetWiki/Count_PWs_for_SpeciesName.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Edit the rdfs:label filter to change the species (Latin name).\n# Note: species is at the DataNode level — join via taxonomy-extra graph.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT DISTINCT ?pwID (STR(?titleLit) AS ?title) (COUNT(DISTINCT ?dataNode) AS ?nDataNodes)\nWHERE {\n  # Step 1: resolve the species name to a taxon IRI via NCBITaxon\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n    ?taxon rdfs:label \"Arabidopsis thaliana\" .  # change species name here\n  }\n  # Step 2: find DataNodes annotated with that taxon\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?dataNode wp:organism ?taxon .\n  }\n  # Step 3: connect DataNodes to their pathway\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?dataNode dcterms:isPartOf ?pw .\n    ?pw a wp:Pathway ;\n        dc:identifier ?pwID ;\n        dc:title ?titleLit .\n  }\n}\nGROUP BY ?pwID ?titleLit\nORDER BY DESC(?nDataNodes)",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "2.PlantMetWiki/Count_PWs_for_SpeciesName.ttl",
+ "aliases": [
+  "2.PlantMetWiki/Count_PWs_for_SpeciesName.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

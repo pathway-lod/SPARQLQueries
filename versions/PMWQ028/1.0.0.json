@@ -1,0 +1,51 @@
+{
+ "id": "PMWQ028",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ028",
+ "label": "Pathways of a gene cluster",
+ "description": "Connect a specific BGC cluster to metabolic pathways via shared genes. BGC membership (ro:0000051) and pathway participant data live in separate graphs; the join is done across three named graphs.",
+ "version": "1.0.0",
+ "created": "2025-12-19",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+ ],
+ "keywords": [
+  "biosynthetic gene cluster",
+  "MIBiG",
+  "plantiSMASH"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/Connect_BGC_to_Pathway.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Replace BGC0000670 with any MIBiG accession of interest.\n\nPREFIX pmw:       <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:        <http://purl.obolibrary.org/obo/RO_>\nPREFIX wp:        <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:        <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms:   <http://purl.org/dc/terms/>\nPREFIX bioregistry: <https://bioregistry.io/mibig:>\n\nSELECT DISTINCT ?pwID ?title ?gene ?source\nWHERE {\n  # 1. Gene is a member of the BGC (in bgc-mibig or bgc-plantismash graph)\n  GRAPH ?bgc_graph {\n    bioregistry:BGC0000670 ro:0000051 ?gene ;\n                            dcterms:source ?source .\n  }\n  FILTER(?bgc_graph IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n\n  # 2. Same gene is part of a pathway (in pathways graph)\n  # wp:GeneProduct DataNodes link directly to pathways via dcterms:isPartOf\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?gene a wp:GeneProduct ;\n          dcterms:isPartOf ?pw .\n    ?pw dc:title ?title ;\n        dc:identifier ?pwID .\n  }\n}\nORDER BY ?title",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/Connect_BGC_to_Pathway.ttl",
+ "aliases": [
+  "3.Biosynthetic gene cluster (BGC) Crosslinks/Connect_BGC_to_Pathway.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

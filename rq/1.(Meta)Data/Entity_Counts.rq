@@ -1,0 +1,57 @@
+# title: Number of entities per type
+# category: (Meta)Data
+# description: Count all major entity types in PlantMetWiki.
+#
+# PMWQ002 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ002
+# Generated from 1.(Meta)Data/Entity_Counts.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+# PC* pathways = WikiPathways-style pathway entries (sequential internal IDs starting with PC).
+# RC* reactions = reaction-level pathway entries (sequential internal IDs starting with RC).
+#
+# Named graphs used:
+#   graph/pathways — all DataNodes, pathways, and interactions
+#
+# Implementation note: uses UNION instead of multiple OPTIONAL patterns.
+# Multiple OPTIONAL patterns in a single query time out in Virtuoso because the
+# optimizer cannot push each OPTIONAL into an independent scan.
+# UNION allows each entity type to be counted separately and efficiently.
+
+PREFIX wp: <http://vocabularies.wikipathways.org/wp#>
+
+SELECT ?entityType (COUNT(DISTINCT ?entity) AS ?count)
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    {
+      ?entity a wp:Pathway .
+      FILTER(CONTAINS(STR(?entity), '/PC'))
+      BIND("1_PC_Pathways" AS ?entityType)
+    } UNION {
+      ?entity a wp:Pathway .
+      FILTER(CONTAINS(STR(?entity), '/RC'))
+      BIND("2_RC_Reactions" AS ?entityType)
+    } UNION {
+      ?entity a wp:GeneProduct .
+      BIND("3_GeneProducts" AS ?entityType)
+    } UNION {
+      ?entity a wp:Protein .
+      BIND("4_Proteins" AS ?entityType)
+    } UNION {
+      ?entity a wp:Metabolite .
+      BIND("5_Metabolites" AS ?entityType)
+    } UNION {
+      ?entity a wp:Complex .
+      BIND("6_Complexes" AS ?entityType)
+    } UNION {
+      ?entity a wp:Interaction .
+      BIND("7_Interactions_total" AS ?entityType)
+    } UNION {
+      ?entity a wp:Catalysis .
+      BIND("8_Catalysis" AS ?entityType)
+    } UNION {
+      ?entity a wp:Conversion .
+      BIND("9_Conversions" AS ?entityType)
+    }
+  }
+}
+GROUP BY ?entityType
+ORDER BY ?entityType

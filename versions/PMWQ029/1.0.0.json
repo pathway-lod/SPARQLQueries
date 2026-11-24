@@ -1,0 +1,51 @@
+{
+ "id": "PMWQ029",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ029",
+ "label": "Source of each gene cluster",
+ "description": "Show BGC provenance: which clusters come from MIBiG and which from plantiSMASH, with their gene counts and species annotations.",
+ "version": "1.0.0",
+ "created": "2025-12-19",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+ ],
+ "keywords": [
+  "biosynthetic gene cluster",
+  "MIBiG",
+  "plantiSMASH"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/93df31e091003c59df6883fb7d974387c1b45008/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/Provenance_BGCs_and_Genes.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "PREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:      <http://purl.obolibrary.org/obo/RO_>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX foaf:    <http://xmlns.com/foaf/0.1/>\n\nSELECT ?source ?species ?bgc ?bgc_page (COUNT(?gene) AS ?nGenes)\nWHERE {\n  GRAPH ?g {\n    ?bgc a pmw:BiosyntheticGeneCluster ;\n         dcterms:source ?source ;\n         ro:0000051 ?gene .\n    OPTIONAL { ?bgc wp:organismName ?species . }\n    OPTIONAL { ?bgc foaf:page ?bgc_page . }\n  }\n  FILTER(?g IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n}\nGROUP BY ?source ?species ?bgc ?bgc_page\nORDER BY ?source ?species ?bgc",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/Provenance_BGCs_and_Genes.ttl",
+ "aliases": [
+  "3.Biosynthetic gene cluster (BGC) Crosslinks/Provenance_BGCs_and_Genes.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

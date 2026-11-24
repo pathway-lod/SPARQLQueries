@@ -1,0 +1,20 @@
+# title: BridgeDb cross-references per database
+# category: PlantMetWiki
+# description: Count how many wp:Metabolite nodes carry a BridgeDb-materialised cross-reference to each external chemical database. Shows the reach of the BridgeDb metabolite mapping in PlantMetWiki (release v3.2): e.g. Wikidata, PubChem and ChEBI each reach ~3,000 metabolites, up from a handful of source identifiers.
+#
+# PMWQ010 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ010
+# Generated from 2.PlantMetWiki/BridgeDb_Coverage_Summary.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+PREFIX wp: <http://vocabularies.wikipathways.org/wp#>
+
+SELECT ?database (COUNT(DISTINCT ?m) AS ?nMetabolites)
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?m a wp:Metabolite ; ?p ?o .
+    VALUES ?p { wp:bdbChEBI wp:bdbWikidata wp:bdbPubChem wp:bdbHmdb
+                wp:bdbKeggCompound wp:bdbChemspider wp:bdbLipidMaps wp:bdbInChIKey }
+    BIND(REPLACE(STR(?p), ".*#bdb", "") AS ?database)
+  }
+}
+GROUP BY ?database
+ORDER BY DESC(?nMetabolites)

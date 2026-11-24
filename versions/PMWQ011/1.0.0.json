@@ -1,0 +1,42 @@
+{
+ "id": "PMWQ011",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ011",
+ "label": "Metabolite cross-references from BridgeDb",
+ "description": "List PlantMetWiki metabolites with the external cross-references materialised by BridgeDb (wp:bdb* predicates: ChEBI, Wikidata, PubChem, HMDB, KEGG, ...). These links are stored directly in the graph, so no federation is needed to resolve a metabolite to its ChEBI / Wikidata / PubChem entries.",
+ "version": "1.0.0",
+ "created": "2026-07-24",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+ ],
+ "keywords": [
+  "plantmetwiki"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/e6b89812e5438e6d4ae7e708ae88c83298eb52e5/2.PlantMetWiki/BridgeDb_Metabolite_CrossReferences.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Added by the BridgeDb metabolite ID mapping (release v3.2, build 20260102).\n\nPREFIX wp:   <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n\nSELECT ?name ?ChEBI ?Wikidata ?PubChem ?HMDB ?KEGG\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?m a wp:Metabolite .\n    OPTIONAL { ?m rdfs:label        ?name }\n    OPTIONAL { ?m wp:bdbChEBI        ?ChEBI }\n    OPTIONAL { ?m wp:bdbWikidata     ?Wikidata }\n    OPTIONAL { ?m wp:bdbPubChem      ?PubChem }\n    OPTIONAL { ?m wp:bdbHmdb         ?HMDB }\n    OPTIONAL { ?m wp:bdbKeggCompound ?KEGG }\n    FILTER(BOUND(?ChEBI) || BOUND(?Wikidata) || BOUND(?PubChem))\n  }\n}\nLIMIT 100",
+ "params": [],
+ "expect": null,
+ "path": "2.PlantMetWiki/BridgeDb_Metabolite_CrossReferences.ttl",
+ "aliases": [
+  "2.PlantMetWiki/BridgeDb_Metabolite_CrossReferences.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

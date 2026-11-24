@@ -1,0 +1,35 @@
+# title: Pathways of a species, with data node counts
+# category: PlantMetWiki
+# description: Find all pathways containing DataNodes annotated for a given species, and count annotated DataNodes per pathway.
+#
+# PMWQ012 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ012
+# Generated from 2.PlantMetWiki/Count_PWs_for_SpeciesName.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+# Edit the rdfs:label filter to change the species (Latin name).
+# Note: species is at the DataNode level — join via taxonomy-extra graph.
+
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT ?pwID (STR(?titleLit) AS ?title) (COUNT(DISTINCT ?dataNode) AS ?nDataNodes)
+WHERE {
+  # Step 1: resolve the species name to a taxon IRI via NCBITaxon
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {
+    ?taxon rdfs:label "Arabidopsis thaliana" .  # change species name here
+  }
+  # Step 2: find DataNodes annotated with that taxon
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {
+    ?dataNode wp:organism ?taxon .
+  }
+  # Step 3: connect DataNodes to their pathway
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?dataNode dcterms:isPartOf ?pw .
+    ?pw a wp:Pathway ;
+        dc:identifier ?pwID ;
+        dc:title ?titleLit .
+  }
+}
+GROUP BY ?pwID ?titleLit
+ORDER BY DESC(?nDataNodes)

@@ -1,0 +1,13 @@
+# title: All named graphs with their triple counts
+# category: (Meta)Data
+# description: List all named graphs in PlantMetWiki with their triple counts. Useful to verify which datasets are loaded in Virtuoso.
+#
+# PMWQ006 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ006
+# Generated from 1.(Meta)Data/ListNamedGraphs.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+SELECT ?graph (COUNT(*) AS ?nTriples)
+WHERE {
+  GRAPH ?graph { ?s ?p ?o . }
+}
+GROUP BY ?graph
+ORDER BY DESC(?nTriples)

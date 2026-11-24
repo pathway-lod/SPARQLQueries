@@ -1,0 +1,44 @@
+{
+ "id": "PMWQ008",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ008",
+ "label": "Taxa missing from NCBITaxon",
+ "description": "Find taxa in PlantMetWiki that cannot be resolved to a label in the local NCBITaxon ontology graph (graph/ncbitaxon).",
+ "version": "1.0.0",
+ "created": "2026-06-01",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+ ],
+ "keywords": [
+  "metadata"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/b171f69ebbfbf4cdf1315ac019d3940cbaa42718/1.%28Meta%29Data/Taxa_Missing_from_NCBITaxon.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Even with the full OBO Foundry NCBITaxon release loaded, some taxa may be\n# absent because:\n#   - The NCBI taxon ID has been deprecated/merged (e.g. NCBITaxon_283673\n#     = Lycopersicon hirsutum, now merged into Solanum habrochaites NCBI 62890)\n#   - The OBO Foundry release does not include every NCBI taxon (it focuses\n#     on biologically relevant taxa used in ontology annotation)\n#\n# Results for PlantCyc 17.0 with the full NCBITaxon release (v2026-05-13):\n#   6 unresolvable taxa · 54 affected GeneProduct/Protein nodes\n#   (all are gene/enzyme annotations, no metabolites affected)\n#\n# Columns:\n#   ?taxon      — the unresolved OBO Foundry IRI\n#   ?ncbiID     — numeric NCBI Taxonomy ID (extracted from IRI)\n#   ?nNodes     — number of GeneProduct/Protein nodes with this taxon\n#   ?nodeTypes  — entity types (GeneProduct, Protein)\n#\n# Look up deprecated/merged taxa:\n#   https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=<ncbiID>\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT ?taxon\n       (STRAFTER(STR(?taxon), \"NCBITaxon_\") AS ?ncbiID)\n       (COUNT(DISTINCT ?node) AS ?nNodes)\n       (GROUP_CONCAT(DISTINCT STRAFTER(STR(?nodeType), \"wp#\"); separator=\", \") AS ?nodeTypes)\nWHERE {\n  # Step 1: collect all species-specific taxa from our taxonomy annotations\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?node wp:organism ?taxon .\n    FILTER(?taxon != ncbi:33090)  # exclude Viridiplantae (pathway-level annotation)\n  }\n  # Step 2: keep only those with NO label in the NCBITaxon ontology graph\n  FILTER NOT EXISTS {\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n      ?taxon rdfs:label ?label .\n    }\n  }\n  # Step 3: look up entity type (GeneProduct / Protein) from the pathways graph\n  # Uses UNION to handle both direct typing and DataNode → wp:isAbout indirection\n  OPTIONAL {\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n      { ?dn wp:isAbout ?node ; a ?nodeType . }\n      UNION\n      { ?node a ?nodeType . }\n      FILTER(STRSTARTS(STR(?nodeType), \"http://vocabularies.wikipathways.org/wp#\"))\n      FILTER(?nodeType != wp:DataNode)\n    }\n  }\n}\nGROUP BY ?taxon\nORDER BY DESC(?nNodes)",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "1.(Meta)Data/Taxa_Missing_from_NCBITaxon.ttl",
+ "aliases": [
+  "1.(Meta)Data/Taxa_Missing_from_NCBITaxon.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

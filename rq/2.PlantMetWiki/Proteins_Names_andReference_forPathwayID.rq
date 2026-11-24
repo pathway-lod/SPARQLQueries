@@ -1,0 +1,34 @@
+# title: Proteins of a pathway, with references
+# category: PlantMetWiki
+# description: List all proteins (with labels and publication references) for a given pathway.
+#
+# PMWQ021 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ021
+# Generated from 2.PlantMetWiki/Proteins_Names_andReference_forPathwayID.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+# Named graphs used:
+#   graph/pathways — pathway, protein, and reference triples
+# Editable placeholder: change "/PC123_" to the internal pathway ID fragment of interest.
+# Note: dc:identifier holds the internal sequential ID (e.g. "PC123") on the pathway IRI;
+#       use FILTER(CONTAINS(STR(?pw), '/PC123_')) to target a specific pathway.
+
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT ?protein (STR(?proteinLabel) AS ?proteinName) ?publication
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?pw rdf:type wp:Pathway ;
+        dc:title ?title .
+    FILTER(CONTAINS(STR(?pw), '/PC123_'))  # change pathway ID fragment here
+
+    ?protein a wp:Protein ;
+             rdfs:label ?proteinLabel ;
+             dcterms:isPartOf ?pw .
+
+    OPTIONAL { ?protein dcterms:references ?publication . }
+  }
+}
+ORDER BY ?proteinName

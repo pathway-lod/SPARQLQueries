@@ -1,0 +1,64 @@
+# title: SMILES from Wikidata for metabolites of a species
+# category: Federated
+# description: Retrieve metabolites (with InChIKey and SMILES) from pathways that have a specific species annotated at the DataNode level, enriched via Wikidata federated query. Species filtering uses graph/gpml-taxonomy-extra + graph/ncbitaxon (NOT wp:organismName, which only returns "Viridiplantae" at pathway level).
+#
+# PMWQ036 version 1.1.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ036
+# Generated from 4.Federated/SMILES_from_Wikidata.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+# Named graphs used:
+#   graph/pathways            — metabolite and pathway triples
+#   graph/gpml-taxonomy-extra — wp:organism annotations per DataNode
+#   graph/ncbitaxon           — taxon labels
+# Federated endpoint: https://qlever.cs.uni-freiburg.de/api/wikidata
+#
+# Editable placeholder: change the FILTER on ?speciesLabel to another species name.
+
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>
+PREFIX wd:      <http://www.wikidata.org/entity/>
+PREFIX wdt:     <http://www.wikidata.org/prop/direct/>
+
+SELECT DISTINCT ?pwID ?title ?metabolite ?smilesDepict ?inchikey ?wd ?wdLabel
+WHERE {
+  {
+    SELECT DISTINCT ?pwID ?title ?metabolite ?inchikey
+    WHERE {
+      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+        ?metabolite a wp:Metabolite ;
+                    dcterms:isPartOf ?pw ;
+                    dc:source "InChIKey" ;
+                    dcterms:identifier ?inchikey .
+
+        ?pw a wp:Pathway ;
+            dc:identifier ?pwID ;
+            dc:title ?titleLit .
+        BIND(STR(?titleLit) AS ?title)
+      }
+
+      # Find pathways that contain at least one DataNode annotated to the species of interest
+      ?annotatedNode dcterms:isPartOf ?pw .
+      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {
+        ?annotatedNode wp:organism ?taxon .
+        FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae
+      }
+      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {
+        ?taxon rdfs:label ?speciesLabel .
+        FILTER(?speciesLabel = "Solanum tuberosum")  # Editable: change species name here
+      }
+    }
+    LIMIT 10
+  }
+
+  # SILENT: QLever's public Wikidata endpoint frequently rate-limits (429 Too
+  # Many Requests) this query; when that happens this returns the base
+  # metabolites unenriched instead of failing the whole query.
+  SERVICE SILENT <https://qlever.cs.uni-freiburg.de/api/wikidata> {
+    ?wd wdt:P235 ?inchikey .
+    OPTIONAL { ?wd wdt:P233 ?smilesDepict }
+    OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") }
+  }
+}
+ORDER BY ?title ?metabolite

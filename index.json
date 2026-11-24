@@ -1,0 +1,2000 @@
+{
+ "schema": 1,
+ "generated": "2026-11-24T07:27:40Z",
+ "repository": "pathway-lod/SPARQLQueries",
+ "commit": "d1bc97e6f915cab6bf6348c6a5306bc8f240e76f",
+ "collection": {
+  "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples",
+  "name": "PlantMetWiki SPARQL examples",
+  "description": "Example SPARQL queries for the PlantMetWiki SPARQL endpoint, shown in the SPARQL Explorer at https://plantmetwiki.bioinformatics.nl/.",
+  "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+  "iriBase": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/",
+  "idPrefix": "PMWQ"
+ },
+ "categories": [
+  {
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata",
+   "label": "(Meta)Data",
+   "order": 1,
+   "notation": "",
+   "parent": null
+  },
+  {
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki",
+   "label": "PlantMetWiki",
+   "order": 2,
+   "notation": "",
+   "parent": null
+  },
+  {
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC",
+   "label": "Biosynthetic gene cluster (BGC) crosslinks",
+   "order": 3,
+   "notation": "",
+   "parent": null
+  },
+  {
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated",
+   "label": "Federated",
+   "order": 4,
+   "notation": "",
+   "parent": null
+  }
+ ],
+ "examples": [
+  {
+   "id": "PMWQ001",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ001",
+   "label": "Number of pathways per species",
+   "description": "Count pathways per species, using DataNode-level species annotations.",
+   "version": "1.0.0",
+   "created": "2025-12-18",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+   ],
+   "keywords": [
+    "metadata"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/8efab1d98ac2c492b8531868dbb3a1536f7ba54a/1.%28Meta%29Data/CountPWsPerSpecies.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Joins: taxonomy-extra (species on DataNodes) + pathways (DataNode → pathway).\n# Species names resolved from the local NCBITaxon ontology.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT ?species (COUNT(DISTINCT ?pw) AS ?nPathways)\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?node wp:organism ?taxonID .\n    FILTER(?taxonID != ncbi:33090)\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?node dcterms:isPartOf ?pw .\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n    ?taxonID rdfs:label ?species .\n  }\n}\nGROUP BY ?species\nORDER BY DESC(?nPathways)",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "1.(Meta)Data/CountPWsPerSpecies.ttl",
+   "aliases": [
+    "1.(Meta)Data/CountPWsPerSpecies.rq"
+   ]
+  },
+  {
+   "id": "PMWQ002",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ002",
+   "label": "Number of entities per type",
+   "description": "Count all major entity types in PlantMetWiki.",
+   "version": "1.0.0",
+   "created": "2026-07-02",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+   ],
+   "keywords": [
+    "metadata"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/7ea07a36e43adc4890b6081ff81c0e2b0ec1a221/1.%28Meta%29Data/Entity_Counts.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# PC* pathways = WikiPathways-style pathway entries (sequential internal IDs starting with PC).\n# RC* reactions = reaction-level pathway entries (sequential internal IDs starting with RC).\n#\n# Named graphs used:\n#   graph/pathways — all DataNodes, pathways, and interactions\n#\n# Implementation note: uses UNION instead of multiple OPTIONAL patterns.\n# Multiple OPTIONAL patterns in a single query time out in Virtuoso because the\n# optimizer cannot push each OPTIONAL into an independent scan.\n# UNION allows each entity type to be counted separately and efficiently.\n\nPREFIX wp: <http://vocabularies.wikipathways.org/wp#>\n\nSELECT ?entityType (COUNT(DISTINCT ?entity) AS ?count)\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    {\n      ?entity a wp:Pathway .\n      FILTER(CONTAINS(STR(?entity), '/PC'))\n      BIND(\"1_PC_Pathways\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Pathway .\n      FILTER(CONTAINS(STR(?entity), '/RC'))\n      BIND(\"2_RC_Reactions\" AS ?entityType)\n    } UNION {\n      ?entity a wp:GeneProduct .\n      BIND(\"3_GeneProducts\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Protein .\n      BIND(\"4_Proteins\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Metabolite .\n      BIND(\"5_Metabolites\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Complex .\n      BIND(\"6_Complexes\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Interaction .\n      BIND(\"7_Interactions_total\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Catalysis .\n      BIND(\"8_Catalysis\" AS ?entityType)\n    } UNION {\n      ?entity a wp:Conversion .\n      BIND(\"9_Conversions\" AS ?entityType)\n    }\n  }\n}\nGROUP BY ?entityType\nORDER BY ?entityType",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "1.(Meta)Data/Entity_Counts.ttl",
+   "aliases": [
+    "1.(Meta)Data/Entity_Counts.rq"
+   ]
+  },
+  {
+   "id": "PMWQ003",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ003",
+   "label": "Triples per named graph",
+   "description": "Count triples per named graph in the PlantMetWiki triplestore.",
+   "version": "1.0.0",
+   "created": "2025-12-18",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+   ],
+   "keywords": [
+    "metadata"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/68fcd95df2f3b86dffc64d962f7d037d6bae6785/1.%28Meta%29Data/GraphIsLoaded.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Named graphs:\n#   graph/pathways              — core WikiPathways RDF (pathways + reactions)\n#   graph/gpml-taxonomy-extra   — per-entity species annotations (wp:organism)\n#   graph/gpml-properties-extra — PlantCyc key-value properties\n#   graph/bgc-mibig             — MIBiG curated biosynthetic gene clusters\n#   graph/bgc-plantismash       — plantiSMASH predicted biosynthetic gene clusters\n#   graph/ncbitaxon             — NCBITaxon ontology (OBO Foundry, CC0)\n#   graph/vocabularies          — pmw:/wp:/gpml: term definitions (self-describing schema)\n#   void                        — VoID metadata for all datasets\n\n# Uses VALUES to enumerate only the known PlantMetWiki graphs — fast because\n# Virtuoso can use per-graph statistics instead of scanning every triple.\n# (A FILTER on ?graph after GRAPH ?g { ?s ?p ?o } forces a full scan of all\n# graphs including the 21.7M-triple NCBITaxon graph before filtering.)\n\nSELECT ?graph (COUNT(*) AS ?nTriples)\nWHERE {\n  VALUES ?graph {\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways>\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra>\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra>\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon>\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/vocabularies>\n    <http://rdf-plantmetwiki.bioinformatics.nl/void>\n  }\n  GRAPH ?graph { ?s ?p ?o . }\n}\nGROUP BY ?graph\nORDER BY DESC(?nTriples)",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "1.(Meta)Data/GraphIsLoaded.ttl",
+   "aliases": [
+    "1.(Meta)Data/GraphIsLoaded.rq"
+   ]
+  },
+  {
+   "id": "PMWQ004",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ004",
+   "label": "All species with annotated data nodes",
+   "description": "List all species that have at least one annotated DataNode in PlantMetWiki. Species names are resolved via the local NCBITaxon ontology graph.",
+   "version": "1.0.0",
+   "created": "2025-12-18",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+   ],
+   "keywords": [
+    "metadata"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/8efab1d98ac2c492b8531868dbb3a1536f7ba54a/1.%28Meta%29Data/ListAllSpecies.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Note: species are annotated at the DataNode level (graph/gpml-taxonomy-extra),\n# not at the pathway level. The pathway level only carries Viridiplantae.\n\nPREFIX wp:   <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX ncbi: <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT DISTINCT ?taxonID ?species\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?node wp:organism ?taxonID .\n    FILTER(?taxonID != ncbi:33090)  # exclude pathway-level Viridiplantae\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n    ?taxonID rdfs:label ?species .\n  }\n}\nORDER BY ?species",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "1.(Meta)Data/ListAllSpecies.ttl",
+   "aliases": [
+    "1.(Meta)Data/ListAllSpecies.rq"
+   ]
+  },
+  {
+   "id": "PMWQ005",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ005",
+   "label": "All entity types",
+   "description": "Lists every entity type (rdf:type) used in PlantMetWiki, to help build your own queries.",
+   "version": "1.0.0",
+   "created": "2025-12-18",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+   ],
+   "keywords": [
+    "metadata"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/c3f41b45c2457428663646b1a0f34e05c90ed58d/1.%28Meta%29Data/ListEntities.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "PREFIX biopax:  <http://www.biopax.org/release/biopax-level3.owl#>\nPREFIX cito:    <http://purl.org/spar/cito/>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX foaf:    <http://xmlns.com/foaf/0.1/>\nPREFIX freq:    <http://purl.org/cld/freq/>\nPREFIX gpml:    <http://vocabularies.wikipathways.org/gpml#>\nPREFIX owl:     <http://www.w3.org/2002/07/owl#>\nPREFIX pav:     <http://purl.org/pav/>\nPREFIX prov:    <http://www.w3.org/ns/prov#>\nPREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX void:    <http://rdfs.org/ns/void#>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX wprdf:   <http://rdf.wikipathways.org/>\nPREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>\nPREFIX pmw:\t\t<http://rdf-plantmetwiki.bioinformatics.nl/pathways/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\nPREFIX ro:\t\t<http://purl.obolibrary.org/obo/RO_>\n\nSELECT DISTINCT ?type\nWHERE { ?s a ?type . } # Find all entity types in our database to help build your queries!",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "1.(Meta)Data/ListEntities.ttl",
+   "aliases": [
+    "1.(Meta)Data/ListEntities.rq"
+   ]
+  },
+  {
+   "id": "PMWQ006",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ006",
+   "label": "All named graphs with their triple counts",
+   "description": "List all named graphs in PlantMetWiki with their triple counts. Useful to verify which datasets are loaded in Virtuoso.",
+   "version": "1.0.0",
+   "created": "2026-06-01",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+   ],
+   "keywords": [
+    "metadata"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/93df31e091003c59df6883fb7d974387c1b45008/1.%28Meta%29Data/ListNamedGraphs.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "SELECT ?graph (COUNT(*) AS ?nTriples)\nWHERE {\n  GRAPH ?graph { ?s ?p ?o . }\n}\nGROUP BY ?graph\nORDER BY DESC(?nTriples)",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "1.(Meta)Data/ListNamedGraphs.ttl",
+   "aliases": [
+    "1.(Meta)Data/ListNamedGraphs.rq"
+   ]
+  },
+  {
+   "id": "PMWQ007",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ007",
+   "label": "PlantCyc accession of a pathway",
+   "description": "Look up the stable PlantCyc PWY/RXN accession for a given pathway. Shows both the internal sequential PC identifier (from graph/pathways) and the stable PlantCyc accession such as \"PWY-5710\" (from graph/gpml-properties-extra).",
+   "version": "1.0.0",
+   "created": "2026-07-02",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+   ],
+   "keywords": [
+    "metadata"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/1.%28Meta%29Data/PlantCyc_PWY_ID_Lookup.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Named graphs used:\n#   graph/pathways            — dc:identifier holds internal ID (e.g. \"PC629\")\n#   graph/gpml-properties-extra — dcterms:identifier holds stable PWY/RXN accession\n#\n# Editable placeholder: change \"/PC629_\" to any other internal pathway ID fragment,\n#   or remove the FILTER to list all pathways with their stable IDs.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT ?pw ?internalID ?stablePWY_ID\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?pw a wp:Pathway ;\n        dc:identifier ?internalID .\n    FILTER(CONTAINS(STR(?pw), '/PC629_'))  # Editable: change pathway ID fragment here\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {\n    ?pw dcterms:identifier ?stablePWY_ID .\n    FILTER(STRSTARTS(?stablePWY_ID, \"PWY\") || STRSTARTS(?stablePWY_ID, \"RXN\"))\n  }\n}",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "1.(Meta)Data/PlantCyc_PWY_ID_Lookup.ttl",
+   "aliases": [
+    "1.(Meta)Data/PlantCyc_PWY_ID_Lookup.rq"
+   ]
+  },
+  {
+   "id": "PMWQ008",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ008",
+   "label": "Taxa missing from NCBITaxon",
+   "description": "Find taxa in PlantMetWiki that cannot be resolved to a label in the local NCBITaxon ontology graph (graph/ncbitaxon).",
+   "version": "1.0.0",
+   "created": "2026-06-01",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+   ],
+   "keywords": [
+    "metadata"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/b171f69ebbfbf4cdf1315ac019d3940cbaa42718/1.%28Meta%29Data/Taxa_Missing_from_NCBITaxon.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Even with the full OBO Foundry NCBITaxon release loaded, some taxa may be\n# absent because:\n#   - The NCBI taxon ID has been deprecated/merged (e.g. NCBITaxon_283673\n#     = Lycopersicon hirsutum, now merged into Solanum habrochaites NCBI 62890)\n#   - The OBO Foundry release does not include every NCBI taxon (it focuses\n#     on biologically relevant taxa used in ontology annotation)\n#\n# Results for PlantCyc 17.0 with the full NCBITaxon release (v2026-05-13):\n#   6 unresolvable taxa · 54 affected GeneProduct/Protein nodes\n#   (all are gene/enzyme annotations, no metabolites affected)\n#\n# Columns:\n#   ?taxon      — the unresolved OBO Foundry IRI\n#   ?ncbiID     — numeric NCBI Taxonomy ID (extracted from IRI)\n#   ?nNodes     — number of GeneProduct/Protein nodes with this taxon\n#   ?nodeTypes  — entity types (GeneProduct, Protein)\n#\n# Look up deprecated/merged taxa:\n#   https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=<ncbiID>\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT ?taxon\n       (STRAFTER(STR(?taxon), \"NCBITaxon_\") AS ?ncbiID)\n       (COUNT(DISTINCT ?node) AS ?nNodes)\n       (GROUP_CONCAT(DISTINCT STRAFTER(STR(?nodeType), \"wp#\"); separator=\", \") AS ?nodeTypes)\nWHERE {\n  # Step 1: collect all species-specific taxa from our taxonomy annotations\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?node wp:organism ?taxon .\n    FILTER(?taxon != ncbi:33090)  # exclude Viridiplantae (pathway-level annotation)\n  }\n  # Step 2: keep only those with NO label in the NCBITaxon ontology graph\n  FILTER NOT EXISTS {\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n      ?taxon rdfs:label ?label .\n    }\n  }\n  # Step 3: look up entity type (GeneProduct / Protein) from the pathways graph\n  # Uses UNION to handle both direct typing and DataNode → wp:isAbout indirection\n  OPTIONAL {\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n      { ?dn wp:isAbout ?node ; a ?nodeType . }\n      UNION\n      { ?node a ?nodeType . }\n      FILTER(STRSTARTS(STR(?nodeType), \"http://vocabularies.wikipathways.org/wp#\"))\n      FILTER(?nodeType != wp:DataNode)\n    }\n  }\n}\nGROUP BY ?taxon\nORDER BY DESC(?nNodes)",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "1.(Meta)Data/Taxa_Missing_from_NCBITaxon.ttl",
+   "aliases": [
+    "1.(Meta)Data/Taxa_Missing_from_NCBITaxon.rq"
+   ]
+  },
+  {
+   "id": "PMWQ009",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ009",
+   "label": "VoID metadata of the datasets",
+   "description": "Inspect the VoID metadata header describing all PlantMetWiki datasets. Shows dataset names, versions, triple counts, creation dates, clickable Zenodo deposit DOIs (foaf:page), and source provenance.",
+   "version": "1.0.0",
+   "created": "2026-06-01",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+   ],
+   "keywords": [
+    "metadata"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/51aa48f8bcd49888688bfabc8599d8a8aa50f528/1.%28Meta%29Data/VoIDHeader.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "PREFIX void:    <http://rdfs.org/ns/void#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX pav:     <http://purl.org/pav/>\nPREFIX foaf:    <http://xmlns.com/foaf/0.1/>\n\nSELECT ?dataset ?title ?version ?triples ?created ?depositDOI ?sourceURI\nFROM <http://rdf-plantmetwiki.bioinformatics.nl/void>\nWHERE {\n  ?dataset a void:Dataset ;\n           dcterms:title ?title ;\n           dcterms:hasVersion ?version ;\n           pav:createdOn ?created .\n  OPTIONAL { ?dataset void:triples ?triples . }\n  # Zenodo deposit DOI — concept DOI always resolves to the latest version\n  OPTIONAL { ?dataset foaf:page ?depositDOI .\n             FILTER(CONTAINS(STR(?depositDOI), \"zenodo\")) }\n  OPTIONAL { ?dataset dcterms:source ?sourceURI . }\n}\nORDER BY ?title",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "1.(Meta)Data/VoIDHeader.ttl",
+   "aliases": [
+    "1.(Meta)Data/VoIDHeader.rq"
+   ]
+  },
+  {
+   "id": "PMWQ010",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ010",
+   "label": "BridgeDb cross-references per database",
+   "description": "Count how many wp:Metabolite nodes carry a BridgeDb-materialised cross-reference to each external chemical database. Shows the reach of the BridgeDb metabolite mapping in PlantMetWiki (release v3.2): e.g. Wikidata, PubChem and ChEBI each reach ~3,000 metabolites, up from a handful of source identifiers.",
+   "version": "1.0.0",
+   "created": "2026-07-24",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/e6b89812e5438e6d4ae7e708ae88c83298eb52e5/2.PlantMetWiki/BridgeDb_Coverage_Summary.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "PREFIX wp: <http://vocabularies.wikipathways.org/wp#>\n\nSELECT ?database (COUNT(DISTINCT ?m) AS ?nMetabolites)\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?m a wp:Metabolite ; ?p ?o .\n    VALUES ?p { wp:bdbChEBI wp:bdbWikidata wp:bdbPubChem wp:bdbHmdb\n                wp:bdbKeggCompound wp:bdbChemspider wp:bdbLipidMaps wp:bdbInChIKey }\n    BIND(REPLACE(STR(?p), \".*#bdb\", \"\") AS ?database)\n  }\n}\nGROUP BY ?database\nORDER BY DESC(?nMetabolites)",
+   "params": [],
+   "expect": null,
+   "path": "2.PlantMetWiki/BridgeDb_Coverage_Summary.ttl",
+   "aliases": [
+    "2.PlantMetWiki/BridgeDb_Coverage_Summary.rq"
+   ]
+  },
+  {
+   "id": "PMWQ011",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ011",
+   "label": "Metabolite cross-references from BridgeDb",
+   "description": "List PlantMetWiki metabolites with the external cross-references materialised by BridgeDb (wp:bdb* predicates: ChEBI, Wikidata, PubChem, HMDB, KEGG, ...). These links are stored directly in the graph, so no federation is needed to resolve a metabolite to its ChEBI / Wikidata / PubChem entries.",
+   "version": "1.0.0",
+   "created": "2026-07-24",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/e6b89812e5438e6d4ae7e708ae88c83298eb52e5/2.PlantMetWiki/BridgeDb_Metabolite_CrossReferences.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Added by the BridgeDb metabolite ID mapping (release v3.2, build 20260102).\n\nPREFIX wp:   <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n\nSELECT ?name ?ChEBI ?Wikidata ?PubChem ?HMDB ?KEGG\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?m a wp:Metabolite .\n    OPTIONAL { ?m rdfs:label        ?name }\n    OPTIONAL { ?m wp:bdbChEBI        ?ChEBI }\n    OPTIONAL { ?m wp:bdbWikidata     ?Wikidata }\n    OPTIONAL { ?m wp:bdbPubChem      ?PubChem }\n    OPTIONAL { ?m wp:bdbHmdb         ?HMDB }\n    OPTIONAL { ?m wp:bdbKeggCompound ?KEGG }\n    FILTER(BOUND(?ChEBI) || BOUND(?Wikidata) || BOUND(?PubChem))\n  }\n}\nLIMIT 100",
+   "params": [],
+   "expect": null,
+   "path": "2.PlantMetWiki/BridgeDb_Metabolite_CrossReferences.ttl",
+   "aliases": [
+    "2.PlantMetWiki/BridgeDb_Metabolite_CrossReferences.rq"
+   ]
+  },
+  {
+   "id": "PMWQ012",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ012",
+   "label": "Pathways of a species, with data node counts",
+   "description": "Find all pathways containing DataNodes annotated for a given species, and count annotated DataNodes per pathway.",
+   "version": "1.0.0",
+   "created": "2025-12-18",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/8efab1d98ac2c492b8531868dbb3a1536f7ba54a/2.PlantMetWiki/Count_PWs_for_SpeciesName.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Edit the rdfs:label filter to change the species (Latin name).\n# Note: species is at the DataNode level — join via taxonomy-extra graph.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT DISTINCT ?pwID (STR(?titleLit) AS ?title) (COUNT(DISTINCT ?dataNode) AS ?nDataNodes)\nWHERE {\n  # Step 1: resolve the species name to a taxon IRI via NCBITaxon\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n    ?taxon rdfs:label \"Arabidopsis thaliana\" .  # change species name here\n  }\n  # Step 2: find DataNodes annotated with that taxon\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?dataNode wp:organism ?taxon .\n  }\n  # Step 3: connect DataNodes to their pathway\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?dataNode dcterms:isPartOf ?pw .\n    ?pw a wp:Pathway ;\n        dc:identifier ?pwID ;\n        dc:title ?titleLit .\n  }\n}\nGROUP BY ?pwID ?titleLit\nORDER BY DESC(?nDataNodes)",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "2.PlantMetWiki/Count_PWs_for_SpeciesName.ttl",
+   "aliases": [
+    "2.PlantMetWiki/Count_PWs_for_SpeciesName.rq"
+   ]
+  },
+  {
+   "id": "PMWQ013",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ013",
+   "label": "Species with an enzyme for each reaction of a pathway",
+   "description": "Cross-species inference: for a given pathway, list every Conversion reaction and which species have an annotated enzyme (GeneProduct or Protein) that catalyses it.",
+   "version": "1.0.0",
+   "created": "2026-07-02",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/7ea07a36e43adc4890b6081ff81c0e2b0ec1a221/2.PlantMetWiki/CrossSpecies_ReactionCoverage.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Mirrors the cross-species coverage analysis in notebook 03.\n#\n# Named graphs used:\n#   graph/gpml-properties-extra — stable PWY/RXN accession lookup\n#   graph/pathways              — pathway, reaction, catalysis, and DataNode triples\n#   graph/gpml-taxonomy-extra   — wp:organism annotations per entity\n#   graph/ncbitaxon             — taxon labels\n#\n# Editable placeholder: change \"PWY-5710\" to any stable PlantCyc PWY accession.\n# Browse available PWY IDs with the PlantCyc_PWY_ID_Lookup.rq query.\n#\n# Note: wp:Conversion nodes do not carry dc:identifier. The reaction ID is extracted\n# from the IRI tail (e.g. \".../Interaction/RXN_21443\" -> \"RXN-21443\").\n# GPML anchor sub-nodes (IRI contains \"_anchor_\") are diagram artefacts, not\n# biochemical reactions, and are excluded.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT ?reactionID ?species\nWHERE {\n  # Identify pathway by stable PWY ID stored in graph/gpml-properties-extra\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {\n    ?pw dcterms:identifier \"PWY-5710\" .  # change to any PWY/RXN accession\n  }\n\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    # Real Conversion reactions only (exclude GPML anchor helper sub-nodes)\n    ?reaction a wp:Conversion ;\n              dcterms:isPartOf ?pw .\n    FILTER(!CONTAINS(STR(?reaction), \"_anchor_\"))\n    # Extract reaction ID from IRI tail: RXN_21443 -> RXN-21443\n    BIND(REPLACE(STRAFTER(STR(?reaction), \"/Interaction/\"), \"_\", \"-\") AS ?reactionID)\n\n    # Catalysis linking enzyme -> reaction\n    ?catalysis a wp:Catalysis ;\n               wp:source ?enzyme ;\n               wp:target ?reaction ;\n               dcterms:isPartOf ?pw .\n\n    { ?enzyme a wp:GeneProduct } UNION { ?enzyme a wp:Protein }\n  }\n\n  # Species annotation on the enzyme (identifiers.org IRI, same across graphs)\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?enzyme wp:organism ?taxon .\n    FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae\n  }\n\n  # Resolve taxon IRI to readable species name\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n    ?taxon rdfs:label ?species .\n  }\n}\nORDER BY ?reactionID ?species",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "2.PlantMetWiki/CrossSpecies_ReactionCoverage.ttl",
+   "aliases": [
+    "2.PlantMetWiki/CrossSpecies_ReactionCoverage.rq"
+   ]
+  },
+  {
+   "id": "PMWQ014",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ014",
+   "label": "Genes and enzymes per species",
+   "description": "For every species annotated in PlantMetWiki, the number of gene products, proteins and pathways, sorted by the number of genes and proteins.",
+   "version": "1.0.0",
+   "created": "2026-07-02",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/2.PlantMetWiki/Genes_and_Enzymes_per_Species.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "#   - number of distinct wp:GeneProduct DataNodes\n#   - number of distinct wp:Protein DataNodes\n#   - total gene/protein entities (nTotal)\n#   - number of distinct pathways covered\n# Results sorted by total entity count descending.\n#\n# Named graphs used:\n#   graph/pathways            — DataNode types and pathway membership\n#   graph/gpml-taxonomy-extra — wp:organism annotations per DataNode\n#   graph/ncbitaxon           — taxon labels\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT ?taxon ?species\n  (COUNT(DISTINCT ?gene)     AS ?nGenes)\n  (COUNT(DISTINCT ?protein)  AS ?nProteins)\n  (COUNT(DISTINCT ?pathway)  AS ?nPathways)\nWHERE {\n  # DataNode annotated to a specific species\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?entity wp:organism ?taxon .\n    FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n    ?taxon rdfs:label ?species .\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?entity dcterms:isPartOf ?pathway .\n    OPTIONAL { ?gene a wp:GeneProduct . FILTER(?gene = ?entity) }\n    OPTIONAL { ?protein a wp:Protein . FILTER(?protein = ?entity) }\n  }\n}\nGROUP BY ?taxon ?species\nORDER BY DESC(COUNT(DISTINCT ?entity))",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "2.PlantMetWiki/Genes_and_Enzymes_per_Species.ttl",
+   "aliases": [
+    "2.PlantMetWiki/Genes_and_Enzymes_per_Species.rq"
+   ]
+  },
+  {
+   "id": "PMWQ015",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ015",
+   "label": "Number of interactions per type",
+   "description": "Count the number of interactions of each wp:Interaction subtype across the whole knowledge base: Catalysis, Conversion, TranscriptionTranslation, Inhibition, Stimulation, Binding and ComplexBinding.",
+   "version": "1.0.0",
+   "created": "2026-07-02",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/2.PlantMetWiki/Interaction_Types_Distribution.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "#                   Stimulation, Binding, ComplexBinding.\n#\n# Named graphs used:\n#   graph/pathways — all interaction triples\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n\nSELECT ?interactionType (COUNT(DISTINCT ?interaction) AS ?nInteractions)\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?interaction rdf:type ?interactionType .\n    VALUES ?interactionType {\n      wp:Catalysis\n      wp:Conversion\n      wp:TranscriptionTranslation\n      wp:Inhibition\n      wp:Stimulation\n      wp:Binding\n      wp:ComplexBinding\n    }\n  }\n}\nGROUP BY ?interactionType\nORDER BY DESC(?nInteractions)",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "2.PlantMetWiki/Interaction_Types_Distribution.ttl",
+   "aliases": [
+    "2.PlantMetWiki/Interaction_Types_Distribution.rq"
+   ]
+  },
+  {
+   "id": "PMWQ016",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ016",
+   "label": "Metabolite by PubChem ID, with its pathways and species",
+   "description": "Search PlantMetWiki starting from an external database identifier — here a PubChem Compound ID — and return the metabolite, its pathways and the species with annotated enzymes in those pathways.",
+   "version": "1.0.0",
+   "created": "2026-07-24",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/e6b89812e5438e6d4ae7e708ae88c83298eb52e5/2.PlantMetWiki/Metabolite_by_PubChem_ID.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Enabled by BridgeDb: the PubChem link is stored directly in the graph, so this\n# resolves without a federated query. Before BridgeDb this was not possible.\n# Example CID 28523 = alpha-tomatine. Change the CID URI to search another compound\n# (or swap wp:bdbPubChem for wp:bdbChEBI / wp:bdbHmdb / wp:bdbWikidata to search\n# from a different database).\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT DISTINCT ?metabolite ?pathway ?species\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?m a wp:Metabolite ;\n       wp:bdbPubChem <http://rdf.ncbi.nlm.nih.gov/pubchem/compound/CID28523> .  # change CID here\n    OPTIONAL { ?m rdfs:label ?metabolite }\n    OPTIONAL {\n      ?m dcterms:isPartOf ?pw .\n      ?pw a wp:Pathway ; dc:title ?pathway .\n      OPTIONAL {\n        ?node dcterms:isPartOf ?pw .\n        GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n          ?node wp:organism ?taxon . FILTER(?taxon != ncbi:33090)\n        }\n        GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n          ?taxon rdfs:label ?species\n        }\n      }\n    }\n  }\n}\nORDER BY ?pathway ?species",
+   "params": [],
+   "expect": null,
+   "path": "2.PlantMetWiki/Metabolite_by_PubChem_ID.ttl",
+   "aliases": [
+    "2.PlantMetWiki/Metabolite_by_PubChem_ID.rq"
+   ]
+  },
+  {
+   "id": "PMWQ017",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ017",
+   "label": "Metabolites in pathways of a species",
+   "description": "Find metabolites in pathways that contain DataNodes annotated for a given species. Because metabolites themselves are rarely species-specific, this query finds all metabolites that co-occur in pathways with the requested species' genes/proteins.",
+   "version": "1.0.0",
+   "created": "2025-12-18",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/8efab1d98ac2c492b8531868dbb3a1536f7ba54a/2.PlantMetWiki/Metabolites_in_Pathway_for_SpeciesName.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Edit the rdfs:label filter to change the species.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT DISTINCT ?metabolite ?inchikey (STR(?titleLit) AS ?title)\nWHERE {\n  # Resolve species name\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n    ?taxon rdfs:label \"Solanum tuberosum\" .  # change species name here\n  }\n  # Find a DataNode annotated with that species — gives us the pathway\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?speciesNode wp:organism ?taxon .\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?speciesNode dcterms:isPartOf ?pw .\n    # Find metabolites in the same pathway\n    ?metabolite a wp:Metabolite ;\n                dcterms:isPartOf ?pw .\n    OPTIONAL { ?metabolite wp:bdbInChIKey ?inchikey . }\n    ?pw dc:title ?titleLit .\n  }\n}\nORDER BY ASC(?metabolite)",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "2.PlantMetWiki/Metabolites_in_Pathway_for_SpeciesName.ttl",
+   "aliases": [
+    "2.PlantMetWiki/Metabolites_in_Pathway_for_SpeciesName.rq"
+   ]
+  },
+  {
+   "id": "PMWQ018",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ018",
+   "label": "Number of references per pathway",
+   "description": "Count the number of distinct publication references per pathway, sorted by most cited.",
+   "version": "1.0.0",
+   "created": "2025-12-23",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/2.PlantMetWiki/nReferences_per_Pathway.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Named graphs used:\n#   graph/pathways — pathway metadata and reference links (dcterms:references, cito:cites)\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX cito:    <http://purl.org/spar/cito/>\n\nSELECT DISTINCT ?pwID ?title (COUNT(DISTINCT ?pubmed) AS ?nPublications)\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?pw a wp:Pathway ;\n        dc:title ?title ;\n        dc:identifier ?pwID ;\n        (dcterms:references|cito:cites) ?pubmed .\n  }\n}\nGROUP BY ?pwID ?title\nORDER BY DESC(?nPublications)",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "2.PlantMetWiki/nReferences_per_Pathway.ttl",
+   "aliases": [
+    "2.PlantMetWiki/nReferences_per_Pathway.rq"
+   ]
+  },
+  {
+   "id": "PMWQ019",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ019",
+   "label": "Content of a pathway",
+   "description": "Summarise the content of a specific pathway by its stable PlantCyc PWY ID. Returns: pathway title, stable PWY ID, internal PC identifier, counts of each DataNode type (GeneProduct, Protein, Metabolite, Complex), number of distinct species, and number of Conversion reactions.",
+   "version": "1.1.0",
+   "created": "2026-07-02",
+   "modified": "2026-11-24",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/2.PlantMetWiki/Pathway_Content_Summary.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Named graphs used:\n#   graph/pathways              — pathway metadata and DataNode triples\n#   graph/gpml-properties-extra — dcterms:identifier = stable PWY/RXN accession\n#   graph/gpml-taxonomy-extra   — wp:organism annotations per DataNode\n#   graph/ncbitaxon             — (not queried here; species count via taxonomy-extra)\n#\n# Editable placeholder: change \"PWY-5710\" to the stable PlantCyc accession of interest.\n#\n# Each count is its own OPTIONAL subquery that re-looks-up the pathway by its\n# stable PWY ID, rather than 5 sibling OPTIONALs sharing ?pw in one group:\n# independent OPTIONALs on the same variable produce their cross product before\n# GROUP BY collapses it, so for a pathway with e.g. 20 genes x 15 proteins x 30\n# metabolites x ... Virtuoso's planner (rightly) estimates a huge join and\n# refuses the query (\"estimated execution time ... exceeds the limit of 400\n# (sec)\"). Pre-aggregating each count on its own keeps every join to size 1.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT ?title ?stablePWY_ID ?internalID ?nGenes ?nProteins ?nMetabolites ?nComplexes ?nSpecies ?nReactions\nWHERE {\n  # Look up pathway by stable PWY ID\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {\n    ?pw dcterms:identifier \"PWY-5710\" .  # Editable: stable PlantCyc PWY accession\n    BIND(\"PWY-5710\" AS ?stablePWY_ID)\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?pw a wp:Pathway ;\n        dc:title ?title ;\n        dc:identifier ?internalID .\n  }\n  OPTIONAL {\n    SELECT (COUNT(DISTINCT ?gene) AS ?nGenes) WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> { ?pw0 dcterms:identifier \"PWY-5710\" . }\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> { ?gene a wp:GeneProduct ; dcterms:isPartOf ?pw0 }\n    }\n  }\n  OPTIONAL {\n    SELECT (COUNT(DISTINCT ?protein) AS ?nProteins) WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> { ?pw0 dcterms:identifier \"PWY-5710\" . }\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> { ?protein a wp:Protein ; dcterms:isPartOf ?pw0 }\n    }\n  }\n  OPTIONAL {\n    SELECT (COUNT(DISTINCT ?metabolite) AS ?nMetabolites) WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> { ?pw0 dcterms:identifier \"PWY-5710\" . }\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> { ?metabolite a wp:Metabolite ; dcterms:isPartOf ?pw0 }\n    }\n  }\n  OPTIONAL {\n    SELECT (COUNT(DISTINCT ?complex) AS ?nComplexes) WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> { ?pw0 dcterms:identifier \"PWY-5710\" . }\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> { ?complex a wp:Complex ; dcterms:isPartOf ?pw0 }\n    }\n  }\n  OPTIONAL {\n    SELECT (COUNT(DISTINCT ?reaction) AS ?nReactions) WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> { ?pw0 dcterms:identifier \"PWY-5710\" . }\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> { ?reaction a wp:Conversion ; dcterms:isPartOf ?pw0 }\n    }\n  }\n  OPTIONAL {\n    SELECT (COUNT(DISTINCT ?taxon) AS ?nSpecies) WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> { ?pw0 dcterms:identifier \"PWY-5710\" . }\n      ?anyNode dcterms:isPartOf ?pw0 .\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n        ?anyNode wp:organism ?taxon .\n        FILTER(?taxon != ncbi:33090)\n      }\n    }\n  }\n}",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "2.PlantMetWiki/Pathway_Content_Summary.ttl",
+   "aliases": [
+    "2.PlantMetWiki/Pathway_Content_Summary.rq"
+   ]
+  },
+  {
+   "id": "PMWQ020",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ020",
+   "label": "Proteins in pathways of a taxon",
+   "description": "Find proteins in pathways for a given NCBI taxon ID. The taxonomy-extra graph annotates the biological entity IRI directly (the same IRI that carries rdf:type wp:Protein and dcterms:isPartOf in the pathways graph), so the join is simple: match ?protein across both graphs.",
+   "version": "1.0.0",
+   "created": "2025-12-18",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/8efab1d98ac2c492b8531868dbb3a1536f7ba54a/2.PlantMetWiki/Proteins_in_Pathway_for_TaxonID.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Replace ncbi:4113 with the NCBI taxon ID of your species of interest.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT DISTINCT ?protein (STR(?titleLit) AS ?title)\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?protein wp:organism ncbi:4113 .  # change taxon ID here (4113 = Solanum tuberosum)\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?protein a wp:Protein ;\n             dcterms:isPartOf ?pw .\n    ?pw dc:title ?titleLit .\n  }\n}\nORDER BY ?title",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "2.PlantMetWiki/Proteins_in_Pathway_for_TaxonID.ttl",
+   "aliases": [
+    "2.PlantMetWiki/Proteins_in_Pathway_for_TaxonID.rq"
+   ]
+  },
+  {
+   "id": "PMWQ021",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ021",
+   "label": "Proteins of a pathway, with references",
+   "description": "List all proteins (with labels and publication references) for a given pathway.",
+   "version": "1.0.0",
+   "created": "2026-01-27",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/2.PlantMetWiki/Proteins_Names_andReference_forPathwayID.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Named graphs used:\n#   graph/pathways — pathway, protein, and reference triples\n# Editable placeholder: change \"/PC123_\" to the internal pathway ID fragment of interest.\n# Note: dc:identifier holds the internal sequential ID (e.g. \"PC123\") on the pathway IRI;\n#       use FILTER(CONTAINS(STR(?pw), '/PC123_')) to target a specific pathway.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT DISTINCT ?protein (STR(?proteinLabel) AS ?proteinName) ?publication\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?pw rdf:type wp:Pathway ;\n        dc:title ?title .\n    FILTER(CONTAINS(STR(?pw), '/PC123_'))  # change pathway ID fragment here\n\n    ?protein a wp:Protein ;\n             rdfs:label ?proteinLabel ;\n             dcterms:isPartOf ?pw .\n\n    OPTIONAL { ?protein dcterms:references ?publication . }\n  }\n}\nORDER BY ?proteinName",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "2.PlantMetWiki/Proteins_Names_andReference_forPathwayID.ttl",
+   "aliases": [
+    "2.PlantMetWiki/Proteins_Names_andReference_forPathwayID.rq"
+   ]
+  },
+  {
+   "id": "PMWQ022",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ022",
+   "label": "Species in a pathway",
+   "description": "Show all species (with NCBI taxon IDs and labels) present in a given pathway. Species are identified from DataNode-level annotations in the taxonomy-extra graph.",
+   "version": "1.0.0",
+   "created": "2025-12-18",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/2.PlantMetWiki/Show_Species_and_TaxonID_Per_PW.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Named graphs used:\n#   graph/pathways            — pathway and DataNode triples\n#   graph/gpml-taxonomy-extra — wp:organism annotations per DataNode\n#   graph/ncbitaxon           — taxon labels\n# Editable placeholder: change \"/PC159_\" to any other internal pathway ID fragment.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT DISTINCT ?taxonID ?species ?title\nWHERE {\n  # Find the pathway by internal sequential ID fragment\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?pw dc:title ?title .\n    FILTER(CONTAINS(STR(?pw), '/PC159_'))  # change pathway ID fragment here\n    ?dataNode dcterms:isPartOf ?pw .\n  }\n  # Get species annotation on DataNodes in this pathway\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?dataNode wp:organism ?taxonID .\n    FILTER(?taxonID != ncbi:33090)  # exclude pathway-level Viridiplantae\n  }\n  # Resolve taxon label\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n    ?taxonID rdfs:label ?species .\n  }\n}\nORDER BY ?species",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "2.PlantMetWiki/Show_Species_and_TaxonID_Per_PW.ttl",
+   "aliases": [
+    "2.PlantMetWiki/Show_Species_and_TaxonID_Per_PW.rq"
+   ]
+  },
+  {
+   "id": "PMWQ023",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ023",
+   "label": "Pathways with the most genes",
+   "description": "List the top N pathways ranked by the number of gene/protein DataNodes they contain. Includes stable PlantCyc PWY/RXN accession from graph/gpml-properties-extra.",
+   "version": "1.0.0",
+   "created": "2026-07-02",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+   ],
+   "keywords": [
+    "plantmetwiki"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/2.PlantMetWiki/TopPathways_by_GeneCount.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Named graphs used:\n#   graph/pathways              — pathway, wp:GeneProduct, wp:Protein triples\n#   graph/gpml-properties-extra — dcterms:identifier = stable PWY/RXN accession\n#\n# Editable placeholder: adjust LIMIT to change how many top pathways are returned.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT ?pw ?internalID ?stablePWY_ID ?title (COUNT(DISTINCT ?entity) AS ?nGeneProducts)\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?pw a wp:Pathway ;\n        dc:identifier ?internalID ;\n        dc:title ?title .\n\n    ?entity dcterms:isPartOf ?pw .\n    { ?entity a wp:GeneProduct } UNION { ?entity a wp:Protein }\n  }\n  OPTIONAL {\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {\n      ?pw dcterms:identifier ?stablePWY_ID .\n      FILTER(STRSTARTS(?stablePWY_ID, \"PWY\") || STRSTARTS(?stablePWY_ID, \"RXN\"))\n    }\n  }\n}\nGROUP BY ?pw ?internalID ?stablePWY_ID ?title\nORDER BY DESC(?nGeneProducts)\nLIMIT 20",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "2.PlantMetWiki/TopPathways_by_GeneCount.ttl",
+   "aliases": [
+    "2.PlantMetWiki/TopPathways_by_GeneCount.rq"
+   ]
+  },
+  {
+   "id": "PMWQ024",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ024",
+   "label": "Genes of all biosynthetic gene clusters",
+   "description": "List all biosynthetic gene cluster (BGC) → gene links from both MIBiG and plantiSMASH.",
+   "version": "1.0.0",
+   "created": "2025-12-18",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+   ],
+   "keywords": [
+    "biosynthetic gene cluster",
+    "MIBiG",
+    "plantiSMASH"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/93df31e091003c59df6883fb7d974387c1b45008/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/All_BGC_Gene_Links.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# BGC data lives in two separate named graphs:\n#   graph/bgc-mibig       — MIBiG 4.0 curated clusters\n#   graph/bgc-plantismash — plantiSMASH v2 predicted clusters\n#\n# ro:0000051 = RO \"has_part\" — links cluster to its member genes.\n\nPREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:      <http://purl.obolibrary.org/obo/RO_>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\n\nSELECT ?bgc ?gene ?source ?species\nWHERE {\n  GRAPH ?g {\n    ?bgc a pmw:BiosyntheticGeneCluster ;\n         ro:0000051 ?gene ;\n         dcterms:source ?source .\n    OPTIONAL { ?bgc wp:organismName ?species . }\n  }\n  FILTER(?g IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n}\nORDER BY ?source ?bgc ?gene\nLIMIT 1000",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/All_BGC_Gene_Links.ttl",
+   "aliases": [
+    "3.Biosynthetic gene cluster (BGC) Crosslinks/All_BGC_Gene_Links.rq"
+   ]
+  },
+  {
+   "id": "PMWQ025",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ025",
+   "label": "Genes shared by gene clusters and pathways",
+   "description": "List all (BGC, gene, pathway) crosslinks across both BGC sources and the pathway graph.",
+   "version": "1.0.0",
+   "created": "2026-07-02",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+   ],
+   "keywords": [
+    "biosynthetic gene cluster",
+    "MIBiG",
+    "plantiSMASH"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/BGC_Pathway_Gene_Crosslinks.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Join is via shared identifiers.org IRIs: genes typed as wp:GeneProduct in graph/pathways\n# are also listed as ro:0000051 members of BGC clusters in the BGC graphs.\n#\n# Named graphs used:\n#   graph/bgc-mibig       — MIBiG 4.0 curated clusters\n#   graph/bgc-plantismash — plantiSMASH v2 predicted clusters\n#   graph/pathways        — wp:GeneProduct DataNodes linked to pathways via dcterms:isPartOf\n#   graph/gpml-properties-extra — dcterms:identifier = stable PWY/RXN accession\n\nPREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:      <http://purl.obolibrary.org/obo/RO_>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\n\nSELECT DISTINCT ?bgc ?bgcSource ?gene ?internalPwID ?stablePWY_ID ?pwTitle\nWHERE {\n  # Get BGC → gene links from either BGC graph\n  GRAPH ?bgcGraph {\n    ?bgc a pmw:BiosyntheticGeneCluster ;\n         dcterms:source ?bgcSource ;\n         ro:0000051 ?gene .\n  }\n  FILTER(?bgcGraph IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n\n  # Same gene IRI must be a GeneProduct DataNode in a pathway\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?gene a wp:GeneProduct ;\n          dcterms:isPartOf ?pw .\n    ?pw dc:identifier ?internalPwID ;\n        dc:title ?pwTitle .\n  }\n\n  # Enrich with stable PlantCyc accession\n  OPTIONAL {\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {\n      ?pw dcterms:identifier ?stablePWY_ID .\n      FILTER(STRSTARTS(?stablePWY_ID, \"PWY\") || STRSTARTS(?stablePWY_ID, \"RXN\"))\n    }\n  }\n}\nORDER BY ?bgcSource ?bgc ?gene",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/BGC_Pathway_Gene_Crosslinks.ttl",
+   "aliases": [
+    "3.Biosynthetic gene cluster (BGC) Crosslinks/BGC_Pathway_Gene_Crosslinks.rq"
+   ]
+  },
+  {
+   "id": "PMWQ026",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ026",
+   "label": "Gene clusters without a pathway",
+   "description": "Find BGCs that have NO shared gene with any PlantCyc pathway in graph/pathways. Uses FILTER NOT EXISTS to identify disconnected clusters. Useful for identifying BGCs whose enzymes are not yet represented in PlantCyc.",
+   "version": "1.0.0",
+   "created": "2026-07-02",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+   ],
+   "keywords": [
+    "biosynthetic gene cluster",
+    "MIBiG",
+    "plantiSMASH"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/BGCs_Without_Pathway_Connection.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Named graphs used:\n#   graph/bgc-mibig       — MIBiG 4.0 curated clusters\n#   graph/bgc-plantismash — plantiSMASH v2 predicted clusters\n#   graph/pathways        — wp:GeneProduct DataNodes linked to pathways\n\nPREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:      <http://purl.obolibrary.org/obo/RO_>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT DISTINCT ?bgc ?bgcSource (COUNT(DISTINCT ?gene) AS ?nGenes)\nWHERE {\n  # Get BGC and its member genes\n  GRAPH ?bgcGraph {\n    ?bgc a pmw:BiosyntheticGeneCluster ;\n         dcterms:source ?bgcSource ;\n         ro:0000051 ?gene .\n  }\n  FILTER(?bgcGraph IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n\n  # Exclude BGCs where at least one gene is in graph/pathways as a GeneProduct\n  FILTER NOT EXISTS {\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n      ?gene a wp:GeneProduct .\n    }\n  }\n}\nGROUP BY ?bgc ?bgcSource\nORDER BY ?bgcSource ?bgc",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/BGCs_Without_Pathway_Connection.ttl",
+   "aliases": [
+    "3.Biosynthetic gene cluster (BGC) Crosslinks/BGCs_Without_Pathway_Connection.rq"
+   ]
+  },
+  {
+   "id": "PMWQ027",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ027",
+   "label": "Gene cluster data per source",
+   "description": "Verify that BGC data is loaded in Virtuoso. Returns cluster count, gene-link count, and species count per source.",
+   "version": "1.0.0",
+   "created": "2026-06-01",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+   ],
+   "keywords": [
+    "biosynthetic gene cluster",
+    "MIBiG",
+    "plantiSMASH"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/Check_BGCs_Loaded.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Expected: MIBiG ≈ 43 clusters (9 A. thaliana + 34 untyped) · plantiSMASH ≈ 65 A. thaliana clusters.\n\nPREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:      <http://purl.obolibrary.org/obo/RO_>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\n\nSELECT ?source\n       (COUNT(DISTINCT ?bgc)     AS ?nClusters)\n       (COUNT(DISTINCT ?gene)    AS ?nGeneLinks)\n       (COUNT(DISTINCT ?species) AS ?nSpecies)\nWHERE {\n  GRAPH ?g {\n    ?bgc a pmw:BiosyntheticGeneCluster ;\n         dcterms:source ?source ;\n         ro:0000051 ?gene .\n    OPTIONAL { ?bgc wp:organismName ?species . }\n  }\n  FILTER(?g IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n}\nGROUP BY ?source\nORDER BY ?source",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/Check_BGCs_Loaded.ttl",
+   "aliases": [
+    "3.Biosynthetic gene cluster (BGC) Crosslinks/Check_BGCs_Loaded.rq"
+   ]
+  },
+  {
+   "id": "PMWQ028",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ028",
+   "label": "Pathways of a gene cluster",
+   "description": "Connect a specific BGC cluster to metabolic pathways via shared genes. BGC membership (ro:0000051) and pathway participant data live in separate graphs; the join is done across three named graphs.",
+   "version": "1.0.0",
+   "created": "2025-12-19",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+   ],
+   "keywords": [
+    "biosynthetic gene cluster",
+    "MIBiG",
+    "plantiSMASH"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/Connect_BGC_to_Pathway.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Replace BGC0000670 with any MIBiG accession of interest.\n\nPREFIX pmw:       <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:        <http://purl.obolibrary.org/obo/RO_>\nPREFIX wp:        <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:        <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms:   <http://purl.org/dc/terms/>\nPREFIX bioregistry: <https://bioregistry.io/mibig:>\n\nSELECT DISTINCT ?pwID ?title ?gene ?source\nWHERE {\n  # 1. Gene is a member of the BGC (in bgc-mibig or bgc-plantismash graph)\n  GRAPH ?bgc_graph {\n    bioregistry:BGC0000670 ro:0000051 ?gene ;\n                            dcterms:source ?source .\n  }\n  FILTER(?bgc_graph IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n\n  # 2. Same gene is part of a pathway (in pathways graph)\n  # wp:GeneProduct DataNodes link directly to pathways via dcterms:isPartOf\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?gene a wp:GeneProduct ;\n          dcterms:isPartOf ?pw .\n    ?pw dc:title ?title ;\n        dc:identifier ?pwID .\n  }\n}\nORDER BY ?title",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/Connect_BGC_to_Pathway.ttl",
+   "aliases": [
+    "3.Biosynthetic gene cluster (BGC) Crosslinks/Connect_BGC_to_Pathway.rq"
+   ]
+  },
+  {
+   "id": "PMWQ029",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ029",
+   "label": "Source of each gene cluster",
+   "description": "Show BGC provenance: which clusters come from MIBiG and which from plantiSMASH, with their gene counts and species annotations.",
+   "version": "1.0.0",
+   "created": "2025-12-19",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+   ],
+   "keywords": [
+    "biosynthetic gene cluster",
+    "MIBiG",
+    "plantiSMASH"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/93df31e091003c59df6883fb7d974387c1b45008/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/Provenance_BGCs_and_Genes.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "PREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:      <http://purl.obolibrary.org/obo/RO_>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX foaf:    <http://xmlns.com/foaf/0.1/>\n\nSELECT ?source ?species ?bgc ?bgc_page (COUNT(?gene) AS ?nGenes)\nWHERE {\n  GRAPH ?g {\n    ?bgc a pmw:BiosyntheticGeneCluster ;\n         dcterms:source ?source ;\n         ro:0000051 ?gene .\n    OPTIONAL { ?bgc wp:organismName ?species . }\n    OPTIONAL { ?bgc foaf:page ?bgc_page . }\n  }\n  FILTER(?g IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n}\nGROUP BY ?source ?species ?bgc ?bgc_page\nORDER BY ?source ?species ?bgc",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/Provenance_BGCs_and_Genes.ttl",
+   "aliases": [
+    "3.Biosynthetic gene cluster (BGC) Crosslinks/Provenance_BGCs_and_Genes.rq"
+   ]
+  },
+  {
+   "id": "PMWQ030",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ030",
+   "label": "Pathways with the most gene cluster genes",
+   "description": "List pathways ranked by the number of BGC-linked genes they contain. For each pathway, reports: stable PWY ID, title, number of connected distinct BGCs, and number of shared genes. Mirrors the analysis in notebook 07, section 6.",
+   "version": "1.0.0",
+   "created": "2026-07-02",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+   ],
+   "keywords": [
+    "biosynthetic gene cluster",
+    "MIBiG",
+    "plantiSMASH"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/Top_Pathways_by_BGC_Genes.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Named graphs used:\n#   graph/bgc-mibig         — MIBiG 4.0 curated clusters\n#   graph/bgc-plantismash   — plantiSMASH v2 predicted clusters\n#   graph/pathways          — wp:GeneProduct DataNodes linked to pathways\n#   graph/gpml-properties-extra — dcterms:identifier = stable PWY/RXN accession\n\nPREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:      <http://purl.obolibrary.org/obo/RO_>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT ?pw ?stablePWY_ID ?pwTitle\n  (COUNT(DISTINCT ?bgc)  AS ?nBGCs)\n  (COUNT(DISTINCT ?gene) AS ?nSharedGenes)\nWHERE {\n  # Get BGC → gene links from either BGC graph\n  GRAPH ?bgcGraph {\n    ?bgc a pmw:BiosyntheticGeneCluster ;\n         ro:0000051 ?gene .\n  }\n  FILTER(?bgcGraph IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n\n  # Same gene must be a GeneProduct DataNode in a pathway\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?gene a wp:GeneProduct ;\n          dcterms:isPartOf ?pw .\n    ?pw dc:title ?pwTitle .\n  }\n\n  # Enrich with stable PlantCyc accession\n  OPTIONAL {\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {\n      ?pw dcterms:identifier ?stablePWY_ID .\n      FILTER(STRSTARTS(?stablePWY_ID, \"PWY\") || STRSTARTS(?stablePWY_ID, \"RXN\"))\n    }\n  }\n}\nGROUP BY ?pw ?stablePWY_ID ?pwTitle\nORDER BY DESC(COUNT(DISTINCT ?gene))",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/Top_Pathways_by_BGC_Genes.ttl",
+   "aliases": [
+    "3.Biosynthetic gene cluster (BGC) Crosslinks/Top_Pathways_by_BGC_Genes.rq"
+   ]
+  },
+  {
+   "id": "PMWQ031",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ031",
+   "label": "Title and DOI of the references of pathways with few references",
+   "description": "Pathways with at most two references, with the title and DOI of each reference from Wikidata (through QLever). Returns 10 pathways at a time (LIMIT and OFFSET).",
+   "version": "1.0.0",
+   "created": "2025-12-23",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+   ],
+   "keywords": [
+    "federated"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [
+    "https://qlever.cs.uni-freiburg.de/api/wikidata"
+   ],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/8fe05ebacf878e606c16252705984acd452019e9/4.Federated/Extend_PWs_with_little_Refs_with_Title_and_DOI.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "PREFIX biopax:  <http://www.biopax.org/release/biopax-level3.owl#>\nPREFIX cito:    <http://purl.org/spar/cito/>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX foaf:    <http://xmlns.com/foaf/0.1/>\nPREFIX freq:    <http://purl.org/cld/freq/>\nPREFIX gpml:    <http://vocabularies.wikipathways.org/gpml#>\nPREFIX owl:     <http://www.w3.org/2002/07/owl#>\nPREFIX pav:     <http://purl.org/pav/>\nPREFIX prov:    <http://www.w3.org/ns/prov#>\nPREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX void:    <http://rdfs.org/ns/void#>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX wprdf:   <http://rdf.wikipathways.org/>\nPREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>\nPREFIX pmw:\t\t<http://rdf-plantmetwiki.bioinformatics.nl/pathways/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\nPREFIX ro:\t\t<http://purl.obolibrary.org/obo/RO_> \nPREFIX bioregistry: <https://bioregistry.io/mibig:> \n\n#Federated prefixes:\nPREFIX wd: <http://www.wikidata.org/entity/>\nPREFIX wdt: <http://www.wikidata.org/prop/direct/>\nPREFIX p: <http://www.wikidata.org/prop/>\nPREFIX pq: <http://www.wikidata.org/prop/qualifier/>\nPREFIX wdtn: <http://www.wikidata.org/prop/direct-normalized/> \n\nSELECT DISTINCT ?pwID ?title ?nPublications ?paperTitle ?pubmedWD ?DOI ?wd\nWHERE {  \n  {\n  \n  SELECT ?pwID ?title ?pubmedWD (COUNT(DISTINCT ?pubmed) AS ?nPublications)\n    WHERE {\n  \t\t?pw a wp:Pathway ;                #Define pathways\n      \t\tdc:title ?title ;             #Define pathway titles\n      \t\tdc:identifier ?pwID ;         #Define pathway IDs\n      \t\t(dcterms:references|cito:cites) ?pubmed .  #Collect total references for pathways\n      \n        ?pw (dcterms:references|cito:cites) ?pubmedWD .  #Keep PMIDs for downstream analysis\n      \n        }\n    GROUP BY ?pwID ?title ?pubmedWD                   #Results need to be aggregated to apply count\n    HAVING (COUNT(DISTINCT ?pubmed) <= 2)             #Retrieve pathways with a few publication\n    LIMIT 10                                          #To avoid timeouts\n    OFFSET 10                                         #To retrieve item 101-200, can be used in a script to collect data from all entries\n    }\n  \n      BIND(STR(?pubmedWD) AS ?pubmedStr)\n      BIND(STRAFTER(?pubmedStr, \"https://identifiers.org/pubmed/\") AS ?pmid0raw)\n      \nSERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {\n  ?wd wdt:P698 ?pmid0raw .                           #Connect PMID from pathways to Wikidata entries\n      OPTIONAL{ ?wd wdtn:P356 ?DOI ;                 #If there is a DOI, extract\n      wdt:P1476 ?paperTitle . }                      #If there is a title, extract\n}\n}\nORDER BY DESC (?nPublications) ?title",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "4.Federated/Extend_PWs_with_little_Refs_with_Title_and_DOI.ttl",
+   "aliases": [
+    "4.Federated/Extend_PWs_with_little_Refs_with_Title_and_DOI.rq"
+   ]
+  },
+  {
+   "id": "PMWQ032",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ032",
+   "label": "IDSM chemical similarity search",
+   "description": "Finds structurally similar ChEBI compounds for source and target metabolites in a pathway's directed interactions via the IDSM/ChEBI structure search service (idsm.elixir-czech.cz). May be slower due to external endpoint dependency.",
+   "version": "1.0.0",
+   "created": "2026-10-13",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+   ],
+   "keywords": [
+    "federated"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [
+    "https://idsm.elixir-czech.cz/sparql/endpoint/chebi"
+   ],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/37fec12c6a73fe97c02611a252cebc3f6d200c55/4.Federated/IDSM_similaritySearch.rq",
+    "https://sparql.wikipathways.org/.well-known/sparql-examples/WPQ055"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX ebi: <http://ebi.rdf.ac.uk/dataset/>\nPREFIX sachem: <http://bioinfo.uochb.cas.cz/rdf/v1.0/sachem#>\nPREFIX idsm: <https://idsm.elixir-czech.cz/sparql/endpoint/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX wp: <http://vocabularies.wikipathways.org/wp#>\nPREFIX sso: <http://semanticscience.org/resource/>\nPREFIX rh:<http://rdf.rhea-db.org/>\nPREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>\nSELECT distinct ((substr(str(?chebioSrc),32)) as ?SourceOrigin) ((substr(str(?similarSrc),32)) as ?SourceSimilar) ((substr(str(?chebioTgt),32)) as ?TargetOrigin) ((substr(str(?similarTgt),32)) as ?TargetSimilar)  #?reaction\nWHERE {\n  ?interaction dcterms:isPartOf ?pathway ; a wp:Conversion ;\n      wp:source ?source ;\n      wp:target ?target .\n    ?source wp:bdbChEBI ?chebiSrc .\n    ?target wp:bdbChEBI ?chebiTgt .\n    VALUES ?pathwayId { \"PC302\" }\n    ?pathway dcterms:identifier ?pathwayId.\n    BIND(iri(concat(\"http://purl.obolibrary.org/obo/CHEBI_\", substr(str(?chebiSrc),37))) AS ?chebioSrc)\n    BIND(iri(concat(\"http://purl.obolibrary.org/obo/CHEBI_\", substr(str(?chebiTgt),37))) AS ?chebioTgt)\n#IDSM\nSERVICE <https://idsm.elixir-czech.cz/sparql/endpoint/chebi> {\n   ?chebioSrc ^sso:is-attribute-of / sso:has-value ?molfileSrc .\n ?chebioTgt ^sso:is-attribute-of / sso:has-value ?molfileTgt .\n  [ sachem:compound ?similarSrc; sachem:score ?scoreSrc ]\n    sachem:similaritySearch [\n      sachem:query ?molfileSrc ;\n     sachem:cutoff 98e-2\n    ].\n  [ sachem:compound ?similarTgt; sachem:score ?scoreTgt ]\n    sachem:similaritySearch [\n      sachem:query ?molfileTgt ;\n      sachem:cutoff 98e-2\n    ] .\n  }\n }",
+   "params": [
+    {
+     "name": "pathwayId",
+     "variable": "pathwayId",
+     "label": "Pathway ID",
+     "description": null,
+     "order": 1,
+     "kind": "literal",
+     "valueTemplate": null,
+     "default": "PC302",
+     "optional": false,
+     "autocomplete": "pathway",
+     "options": null
+    }
+   ],
+   "expect": null,
+   "path": "4.Federated/IDSM_similaritySearch.ttl",
+   "aliases": [
+    "4.Federated/IDSM_similaritySearch.rq"
+   ]
+  },
+  {
+   "id": "PMWQ033",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ033",
+   "label": "Wikidata, ChEBI and PubChem for metabolites, by InChIKey",
+   "description": "Retrieve Wikidata entries, ChEBI IDs, and PubChem CIDs for metabolites in PlantMetWiki, matched via InChIKey (wdt:P235). Returns metabolites that occur in at most one pathway (rare/specialised compounds).",
+   "version": "1.1.0",
+   "created": "2025-12-19",
+   "modified": "2026-11-24",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+   ],
+   "keywords": [
+    "federated"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [
+    "https://query.wikidata.org/sparql"
+   ],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/7ea07a36e43adc4890b6081ff81c0e2b0ec1a221/4.Federated/InChIKey_to_Wikidata_for_ChEBI_and_HMDB.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Named graphs used:\n#   graph/pathways — metabolite DataNodes with InChIKey identifiers\n#\n# Federation:\n#   https://query.wikidata.org/sparql — chemical metadata via InChIKey\n#\n# Editable parameters:\n#   HAVING clause: change <= 1 to restrict/expand pathway occurrence filter\n#   LIMIT/OFFSET: paginate through results (100 items per page)\n\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX wd:      <http://www.wikidata.org/entity/>\nPREFIX wdt:     <http://www.wikidata.org/prop/direct/>\nPREFIX p:       <http://www.wikidata.org/prop/>\nPREFIX pq:      <http://www.wikidata.org/prop/qualifier/>\n\nSELECT DISTINCT ?inchikey ?nPWOcurrences ?wd ?wdLabel ?chebi ?pubchem\nWHERE {\n  {\n    SELECT ?inchikey (COUNT(DISTINCT ?pwID) AS ?nPWOcurrences)\n    WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n        ?metabolite a wp:Metabolite ;\n                    dcterms:isPartOf ?pw ;\n                    dc:source \"InChIKey\" ;\n                    dcterms:identifier ?inchikey .\n        ?pw a wp:Pathway ;\n            dc:identifier ?pwID .\n      }\n    }\n    GROUP BY ?inchikey\n    HAVING (COUNT(DISTINCT ?pwID) <= 1)   # specialised metabolites (change limit here)\n    LIMIT 100                              # page size\n    OFFSET 0                              # increment by 100 for next page\n  }\n\n  # Federated: enrich with Wikidata chemical metadata via InChIKey.\n  # SILENT: Wikidata's public endpoint is occasionally too busy to answer within\n  # the request timeout; when that happens this returns the base metabolites\n  # unenriched instead of failing the whole query.\n  SERVICE SILENT <https://query.wikidata.org/sparql> {\n    ?wd wdt:P235 ?inchikey .\n    OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = \"en\") }\n    OPTIONAL {\n      ?wd wdt:P683 ?chebi ;\n          p:P683 ?internalID .\n      ?internalID pq:P4390 wd:Q39893449 .  # ChEBI exact match only\n    }\n    OPTIONAL { ?wd wdt:P662 ?pubchem . }\n  }\n}\nORDER BY DESC(?nPWOcurrences)",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "4.Federated/InChIKey_to_Wikidata_for_ChEBI_and_HMDB.ttl",
+   "aliases": [
+    "4.Federated/InChIKey_to_Wikidata_for_ChEBI_and_HMDB.rq"
+   ]
+  },
+  {
+   "id": "PMWQ034",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ034",
+   "label": "Pathways and species of metabolites, by InChIKey",
+   "description": "Find pathways and associated plant species for specific metabolites of interest, identified by their InChIKey. Enriches results with Wikidata entry and label.",
+   "version": "1.0.0",
+   "created": "2025-12-23",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+   ],
+   "keywords": [
+    "federated"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [
+    "https://query.wikidata.org/sparql"
+   ],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/7ea07a36e43adc4890b6081ff81c0e2b0ec1a221/4.Federated/Metabolites_by_InChIKey_with_Involved_Species.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Species are annotated at the DataNode level (not the pathway level).\n# Strategy: find gene/protein DataNodes co-occurring in the same pathway as the\n# metabolite, then look up their species annotation via graph/gpml-taxonomy-extra\n# and resolve the taxon label from graph/ncbitaxon.\n#\n# Named graphs used:\n#   graph/pathways            — metabolite and DataNode triples\n#   graph/gpml-taxonomy-extra — wp:organism per entity\n#   graph/ncbitaxon           — taxon labels\n#\n# Federation:\n#   https://query.wikidata.org/sparql — Wikidata entry and label via InChIKey (wdt:P235)\n#\n# Editable: replace the InChIKey values in the FILTER to query different metabolites.\n# Note: returns one row per (pathway, species) combination to avoid GROUP_CONCAT\n# string-length errors in Virtuoso.\n\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\nPREFIX wdt:     <http://www.wikidata.org/prop/direct/>\n\nSELECT DISTINCT ?title ?species ?inchikey ?wd ?wdLabel\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    # Find the target metabolite(s) by InChIKey\n    ?metabolite a wp:Metabolite ;\n                dcterms:isPartOf ?pw ;\n                dc:source \"InChIKey\" ;\n                dcterms:identifier ?inchikey .\n\n    FILTER(?inchikey IN (\n      \"BGWGXPAPYGQALX-ARQDHWQXSA-L\",\n      \"CZMRCDWAGMRECN-UGDNZRGBSA-N\",\n      \"ASKKPQKSCFYPPP-FVLDFCIYSA-J\"))  # edit: list InChIKeys of interest\n\n    ?pw dc:title ?title .\n\n    # Find gene/protein DataNodes co-occurring in the same pathway\n    # (metabolites are rarely species-specific; species context comes from enzymes)\n    OPTIONAL {\n      ?speciesNode dcterms:isPartOf ?pw .\n      { ?speciesNode a wp:GeneProduct } UNION { ?speciesNode a wp:Protein }\n    }\n  }\n\n  # Resolve species annotation for the co-occurring DataNode\n  OPTIONAL {\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n      ?speciesNode wp:organism ?taxon .\n      FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae\n    }\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n      ?taxon rdfs:label ?species .\n    }\n  }\n\n  # Federated: enrich with Wikidata entry via InChIKey\n  SERVICE <https://query.wikidata.org/sparql> {\n    ?wd wdt:P235 ?inchikey .\n    OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = \"en\") }\n  }\n}\nORDER BY ?inchikey ?title ?species",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "4.Federated/Metabolites_by_InChIKey_with_Involved_Species.ttl",
+   "aliases": [
+    "4.Federated/Metabolites_by_InChIKey_with_Involved_Species.rq"
+   ]
+  },
+  {
+   "id": "PMWQ035",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ035",
+   "label": "Pathways and species of metabolites, by name",
+   "description": "Find metabolites by name, list the pathways they appear in, and which plant species are annotated in those pathways (via DataNode-level taxonomy, not pathway-level wp:organismName). Also enriches each metabolite with Wikidata active ingredient info (federated query).",
+   "version": "1.1.0",
+   "created": "2025-12-23",
+   "modified": "2026-11-24",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+   ],
+   "keywords": [
+    "federated"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [
+    "https://qlever.cs.uni-freiburg.de/api/wikidata"
+   ],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/4.Federated/Metabolites_by_Name_with_Involved_Species.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Named graphs used:\n#   graph/pathways            — metabolite and pathway triples\n#   graph/gpml-taxonomy-extra — wp:organism annotations per DataNode\n#   graph/ncbitaxon           — taxon labels\n# Federated endpoint: https://qlever.cs.uni-freiburg.de/api/wikidata\n#\n# Editable placeholder: update the FILTER values with metabolite names of interest.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\nPREFIX wd:      <http://www.wikidata.org/entity/>\nPREFIX wdt:     <http://www.wikidata.org/prop/direct/>\n\nSELECT ?pwID (GROUP_CONCAT(DISTINCT ?species; separator=\", \") AS ?Species) ?name ?wd ?ingredientLabel\nWHERE {\n  # Find metabolites by name in the pathways graph\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?metabolite a wp:Metabolite ;\n                rdfs:label ?name ;\n                dcterms:isPartOf ?pw ;\n                dc:source \"InChIKey\" ;\n                dcterms:identifier ?inchikey .\n\n    ?pw a wp:Pathway ;\n        dc:identifier ?pwID .\n\n    # Editable: metabolite names of interest\n    FILTER(?name IN (\"caffeine\", \"theobromine\", \"xanthine\", \"7-methylxanthine\"))\n  }\n\n  # Get species from DataNodes co-occurring in the same pathway\n  OPTIONAL {\n    ?speciesNode dcterms:isPartOf ?pw .\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n      ?speciesNode wp:organism ?taxon .\n      FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae\n    }\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n      ?taxon rdfs:label ?species .\n    }\n  }\n\n  # Federated: enrich with Wikidata active ingredient info via InChIKey.\n  # SILENT: QLever's public Wikidata endpoint occasionally rate-limits or times\n  # out; when that happens this returns the base metabolites unenriched instead\n  # of failing the whole query.\n  SERVICE SILENT <https://qlever.cs.uni-freiburg.de/api/wikidata> {\n    ?wd wdt:P235 ?inchikey .\n    OPTIONAL {\n      ?wd wdt:P3780 ?ingredient .\n      ?ingredient rdfs:label ?ingredientLabel .\n      FILTER(LANG(?ingredientLabel) = \"en\")\n    }\n  }\n}\nGROUP BY ?pwID ?name ?wd ?ingredientLabel\nORDER BY ?name",
+   "params": [],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "4.Federated/Metabolites_by_Name_with_Involved_Species.ttl",
+   "aliases": [
+    "4.Federated/Metabolites_by_Name_with_Involved_Species.rq"
+   ]
+  },
+  {
+   "id": "PMWQ036",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ036",
+   "label": "SMILES from Wikidata for metabolites of a species",
+   "description": "Retrieve metabolites (with InChIKey and SMILES) from pathways that have a specific species annotated at the DataNode level, enriched via Wikidata federated query. Species filtering uses graph/gpml-taxonomy-extra + graph/ncbitaxon (NOT wp:organismName, which only returns \"Viridiplantae\" at pathway level).",
+   "version": "1.1.0",
+   "created": "2025-12-23",
+   "modified": "2026-11-24",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0001-8449-1318",
+     "name": "Denise Slenter"
+    }
+   ],
+   "contributors": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+   ],
+   "keywords": [
+    "federated"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [
+    "https://qlever.cs.uni-freiburg.de/api/wikidata"
+   ],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/4.Federated/SMILES_from_Wikidata.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "# Named graphs used:\n#   graph/pathways            — metabolite and pathway triples\n#   graph/gpml-taxonomy-extra — wp:organism annotations per DataNode\n#   graph/ncbitaxon           — taxon labels\n# Federated endpoint: https://qlever.cs.uni-freiburg.de/api/wikidata\n#\n# Editable placeholder: change the FILTER on ?speciesLabel to another species name.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\nPREFIX wd:      <http://www.wikidata.org/entity/>\nPREFIX wdt:     <http://www.wikidata.org/prop/direct/>\n\nSELECT DISTINCT ?pwID ?title ?metabolite ?smilesDepict ?inchikey ?wd ?wdLabel\nWHERE {\n  {\n    SELECT DISTINCT ?pwID ?title ?metabolite ?inchikey\n    WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n        ?metabolite a wp:Metabolite ;\n                    dcterms:isPartOf ?pw ;\n                    dc:source \"InChIKey\" ;\n                    dcterms:identifier ?inchikey .\n\n        ?pw a wp:Pathway ;\n            dc:identifier ?pwID ;\n            dc:title ?titleLit .\n        BIND(STR(?titleLit) AS ?title)\n      }\n\n      # Find pathways that contain at least one DataNode annotated to the species of interest\n      ?annotatedNode dcterms:isPartOf ?pw .\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n        ?annotatedNode wp:organism ?taxon .\n        FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae\n      }\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n        ?taxon rdfs:label ?speciesLabel .\n        FILTER(?speciesLabel = \"Solanum tuberosum\")  # Editable: change species name here\n      }\n    }\n    LIMIT 10\n  }\n\n  # SILENT: QLever's public Wikidata endpoint frequently rate-limits (429 Too\n  # Many Requests) this query; when that happens this returns the base\n  # metabolites unenriched instead of failing the whole query.\n  SERVICE SILENT <https://qlever.cs.uni-freiburg.de/api/wikidata> {\n    ?wd wdt:P235 ?inchikey .\n    OPTIONAL { ?wd wdt:P233 ?smilesDepict }\n    OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = \"en\") }\n  }\n}\nORDER BY ?title ?metabolite",
+   "params": [],
+   "expect": null,
+   "path": "4.Federated/SMILES_from_Wikidata.ttl",
+   "aliases": [
+    "4.Federated/SMILES_from_Wikidata.rq"
+   ]
+  },
+  {
+   "id": "PMWQ037",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ037",
+   "label": "Rhea Reaction Enrichment",
+   "description": "For a pathway's reactions that carry a Rhea cross-reference, federates to the Rhea SPARQL endpoint (sparql.rhea-db.org) to retrieve the full reaction equation and every participating ChEBI compound. Returns one row per (reaction, Rhea participant) to avoid GROUP_CONCAT overflow.",
+   "version": "1.0.0",
+   "created": "2026-11-22",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+   ],
+   "keywords": [
+    "federated"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [
+    "https://sparql.rhea-db.org/sparql"
+   ],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/874874b311aa093a6c7e68cdb7354d90d813ba49/4.Federated/Rhea_Reaction_Enrichment.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX gpml:    <http://vocabularies.wikipathways.org/gpml#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX rh:      <http://rdf.rhea-db.org/>\n\nSELECT DISTINCT ?title ?rheaAccession ?equation ?chebiName ?chebi\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    VALUES ?pathwayId { \"PC302\" }\n    ?pw a wp:Pathway ; dcterms:identifier ?pathwayId ; dc:title ?title .\n    ?conv a wp:Conversion ; dcterms:isPartOf ?pw ; wp:isAbout ?interaction .\n    ?interaction gpml:xrefDataSource \"Rhea\" ; gpml:xrefId ?rheaId .\n  }\n  BIND(IRI(CONCAT(\"http://rdf.rhea-db.org/\", ?rheaId)) AS ?reaction)\n\n  SERVICE <https://sparql.rhea-db.org/sparql> {\n    ?reaction rh:accession ?rheaAccession ;\n              rh:equation ?equation ;\n              rh:side ?side .\n    ?side rh:contains ?participant .\n    ?participant rh:compound ?compound .\n    ?compound rh:name ?chebiName ;\n              rh:chebi ?chebi .\n  }\n}\nORDER BY ?rheaAccession ?chebiName",
+   "params": [
+    {
+     "name": "pathwayId",
+     "variable": "pathwayId",
+     "label": "Pathway ID",
+     "description": null,
+     "order": 1,
+     "kind": "literal",
+     "valueTemplate": null,
+     "default": "PC302",
+     "optional": false,
+     "autocomplete": "pathway",
+     "options": null
+    }
+   ],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "4.Federated/Rhea_Reaction_Enrichment.ttl",
+   "aliases": [
+    "4.Federated/Rhea_Reaction_Enrichment.rq"
+   ]
+  },
+  {
+   "id": "PMWQ038",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ038",
+   "label": "UniProt GO Enrichment",
+   "description": "For a pathway's enzymes that carry a UniProt accession, federates to UniProt's own SPARQL endpoint (sparql.uniprot.org) to retrieve every Gene Ontology (GO) term the enzyme is annotated with — molecular function, biological process and cellular component alike. PlantMetWiki itself carries no GO annotations at all; this is the live bridge to them.",
+   "version": "1.0.0",
+   "created": "2026-11-22",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+   ],
+   "keywords": [
+    "federated"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [
+    "https://sparql.uniprot.org/sparql"
+   ],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/d2e7514286f11cb23d52bf41a2ccaf0d6898d01e/4.Federated/UniProt_GO_Enrichment.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX up:      <http://purl.uniprot.org/core/>\n\nSELECT DISTINCT ?title ?protein ?go ?goLabel\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    VALUES ?pathwayId { \"PC302\" }\n    ?pw a wp:Pathway ; dcterms:identifier ?pathwayId ; dc:title ?title .\n    ?cat a wp:Catalysis ; wp:source ?protein ; wp:target ?conv .\n    ?conv a wp:Conversion ; dcterms:isPartOf ?pw .\n    FILTER(STRSTARTS(STR(?protein), \"https://identifiers.org/uniprot/\"))\n  }\n  BIND(IRI(CONCAT(\"http://purl.uniprot.org/uniprot/\", STRAFTER(STR(?protein), \"/uniprot/\"))) AS ?uniprotIri)\n\n  SERVICE <https://sparql.uniprot.org/sparql> {\n    ?uniprotIri up:classifiedWith ?go .\n    FILTER(STRSTARTS(STR(?go), \"http://purl.obolibrary.org/obo/GO_\"))\n    OPTIONAL { ?go rdfs:label ?goLabel }\n  }\n}\nORDER BY ?protein ?goLabel",
+   "params": [
+    {
+     "name": "pathwayId",
+     "variable": "pathwayId",
+     "label": "Pathway ID",
+     "description": null,
+     "order": 1,
+     "kind": "literal",
+     "valueTemplate": null,
+     "default": "PC302",
+     "optional": false,
+     "autocomplete": "pathway",
+     "options": null
+    }
+   ],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "4.Federated/UniProt_GO_Enrichment.ttl",
+   "aliases": [
+    "4.Federated/UniProt_GO_Enrichment.rq"
+   ]
+  },
+  {
+   "id": "PMWQ039",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ039",
+   "label": "ENZYME Nomenclature Enrichment",
+   "description": "For a pathway's reactions that carry an \"Enzyme Nomenclature\" (EC number) cross-reference, federates to UniProt's own SPARQL endpoint (sparql.uniprot.org) — which also serves the Expasy ENZYME database in RDF — to retrieve the enzyme's official name, synonyms and curator comments (catalytic notes, substrate range, species specificity).",
+   "version": "1.0.0",
+   "created": "2026-11-22",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+   ],
+   "keywords": [
+    "federated"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [
+    "https://sparql.uniprot.org/sparql"
+   ],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/6041d54d281843897808cba86a2ffe608d153f23/4.Federated/ENZYME_Nomenclature_Enrichment.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX gpml:    <http://vocabularies.wikipathways.org/gpml#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\n\nSELECT DISTINCT ?title ?ecNumber ?prefLabel ?comment\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    VALUES ?pathwayId { \"PC302\" }\n    ?pw a wp:Pathway ; dcterms:identifier ?pathwayId ; dc:title ?title .\n    ?conv a wp:Conversion ; dcterms:isPartOf ?pw ; wp:isAbout ?interaction .\n    ?interaction gpml:xrefDataSource \"Enzyme Nomenclature\" ; gpml:xrefId ?xrefId .\n    BIND(STRAFTER(?xrefId, \"EC-\") AS ?ecNumber)\n  }\n  BIND(IRI(CONCAT(\"http://purl.uniprot.org/enzyme/\", ?ecNumber)) AS ?enzymeIri)\n\n  SERVICE <https://sparql.uniprot.org/sparql> {\n    ?enzymeIri skos:prefLabel ?prefLabel .\n    OPTIONAL { ?enzymeIri rdfs:comment ?comment }\n  }\n}\nORDER BY ?ecNumber",
+   "params": [
+    {
+     "name": "pathwayId",
+     "variable": "pathwayId",
+     "label": "Pathway ID",
+     "description": null,
+     "order": 1,
+     "kind": "literal",
+     "valueTemplate": null,
+     "default": "PC302",
+     "optional": false,
+     "autocomplete": "pathway",
+     "options": null
+    }
+   ],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "4.Federated/ENZYME_Nomenclature_Enrichment.ttl",
+   "aliases": [
+    "4.Federated/ENZYME_Nomenclature_Enrichment.rq"
+   ]
+  },
+  {
+   "id": "PMWQ040",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ040",
+   "label": "SwissLipids Enrichment",
+   "description": "For a pathway's metabolites identified by InChIKey, federates to the SwissLipids SPARQL endpoint (beta.sparql.swisslipids.org) to check whether the compound is a registered lipid species, returning its SwissLipids name and equivalent ChEBI class. Matches both lipids proper (fatty acyl-CoAs, phospholipids, ...) and shared cofactors SwissLipids also curates (ATP, CoA, NAD(P)(H), water, diphosphate) because they appear in lipid-metabolism reactions too.",
+   "version": "1.0.0",
+   "created": "2026-11-22",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+   ],
+   "keywords": [
+    "federated"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [
+    "https://beta.sparql.swisslipids.org/sparql"
+   ],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/6041d54d281843897808cba86a2ffe608d153f23/4.Federated/SwissLipids_Enrichment.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\n\nSELECT DISTINCT ?title ?inchikey ?slmLipid ?slmLabel ?chebi\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    VALUES ?pathwayId { \"PC880\" }\n    ?pw a wp:Pathway ; dcterms:identifier ?pathwayId ; dc:title ?title .\n    ?m a wp:Metabolite ; dcterms:isPartOf ?pw ; dc:source \"InChIKey\" ; dcterms:identifier ?inchikey .\n  }\n  BIND(?inchikey AS ?ik)\n\n  SERVICE <https://beta.sparql.swisslipids.org/sparql> {\n    ?slmLipid <http://purl.obolibrary.org/obo/chebi/inchikey> ?ik ;\n              rdfs:label ?slmLabel .\n    OPTIONAL { ?slmLipid <http://www.w3.org/2002/07/owl#equivalentClass> ?chebi }\n  }\n}\nORDER BY ?inchikey",
+   "params": [
+    {
+     "name": "pathwayId",
+     "variable": "pathwayId",
+     "label": "Pathway ID",
+     "description": null,
+     "order": 1,
+     "kind": "literal",
+     "valueTemplate": null,
+     "default": "PC880",
+     "optional": false,
+     "autocomplete": "pathway",
+     "options": null
+    }
+   ],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "4.Federated/SwissLipids_Enrichment.ttl",
+   "aliases": [
+    "4.Federated/SwissLipids_Enrichment.rq"
+   ]
+  },
+  {
+   "id": "PMWQ041",
+   "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ041",
+   "label": "PROSITE / HAMAP Domain Signatures",
+   "description": "For a pathway's UniProt-accession enzymes, federates to UniProt's own SPARQL endpoint to list the PROSITE pattern/profile and HAMAP family signature identifiers (rdfs:seeAlso) attached to each protein. LIMITATION (checked live, both still true as of writing): neither PROSITE nor HAMAP currently exposes a reachable public SPARQL endpoint of their own (purl.expasy.org/prosite/signature/<id> resolves to an HTML page only; HAMAP's documented endpoint, hamap.expasy.org/sparql[/sparql], 404s on every URL pattern tried), so this query can only surface the bare signature id via UniProt — not the signature's name/description, which would need a second federated hop that isn't available right now.",
+   "version": "1.0.0",
+   "created": "2026-11-22",
+   "modified": "2026-11-23",
+   "creators": [
+    {
+     "iri": "https://orcid.org/0000-0002-9472-918X",
+     "name": "Elena Del Pup"
+    }
+   ],
+   "contributors": [],
+   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+   "categories": [
+    "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+   ],
+   "keywords": [
+    "federated"
+   ],
+   "level": null,
+   "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+   "federatesWith": [
+    "https://sparql.uniprot.org/sparql"
+   ],
+   "references": [],
+   "derivedFrom": [
+    "https://github.com/pathway-lod/SPARQLQueries/blob/67d61b5e8427f7511c3af8e1d99c7b1534236391/4.Federated/PROSITE_HAMAP_Domain_Signatures.rq"
+   ],
+   "testedAgainst": null,
+   "deprecated": false,
+   "replacedBy": null,
+   "queryType": "select",
+   "query": "PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\n\nSELECT DISTINCT ?title ?protein ?signature\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    VALUES ?pathwayId { \"PC302\" }\n    ?pw a wp:Pathway ; dcterms:identifier ?pathwayId ; dc:title ?title .\n    ?cat a wp:Catalysis ; wp:source ?protein ; wp:target ?conv .\n    ?conv a wp:Conversion ; dcterms:isPartOf ?pw .\n    FILTER(STRSTARTS(STR(?protein), \"https://identifiers.org/uniprot/\"))\n  }\n  BIND(IRI(CONCAT(\"http://purl.uniprot.org/uniprot/\", STRAFTER(STR(?protein), \"/uniprot/\"))) AS ?uniprotIri)\n\n  SERVICE <https://sparql.uniprot.org/sparql> {\n    ?uniprotIri rdfs:seeAlso ?signature .\n    FILTER(STRSTARTS(STR(?signature), \"https://purl.expasy.org/prosite/\") || STRSTARTS(STR(?signature), \"https://purl.expasy.org/hamap/\"))\n  }\n}\nORDER BY ?protein",
+   "params": [
+    {
+     "name": "pathwayId",
+     "variable": "pathwayId",
+     "label": "Pathway ID",
+     "description": null,
+     "order": 1,
+     "kind": "literal",
+     "valueTemplate": null,
+     "default": "PC302",
+     "optional": false,
+     "autocomplete": "pathway",
+     "options": null
+    }
+   ],
+   "expect": {
+    "minResults": 1
+   },
+   "path": "4.Federated/PROSITE_HAMAP_Domain_Signatures.ttl",
+   "aliases": [
+    "4.Federated/PROSITE_HAMAP_Domain_Signatures.rq"
+   ]
+  }
+ ]
+}

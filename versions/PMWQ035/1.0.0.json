@@ -1,0 +1,51 @@
+{
+ "id": "PMWQ035",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ035",
+ "label": "Pathways and species of metabolites, by name",
+ "description": "Find metabolites by name, list the pathways they appear in, and which plant species are annotated in those pathways (via DataNode-level taxonomy, not pathway-level wp:organismName). Also enriches each metabolite with Wikidata active ingredient info (federated query).",
+ "version": "1.0.0",
+ "created": "2025-12-23",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+ ],
+ "keywords": [
+  "federated"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [
+  "https://qlever.cs.uni-freiburg.de/api/wikidata"
+ ],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/4.Federated/Metabolites_by_Name_with_Involved_Species.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Named graphs used:\n#   graph/pathways            — metabolite and pathway triples\n#   graph/gpml-taxonomy-extra — wp:organism annotations per DataNode\n#   graph/ncbitaxon           — taxon labels\n# Federated endpoint: https://qlever.cs.uni-freiburg.de/api/wikidata\n#\n# Editable placeholder: update the FILTER values with metabolite names of interest.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\nPREFIX wd:      <http://www.wikidata.org/entity/>\nPREFIX wdt:     <http://www.wikidata.org/prop/direct/>\n\nSELECT ?pwID (GROUP_CONCAT(DISTINCT ?species; separator=\", \") AS ?Species) ?name ?wd ?ingredientLabel\nWHERE {\n  # Find metabolites by name in the pathways graph\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?metabolite a wp:Metabolite ;\n                rdfs:label ?name ;\n                dcterms:isPartOf ?pw ;\n                dc:source \"InChIKey\" ;\n                dcterms:identifier ?inchikey .\n\n    ?pw a wp:Pathway ;\n        dc:identifier ?pwID .\n\n    # Editable: metabolite names of interest\n    FILTER(?name IN (\"caffeine\", \"theobromine\", \"xanthine\", \"7-methylxanthine\"))\n  }\n\n  # Get species from DataNodes co-occurring in the same pathway\n  OPTIONAL {\n    ?speciesNode dcterms:isPartOf ?pw .\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n      ?speciesNode wp:organism ?taxon .\n      FILTER(?taxon != ncbi:33090)  # exclude pathway-level Viridiplantae\n    }\n    GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n      ?taxon rdfs:label ?species .\n    }\n  }\n\n  # Federated: enrich with Wikidata active ingredient info via InChIKey\n  SERVICE <https://qlever.cs.uni-freiburg.de/api/wikidata> {\n    ?wd wdt:P235 ?inchikey .\n    OPTIONAL {\n      ?wd wdt:P3780 ?ingredient .\n      ?ingredient rdfs:label ?ingredientLabel .\n      FILTER(LANG(?ingredientLabel) = \"en\")\n    }\n  }\n}\nGROUP BY ?pwID ?name ?wd ?ingredientLabel\nORDER BY ?name",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "4.Federated/Metabolites_by_Name_with_Involved_Species.ttl",
+ "aliases": [
+  "4.Federated/Metabolites_by_Name_with_Involved_Species.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

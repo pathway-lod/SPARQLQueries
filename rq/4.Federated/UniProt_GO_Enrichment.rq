@@ -1,0 +1,32 @@
+# title: UniProt GO Enrichment
+# category: Federated
+# description: For a pathway's enzymes that carry a UniProt accession, federates to UniProt's own SPARQL endpoint (sparql.uniprot.org) to retrieve every Gene Ontology (GO) term the enzyme is annotated with — molecular function, biological process and cellular component alike. PlantMetWiki itself carries no GO annotations at all; this is the live bridge to them.
+# param: pathwayId|autocomplete:pathway|PC302|Pathway ID
+#
+# PMWQ038 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ038
+# Generated from 4.Federated/UniProt_GO_Enrichment.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX up:      <http://purl.uniprot.org/core/>
+
+SELECT DISTINCT ?title ?protein ?go ?goLabel
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    VALUES ?pathwayId { "{{pathwayId}}" }
+    ?pw a wp:Pathway ; dcterms:identifier ?pathwayId ; dc:title ?title .
+    ?cat a wp:Catalysis ; wp:source ?protein ; wp:target ?conv .
+    ?conv a wp:Conversion ; dcterms:isPartOf ?pw .
+    FILTER(STRSTARTS(STR(?protein), "https://identifiers.org/uniprot/"))
+  }
+  BIND(IRI(CONCAT("http://purl.uniprot.org/uniprot/", STRAFTER(STR(?protein), "/uniprot/"))) AS ?uniprotIri)
+
+  SERVICE <https://sparql.uniprot.org/sparql> {
+    ?uniprotIri up:classifiedWith ?go .
+    FILTER(STRSTARTS(STR(?go), "http://purl.obolibrary.org/obo/GO_"))
+    OPTIONAL { ?go rdfs:label ?goLabel }
+  }
+}
+ORDER BY ?protein ?goLabel

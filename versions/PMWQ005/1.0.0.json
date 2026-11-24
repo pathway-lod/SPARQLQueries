@@ -1,0 +1,44 @@
+{
+ "id": "PMWQ005",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ005",
+ "label": "All entity types",
+ "description": "Lists every entity type (rdf:type) used in PlantMetWiki, to help build your own queries.",
+ "version": "1.0.0",
+ "created": "2025-12-18",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+ ],
+ "keywords": [
+  "metadata"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/c3f41b45c2457428663646b1a0f34e05c90ed58d/1.%28Meta%29Data/ListEntities.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "PREFIX biopax:  <http://www.biopax.org/release/biopax-level3.owl#>\nPREFIX cito:    <http://purl.org/spar/cito/>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX foaf:    <http://xmlns.com/foaf/0.1/>\nPREFIX freq:    <http://purl.org/cld/freq/>\nPREFIX gpml:    <http://vocabularies.wikipathways.org/gpml#>\nPREFIX owl:     <http://www.w3.org/2002/07/owl#>\nPREFIX pav:     <http://purl.org/pav/>\nPREFIX prov:    <http://www.w3.org/ns/prov#>\nPREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX void:    <http://rdfs.org/ns/void#>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX wprdf:   <http://rdf.wikipathways.org/>\nPREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>\nPREFIX pmw:\t\t<http://rdf-plantmetwiki.bioinformatics.nl/pathways/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\nPREFIX ro:\t\t<http://purl.obolibrary.org/obo/RO_>\n\nSELECT DISTINCT ?type\nWHERE { ?s a ?type . } # Find all entity types in our database to help build your queries!",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "1.(Meta)Data/ListEntities.ttl",
+ "aliases": [
+  "1.(Meta)Data/ListEntities.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

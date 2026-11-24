@@ -1,0 +1,49 @@
+{
+ "id": "PMWQ004",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ004",
+ "label": "All species with annotated data nodes",
+ "description": "List all species that have at least one annotated DataNode in PlantMetWiki. Species names are resolved via the local NCBITaxon ontology graph.",
+ "version": "1.0.0",
+ "created": "2025-12-18",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+ ],
+ "keywords": [
+  "metadata"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/8efab1d98ac2c492b8531868dbb3a1536f7ba54a/1.%28Meta%29Data/ListAllSpecies.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Note: species are annotated at the DataNode level (graph/gpml-taxonomy-extra),\n# not at the pathway level. The pathway level only carries Viridiplantae.\n\nPREFIX wp:   <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX ncbi: <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT DISTINCT ?taxonID ?species\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?node wp:organism ?taxonID .\n    FILTER(?taxonID != ncbi:33090)  # exclude pathway-level Viridiplantae\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n    ?taxonID rdfs:label ?species .\n  }\n}\nORDER BY ?species",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "1.(Meta)Data/ListAllSpecies.ttl",
+ "aliases": [
+  "1.(Meta)Data/ListAllSpecies.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

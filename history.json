@@ -1,0 +1,358 @@
+{
+ "schema": 1,
+ "examples": {
+  "PMWQ001": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "1.(Meta)Data/CountPWsPerSpecies.ttl"
+   }
+  ],
+  "PMWQ002": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "1.(Meta)Data/Entity_Counts.ttl"
+   }
+  ],
+  "PMWQ003": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "1.(Meta)Data/GraphIsLoaded.ttl"
+   }
+  ],
+  "PMWQ004": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "1.(Meta)Data/ListAllSpecies.ttl"
+   }
+  ],
+  "PMWQ005": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "1.(Meta)Data/ListEntities.ttl"
+   }
+  ],
+  "PMWQ006": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "1.(Meta)Data/ListNamedGraphs.ttl"
+   }
+  ],
+  "PMWQ007": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "1.(Meta)Data/PlantCyc_PWY_ID_Lookup.ttl"
+   }
+  ],
+  "PMWQ008": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "1.(Meta)Data/Taxa_Missing_from_NCBITaxon.ttl"
+   }
+  ],
+  "PMWQ009": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "1.(Meta)Data/VoIDHeader.ttl"
+   }
+  ],
+  "PMWQ010": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/BridgeDb_Coverage_Summary.ttl"
+   }
+  ],
+  "PMWQ011": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/BridgeDb_Metabolite_CrossReferences.ttl"
+   }
+  ],
+  "PMWQ012": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/Count_PWs_for_SpeciesName.ttl"
+   }
+  ],
+  "PMWQ013": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/CrossSpecies_ReactionCoverage.ttl"
+   }
+  ],
+  "PMWQ014": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/Genes_and_Enzymes_per_Species.ttl"
+   }
+  ],
+  "PMWQ015": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/Interaction_Types_Distribution.ttl"
+   }
+  ],
+  "PMWQ016": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/Metabolite_by_PubChem_ID.ttl"
+   }
+  ],
+  "PMWQ017": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/Metabolites_in_Pathway_for_SpeciesName.ttl"
+   }
+  ],
+  "PMWQ018": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/nReferences_per_Pathway.ttl"
+   }
+  ],
+  "PMWQ019": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/Pathway_Content_Summary.ttl"
+   },
+   {
+    "version": "1.1.0",
+    "commit": "d1bc97e6f915cab6bf6348c6a5306bc8f240e76f",
+    "date": "2026-11-24",
+    "path": "2.PlantMetWiki/Pathway_Content_Summary.ttl"
+   }
+  ],
+  "PMWQ020": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/Proteins_in_Pathway_for_TaxonID.ttl"
+   }
+  ],
+  "PMWQ021": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/Proteins_Names_andReference_forPathwayID.ttl"
+   }
+  ],
+  "PMWQ022": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/Show_Species_and_TaxonID_Per_PW.ttl"
+   }
+  ],
+  "PMWQ023": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "2.PlantMetWiki/TopPathways_by_GeneCount.ttl"
+   }
+  ],
+  "PMWQ024": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/All_BGC_Gene_Links.ttl"
+   }
+  ],
+  "PMWQ025": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/BGC_Pathway_Gene_Crosslinks.ttl"
+   }
+  ],
+  "PMWQ026": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/BGCs_Without_Pathway_Connection.ttl"
+   }
+  ],
+  "PMWQ027": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/Check_BGCs_Loaded.ttl"
+   }
+  ],
+  "PMWQ028": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/Connect_BGC_to_Pathway.ttl"
+   }
+  ],
+  "PMWQ029": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/Provenance_BGCs_and_Genes.ttl"
+   }
+  ],
+  "PMWQ030": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/Top_Pathways_by_BGC_Genes.ttl"
+   }
+  ],
+  "PMWQ031": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "4.Federated/Extend_PWs_with_little_Refs_with_Title_and_DOI.ttl"
+   }
+  ],
+  "PMWQ032": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "4.Federated/IDSM_similaritySearch.ttl"
+   }
+  ],
+  "PMWQ033": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "4.Federated/InChIKey_to_Wikidata_for_ChEBI_and_HMDB.ttl"
+   },
+   {
+    "version": "1.1.0",
+    "commit": "d1bc97e6f915cab6bf6348c6a5306bc8f240e76f",
+    "date": "2026-11-24",
+    "path": "4.Federated/InChIKey_to_Wikidata_for_ChEBI_and_HMDB.ttl"
+   }
+  ],
+  "PMWQ034": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "4.Federated/Metabolites_by_InChIKey_with_Involved_Species.ttl"
+   }
+  ],
+  "PMWQ035": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "4.Federated/Metabolites_by_Name_with_Involved_Species.ttl"
+   },
+   {
+    "version": "1.1.0",
+    "commit": "d1bc97e6f915cab6bf6348c6a5306bc8f240e76f",
+    "date": "2026-11-24",
+    "path": "4.Federated/Metabolites_by_Name_with_Involved_Species.ttl"
+   }
+  ],
+  "PMWQ036": [
+   {
+    "version": "1.0.0",
+    "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1",
+    "date": "2026-11-23",
+    "path": "4.Federated/SMILES_from_Wikidata.ttl"
+   },
+   {
+    "version": "1.1.0",
+    "commit": "d1bc97e6f915cab6bf6348c6a5306bc8f240e76f",
+    "date": "2026-11-24",
+    "path": "4.Federated/SMILES_from_Wikidata.ttl"
+   }
+  ],
+  "PMWQ037": [
+   {
+    "version": "1.0.0",
+    "commit": "8486ceeff54a5b52d29c05e0f88c01d2aa4c3107",
+    "date": "2026-11-23",
+    "path": "4.Federated/Rhea_Reaction_Enrichment.ttl"
+   }
+  ],
+  "PMWQ038": [
+   {
+    "version": "1.0.0",
+    "commit": "8486ceeff54a5b52d29c05e0f88c01d2aa4c3107",
+    "date": "2026-11-23",
+    "path": "4.Federated/UniProt_GO_Enrichment.ttl"
+   }
+  ],
+  "PMWQ039": [
+   {
+    "version": "1.0.0",
+    "commit": "8486ceeff54a5b52d29c05e0f88c01d2aa4c3107",
+    "date": "2026-11-23",
+    "path": "4.Federated/ENZYME_Nomenclature_Enrichment.ttl"
+   }
+  ],
+  "PMWQ040": [
+   {
+    "version": "1.0.0",
+    "commit": "8486ceeff54a5b52d29c05e0f88c01d2aa4c3107",
+    "date": "2026-11-23",
+    "path": "4.Federated/SwissLipids_Enrichment.ttl"
+   }
+  ],
+  "PMWQ041": [
+   {
+    "version": "1.0.0",
+    "commit": "8486ceeff54a5b52d29c05e0f88c01d2aa4c3107",
+    "date": "2026-11-23",
+    "path": "4.Federated/PROSITE_HAMAP_Domain_Signatures.ttl"
+   }
+  ]
+ },
+ "releases": {}
+}

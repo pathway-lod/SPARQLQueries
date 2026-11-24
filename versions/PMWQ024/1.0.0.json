@@ -1,0 +1,51 @@
+{
+ "id": "PMWQ024",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ024",
+ "label": "Genes of all biosynthetic gene clusters",
+ "description": "List all biosynthetic gene cluster (BGC) → gene links from both MIBiG and plantiSMASH.",
+ "version": "1.0.0",
+ "created": "2025-12-18",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/BGC"
+ ],
+ "keywords": [
+  "biosynthetic gene cluster",
+  "MIBiG",
+  "plantiSMASH"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/93df31e091003c59df6883fb7d974387c1b45008/3.Biosynthetic%20gene%20cluster%20%28BGC%29%20Crosslinks/All_BGC_Gene_Links.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# BGC data lives in two separate named graphs:\n#   graph/bgc-mibig       — MIBiG 4.0 curated clusters\n#   graph/bgc-plantismash — plantiSMASH v2 predicted clusters\n#\n# ro:0000051 = RO \"has_part\" — links cluster to its member genes.\n\nPREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>\nPREFIX ro:      <http://purl.obolibrary.org/obo/RO_>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\n\nSELECT ?bgc ?gene ?source ?species\nWHERE {\n  GRAPH ?g {\n    ?bgc a pmw:BiosyntheticGeneCluster ;\n         ro:0000051 ?gene ;\n         dcterms:source ?source .\n    OPTIONAL { ?bgc wp:organismName ?species . }\n  }\n  FILTER(?g IN (\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,\n    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>\n  ))\n}\nORDER BY ?source ?bgc ?gene\nLIMIT 1000",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "3.Biosynthetic gene cluster (BGC) Crosslinks/All_BGC_Gene_Links.ttl",
+ "aliases": [
+  "3.Biosynthetic gene cluster (BGC) Crosslinks/All_BGC_Gene_Links.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

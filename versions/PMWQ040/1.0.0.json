@@ -1,0 +1,60 @@
+{
+ "id": "PMWQ040",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ040",
+ "label": "SwissLipids Enrichment",
+ "description": "For a pathway's metabolites identified by InChIKey, federates to the SwissLipids SPARQL endpoint (beta.sparql.swisslipids.org) to check whether the compound is a registered lipid species, returning its SwissLipids name and equivalent ChEBI class. Matches both lipids proper (fatty acyl-CoAs, phospholipids, ...) and shared cofactors SwissLipids also curates (ATP, CoA, NAD(P)(H), water, diphosphate) because they appear in lipid-metabolism reactions too.",
+ "version": "1.0.0",
+ "created": "2026-11-22",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Federated"
+ ],
+ "keywords": [
+  "federated"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [
+  "https://beta.sparql.swisslipids.org/sparql"
+ ],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/6041d54d281843897808cba86a2ffe608d153f23/4.Federated/SwissLipids_Enrichment.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\n\nSELECT DISTINCT ?title ?inchikey ?slmLipid ?slmLabel ?chebi\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    VALUES ?pathwayId { \"PC880\" }\n    ?pw a wp:Pathway ; dcterms:identifier ?pathwayId ; dc:title ?title .\n    ?m a wp:Metabolite ; dcterms:isPartOf ?pw ; dc:source \"InChIKey\" ; dcterms:identifier ?inchikey .\n  }\n  BIND(?inchikey AS ?ik)\n\n  SERVICE <https://beta.sparql.swisslipids.org/sparql> {\n    ?slmLipid <http://purl.obolibrary.org/obo/chebi/inchikey> ?ik ;\n              rdfs:label ?slmLabel .\n    OPTIONAL { ?slmLipid <http://www.w3.org/2002/07/owl#equivalentClass> ?chebi }\n  }\n}\nORDER BY ?inchikey",
+ "params": [
+  {
+   "name": "pathwayId",
+   "variable": "pathwayId",
+   "label": "Pathway ID",
+   "description": null,
+   "order": 1,
+   "kind": "literal",
+   "valueTemplate": null,
+   "default": "PC880",
+   "optional": false,
+   "autocomplete": "pathway",
+   "options": null
+  }
+ ],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "4.Federated/SwissLipids_Enrichment.ttl",
+ "aliases": [
+  "4.Federated/SwissLipids_Enrichment.rq"
+ ],
+ "commit": "8486ceeff54a5b52d29c05e0f88c01d2aa4c3107"
+}

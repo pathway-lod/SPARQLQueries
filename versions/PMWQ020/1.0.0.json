@@ -1,0 +1,49 @@
+{
+ "id": "PMWQ020",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ020",
+ "label": "Proteins in pathways of a taxon",
+ "description": "Find proteins in pathways for a given NCBI taxon ID. The taxonomy-extra graph annotates the biological entity IRI directly (the same IRI that carries rdf:type wp:Protein and dcterms:isPartOf in the pathways graph), so the join is simple: match ?protein across both graphs.",
+ "version": "1.0.0",
+ "created": "2025-12-18",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+ ],
+ "keywords": [
+  "plantmetwiki"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/8efab1d98ac2c492b8531868dbb3a1536f7ba54a/2.PlantMetWiki/Proteins_in_Pathway_for_TaxonID.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Replace ncbi:4113 with the NCBI taxon ID of your species of interest.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT DISTINCT ?protein (STR(?titleLit) AS ?title)\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?protein wp:organism ncbi:4113 .  # change taxon ID here (4113 = Solanum tuberosum)\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?protein a wp:Protein ;\n             dcterms:isPartOf ?pw .\n    ?pw dc:title ?titleLit .\n  }\n}\nORDER BY ?title",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "2.PlantMetWiki/Proteins_in_Pathway_for_TaxonID.ttl",
+ "aliases": [
+  "2.PlantMetWiki/Proteins_in_Pathway_for_TaxonID.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

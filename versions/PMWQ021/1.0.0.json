@@ -1,0 +1,49 @@
+{
+ "id": "PMWQ021",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ021",
+ "label": "Proteins of a pathway, with references",
+ "description": "List all proteins (with labels and publication references) for a given pathway.",
+ "version": "1.0.0",
+ "created": "2026-01-27",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+ ],
+ "keywords": [
+  "plantmetwiki"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/2.PlantMetWiki/Proteins_Names_andReference_forPathwayID.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Named graphs used:\n#   graph/pathways — pathway, protein, and reference triples\n# Editable placeholder: change \"/PC123_\" to the internal pathway ID fragment of interest.\n# Note: dc:identifier holds the internal sequential ID (e.g. \"PC123\") on the pathway IRI;\n#       use FILTER(CONTAINS(STR(?pw), '/PC123_')) to target a specific pathway.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT DISTINCT ?protein (STR(?proteinLabel) AS ?proteinName) ?publication\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?pw rdf:type wp:Pathway ;\n        dc:title ?title .\n    FILTER(CONTAINS(STR(?pw), '/PC123_'))  # change pathway ID fragment here\n\n    ?protein a wp:Protein ;\n             rdfs:label ?proteinLabel ;\n             dcterms:isPartOf ?pw .\n\n    OPTIONAL { ?protein dcterms:references ?publication . }\n  }\n}\nORDER BY ?proteinName",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "2.PlantMetWiki/Proteins_Names_andReference_forPathwayID.ttl",
+ "aliases": [
+  "2.PlantMetWiki/Proteins_Names_andReference_forPathwayID.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

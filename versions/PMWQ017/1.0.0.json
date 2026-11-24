@@ -1,0 +1,49 @@
+{
+ "id": "PMWQ017",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ017",
+ "label": "Metabolites in pathways of a species",
+ "description": "Find metabolites in pathways that contain DataNodes annotated for a given species. Because metabolites themselves are rarely species-specific, this query finds all metabolites that co-occur in pathways with the requested species' genes/proteins.",
+ "version": "1.0.0",
+ "created": "2025-12-18",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0001-8449-1318",
+   "name": "Denise Slenter"
+  }
+ ],
+ "contributors": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+ ],
+ "keywords": [
+  "plantmetwiki"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/8efab1d98ac2c492b8531868dbb3a1536f7ba54a/2.PlantMetWiki/Metabolites_in_Pathway_for_SpeciesName.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Edit the rdfs:label filter to change the species.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT DISTINCT ?metabolite ?inchikey (STR(?titleLit) AS ?title)\nWHERE {\n  # Resolve species name\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n    ?taxon rdfs:label \"Solanum tuberosum\" .  # change species name here\n  }\n  # Find a DataNode annotated with that species — gives us the pathway\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n    ?speciesNode wp:organism ?taxon .\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?speciesNode dcterms:isPartOf ?pw .\n    # Find metabolites in the same pathway\n    ?metabolite a wp:Metabolite ;\n                dcterms:isPartOf ?pw .\n    OPTIONAL { ?metabolite wp:bdbInChIKey ?inchikey . }\n    ?pw dc:title ?titleLit .\n  }\n}\nORDER BY ASC(?metabolite)",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "2.PlantMetWiki/Metabolites_in_Pathway_for_SpeciesName.ttl",
+ "aliases": [
+  "2.PlantMetWiki/Metabolites_in_Pathway_for_SpeciesName.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

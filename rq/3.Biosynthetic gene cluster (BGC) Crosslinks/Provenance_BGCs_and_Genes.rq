@@ -1,0 +1,29 @@
+# title: Source of each gene cluster
+# category: Biosynthetic gene cluster (BGC) crosslinks
+# description: Show BGC provenance: which clusters come from MIBiG and which from plantiSMASH, with their gene counts and species annotations.
+#
+# PMWQ029 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ029
+# Generated from 3.Biosynthetic gene cluster (BGC) Crosslinks/Provenance_BGCs_and_Genes.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+PREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>
+PREFIX ro:      <http://purl.obolibrary.org/obo/RO_>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+
+SELECT ?source ?species ?bgc ?bgc_page (COUNT(?gene) AS ?nGenes)
+WHERE {
+  GRAPH ?g {
+    ?bgc a pmw:BiosyntheticGeneCluster ;
+         dcterms:source ?source ;
+         ro:0000051 ?gene .
+    OPTIONAL { ?bgc wp:organismName ?species . }
+    OPTIONAL { ?bgc foaf:page ?bgc_page . }
+  }
+  FILTER(?g IN (
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>
+  ))
+}
+GROUP BY ?source ?species ?bgc ?bgc_page
+ORDER BY ?source ?species ?bgc

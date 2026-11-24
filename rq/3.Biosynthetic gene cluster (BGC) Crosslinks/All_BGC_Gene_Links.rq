@@ -1,0 +1,33 @@
+# title: Genes of all biosynthetic gene clusters
+# category: Biosynthetic gene cluster (BGC) crosslinks
+# description: List all biosynthetic gene cluster (BGC) → gene links from both MIBiG and plantiSMASH.
+#
+# PMWQ024 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ024
+# Generated from 3.Biosynthetic gene cluster (BGC) Crosslinks/All_BGC_Gene_Links.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+# BGC data lives in two separate named graphs:
+#   graph/bgc-mibig       — MIBiG 4.0 curated clusters
+#   graph/bgc-plantismash — plantiSMASH v2 predicted clusters
+#
+# ro:0000051 = RO "has_part" — links cluster to its member genes.
+
+PREFIX pmw:     <http://rdf-plantmetwiki.bioinformatics.nl/vocab/>
+PREFIX ro:      <http://purl.obolibrary.org/obo/RO_>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+
+SELECT ?bgc ?gene ?source ?species
+WHERE {
+  GRAPH ?g {
+    ?bgc a pmw:BiosyntheticGeneCluster ;
+         ro:0000051 ?gene ;
+         dcterms:source ?source .
+    OPTIONAL { ?bgc wp:organismName ?species . }
+  }
+  FILTER(?g IN (
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-mibig>,
+    <http://rdf-plantmetwiki.bioinformatics.nl/graph/bgc-plantismash>
+  ))
+}
+ORDER BY ?source ?bgc ?gene
+LIMIT 1000

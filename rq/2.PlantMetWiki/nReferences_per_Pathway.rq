@@ -1,0 +1,26 @@
+# title: Number of references per pathway
+# category: PlantMetWiki
+# description: Count the number of distinct publication references per pathway, sorted by most cited.
+#
+# PMWQ018 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ018
+# Generated from 2.PlantMetWiki/nReferences_per_Pathway.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+# Named graphs used:
+#   graph/pathways — pathway metadata and reference links (dcterms:references, cito:cites)
+
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX cito:    <http://purl.org/spar/cito/>
+
+SELECT DISTINCT ?pwID ?title (COUNT(DISTINCT ?pubmed) AS ?nPublications)
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?pw a wp:Pathway ;
+        dc:title ?title ;
+        dc:identifier ?pwID ;
+        (dcterms:references|cito:cites) ?pubmed .
+  }
+}
+GROUP BY ?pwID ?title
+ORDER BY DESC(?nPublications)

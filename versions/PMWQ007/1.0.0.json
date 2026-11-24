@@ -1,0 +1,44 @@
+{
+ "id": "PMWQ007",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ007",
+ "label": "PlantCyc accession of a pathway",
+ "description": "Look up the stable PlantCyc PWY/RXN accession for a given pathway. Shows both the internal sequential PC identifier (from graph/pathways) and the stable PlantCyc accession such as \"PWY-5710\" (from graph/gpml-properties-extra).",
+ "version": "1.0.0",
+ "created": "2026-07-02",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/Metadata"
+ ],
+ "keywords": [
+  "metadata"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/1.%28Meta%29Data/PlantCyc_PWY_ID_Lookup.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Named graphs used:\n#   graph/pathways            — dc:identifier holds internal ID (e.g. \"PC629\")\n#   graph/gpml-properties-extra — dcterms:identifier holds stable PWY/RXN accession\n#\n# Editable placeholder: change \"/PC629_\" to any other internal pathway ID fragment,\n#   or remove the FILTER to list all pathways with their stable IDs.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\n\nSELECT ?pw ?internalID ?stablePWY_ID\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?pw a wp:Pathway ;\n        dc:identifier ?internalID .\n    FILTER(CONTAINS(STR(?pw), '/PC629_'))  # Editable: change pathway ID fragment here\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {\n    ?pw dcterms:identifier ?stablePWY_ID .\n    FILTER(STRSTARTS(?stablePWY_ID, \"PWY\") || STRSTARTS(?stablePWY_ID, \"RXN\"))\n  }\n}",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "1.(Meta)Data/PlantCyc_PWY_ID_Lookup.ttl",
+ "aliases": [
+  "1.(Meta)Data/PlantCyc_PWY_ID_Lookup.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

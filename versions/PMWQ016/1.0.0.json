@@ -1,0 +1,42 @@
+{
+ "id": "PMWQ016",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ016",
+ "label": "Metabolite by PubChem ID, with its pathways and species",
+ "description": "Search PlantMetWiki starting from an external database identifier — here a PubChem Compound ID — and return the metabolite, its pathways and the species with annotated enzymes in those pathways.",
+ "version": "1.0.0",
+ "created": "2026-07-24",
+ "modified": "2026-11-23",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+ ],
+ "keywords": [
+  "plantmetwiki"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/e6b89812e5438e6d4ae7e708ae88c83298eb52e5/2.PlantMetWiki/Metabolite_by_PubChem_ID.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Enabled by BridgeDb: the PubChem link is stored directly in the graph, so this\n# resolves without a federated query. Before BridgeDb this was not possible.\n# Example CID 28523 = alpha-tomatine. Change the CID URI to search another compound\n# (or swap wp:bdbPubChem for wp:bdbChEBI / wp:bdbHmdb / wp:bdbWikidata to search\n# from a different database).\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT DISTINCT ?metabolite ?pathway ?species\nWHERE {\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?m a wp:Metabolite ;\n       wp:bdbPubChem <http://rdf.ncbi.nlm.nih.gov/pubchem/compound/CID28523> .  # change CID here\n    OPTIONAL { ?m rdfs:label ?metabolite }\n    OPTIONAL {\n      ?m dcterms:isPartOf ?pw .\n      ?pw a wp:Pathway ; dc:title ?pathway .\n      OPTIONAL {\n        ?node dcterms:isPartOf ?pw .\n        GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n          ?node wp:organism ?taxon . FILTER(?taxon != ncbi:33090)\n        }\n        GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {\n          ?taxon rdfs:label ?species\n        }\n      }\n    }\n  }\n}\nORDER BY ?pathway ?species",
+ "params": [],
+ "expect": null,
+ "path": "2.PlantMetWiki/Metabolite_by_PubChem_ID.ttl",
+ "aliases": [
+  "2.PlantMetWiki/Metabolite_by_PubChem_ID.rq"
+ ],
+ "commit": "c8e78e7509ae9707b37e532b4c5848bf0582dbe1"
+}

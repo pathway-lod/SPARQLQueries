@@ -1,0 +1,26 @@
+# title: Proteins in pathways of a taxon
+# category: PlantMetWiki
+# description: Find proteins in pathways for a given NCBI taxon ID. The taxonomy-extra graph annotates the biological entity IRI directly (the same IRI that carries rdf:type wp:Protein and dcterms:isPartOf in the pathways graph), so the join is simple: match ?protein across both graphs.
+#
+# PMWQ020 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ020
+# Generated from 2.PlantMetWiki/Proteins_in_Pathway_for_TaxonID.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+# Replace ncbi:4113 with the NCBI taxon ID of your species of interest.
+
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>
+
+SELECT DISTINCT ?protein (STR(?titleLit) AS ?title)
+WHERE {
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {
+    ?protein wp:organism ncbi:4113 .  # change taxon ID here (4113 = Solanum tuberosum)
+  }
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?protein a wp:Protein ;
+             dcterms:isPartOf ?pw .
+    ?pw dc:title ?titleLit .
+  }
+}
+ORDER BY ?title

@@ -1,0 +1,44 @@
+{
+ "id": "PMWQ019",
+ "iri": "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ019",
+ "label": "Content of a pathway",
+ "description": "Summarise the content of a specific pathway by its stable PlantCyc PWY ID. Returns: pathway title, stable PWY ID, internal PC identifier, counts of each DataNode type (GeneProduct, Protein, Metabolite, Complex), number of distinct species, and number of Conversion reactions.",
+ "version": "1.1.0",
+ "created": "2026-07-02",
+ "modified": "2026-11-24",
+ "creators": [
+  {
+   "iri": "https://orcid.org/0000-0002-9472-918X",
+   "name": "Elena Del Pup"
+  }
+ ],
+ "contributors": [],
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "categories": [
+  "https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/category/PlantMetWiki"
+ ],
+ "keywords": [
+  "plantmetwiki"
+ ],
+ "level": null,
+ "target": "https://plantmetwiki.bioinformatics.nl/sparql",
+ "federatesWith": [],
+ "references": [],
+ "derivedFrom": [
+  "https://github.com/pathway-lod/SPARQLQueries/blob/12d919aa658aa4f7d9f35a457d684b9e17c5716c/2.PlantMetWiki/Pathway_Content_Summary.rq"
+ ],
+ "testedAgainst": null,
+ "deprecated": false,
+ "replacedBy": null,
+ "queryType": "select",
+ "query": "# Named graphs used:\n#   graph/pathways              — pathway metadata and DataNode triples\n#   graph/gpml-properties-extra — dcterms:identifier = stable PWY/RXN accession\n#   graph/gpml-taxonomy-extra   — wp:organism annotations per DataNode\n#   graph/ncbitaxon             — (not queried here; species count via taxonomy-extra)\n#\n# Editable placeholder: change \"PWY-5710\" to the stable PlantCyc accession of interest.\n#\n# Each count is its own OPTIONAL subquery that re-looks-up the pathway by its\n# stable PWY ID, rather than 5 sibling OPTIONALs sharing ?pw in one group:\n# independent OPTIONALs on the same variable produce their cross product before\n# GROUP BY collapses it, so for a pathway with e.g. 20 genes x 15 proteins x 30\n# metabolites x ... Virtuoso's planner (rightly) estimates a huge join and\n# refuses the query (\"estimated execution time ... exceeds the limit of 400\n# (sec)\"). Pre-aggregating each count on its own keeps every join to size 1.\n\nPREFIX wp:      <http://vocabularies.wikipathways.org/wp#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dc:      <http://purl.org/dc/elements/1.1/>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nPREFIX ncbi:    <http://purl.obolibrary.org/obo/NCBITaxon_>\n\nSELECT ?title ?stablePWY_ID ?internalID ?nGenes ?nProteins ?nMetabolites ?nComplexes ?nSpecies ?nReactions\nWHERE {\n  # Look up pathway by stable PWY ID\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> {\n    ?pw dcterms:identifier \"PWY-5710\" .  # Editable: stable PlantCyc PWY accession\n    BIND(\"PWY-5710\" AS ?stablePWY_ID)\n  }\n  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {\n    ?pw a wp:Pathway ;\n        dc:title ?title ;\n        dc:identifier ?internalID .\n  }\n  OPTIONAL {\n    SELECT (COUNT(DISTINCT ?gene) AS ?nGenes) WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> { ?pw0 dcterms:identifier \"PWY-5710\" . }\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> { ?gene a wp:GeneProduct ; dcterms:isPartOf ?pw0 }\n    }\n  }\n  OPTIONAL {\n    SELECT (COUNT(DISTINCT ?protein) AS ?nProteins) WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> { ?pw0 dcterms:identifier \"PWY-5710\" . }\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> { ?protein a wp:Protein ; dcterms:isPartOf ?pw0 }\n    }\n  }\n  OPTIONAL {\n    SELECT (COUNT(DISTINCT ?metabolite) AS ?nMetabolites) WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> { ?pw0 dcterms:identifier \"PWY-5710\" . }\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> { ?metabolite a wp:Metabolite ; dcterms:isPartOf ?pw0 }\n    }\n  }\n  OPTIONAL {\n    SELECT (COUNT(DISTINCT ?complex) AS ?nComplexes) WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> { ?pw0 dcterms:identifier \"PWY-5710\" . }\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> { ?complex a wp:Complex ; dcterms:isPartOf ?pw0 }\n    }\n  }\n  OPTIONAL {\n    SELECT (COUNT(DISTINCT ?reaction) AS ?nReactions) WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> { ?pw0 dcterms:identifier \"PWY-5710\" . }\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> { ?reaction a wp:Conversion ; dcterms:isPartOf ?pw0 }\n    }\n  }\n  OPTIONAL {\n    SELECT (COUNT(DISTINCT ?taxon) AS ?nSpecies) WHERE {\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-properties-extra> { ?pw0 dcterms:identifier \"PWY-5710\" . }\n      ?anyNode dcterms:isPartOf ?pw0 .\n      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {\n        ?anyNode wp:organism ?taxon .\n        FILTER(?taxon != ncbi:33090)\n      }\n    }\n  }\n}",
+ "params": [],
+ "expect": {
+  "minResults": 1
+ },
+ "path": "2.PlantMetWiki/Pathway_Content_Summary.ttl",
+ "aliases": [
+  "2.PlantMetWiki/Pathway_Content_Summary.rq"
+ ],
+ "commit": "d1bc97e6f915cab6bf6348c6a5306bc8f240e76f"
+}

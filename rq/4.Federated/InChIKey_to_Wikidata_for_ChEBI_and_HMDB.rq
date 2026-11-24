@@ -1,0 +1,62 @@
+# title: Wikidata, ChEBI and PubChem for metabolites, by InChIKey
+# category: Federated
+# description: Retrieve Wikidata entries, ChEBI IDs, and PubChem CIDs for metabolites in PlantMetWiki, matched via InChIKey (wdt:P235). Returns metabolites that occur in at most one pathway (rare/specialised compounds).
+#
+# PMWQ033 version 1.1.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ033
+# Generated from 4.Federated/InChIKey_to_Wikidata_for_ChEBI_and_HMDB.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+# Named graphs used:
+#   graph/pathways — metabolite DataNodes with InChIKey identifiers
+#
+# Federation:
+#   https://query.wikidata.org/sparql — chemical metadata via InChIKey
+#
+# Editable parameters:
+#   HAVING clause: change <= 1 to restrict/expand pathway occurrence filter
+#   LIMIT/OFFSET: paginate through results (100 items per page)
+
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX wd:      <http://www.wikidata.org/entity/>
+PREFIX wdt:     <http://www.wikidata.org/prop/direct/>
+PREFIX p:       <http://www.wikidata.org/prop/>
+PREFIX pq:      <http://www.wikidata.org/prop/qualifier/>
+
+SELECT DISTINCT ?inchikey ?nPWOcurrences ?wd ?wdLabel ?chebi ?pubchem
+WHERE {
+  {
+    SELECT ?inchikey (COUNT(DISTINCT ?pwID) AS ?nPWOcurrences)
+    WHERE {
+      GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+        ?metabolite a wp:Metabolite ;
+                    dcterms:isPartOf ?pw ;
+                    dc:source "InChIKey" ;
+                    dcterms:identifier ?inchikey .
+        ?pw a wp:Pathway ;
+            dc:identifier ?pwID .
+      }
+    }
+    GROUP BY ?inchikey
+    HAVING (COUNT(DISTINCT ?pwID) <= 1)   # specialised metabolites (change limit here)
+    LIMIT 100                              # page size
+    OFFSET 0                              # increment by 100 for next page
+  }
+
+  # Federated: enrich with Wikidata chemical metadata via InChIKey.
+  # SILENT: Wikidata's public endpoint is occasionally too busy to answer within
+  # the request timeout; when that happens this returns the base metabolites
+  # unenriched instead of failing the whole query.
+  SERVICE SILENT <https://query.wikidata.org/sparql> {
+    ?wd wdt:P235 ?inchikey .
+    OPTIONAL { ?wd rdfs:label ?wdLabel . FILTER(LANG(?wdLabel) = "en") }
+    OPTIONAL {
+      ?wd wdt:P683 ?chebi ;
+          p:P683 ?internalID .
+      ?internalID pq:P4390 wd:Q39893449 .  # ChEBI exact match only
+    }
+    OPTIONAL { ?wd wdt:P662 ?pubchem . }
+  }
+}
+ORDER BY DESC(?nPWOcurrences)

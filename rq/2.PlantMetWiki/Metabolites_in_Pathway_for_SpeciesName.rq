@@ -1,0 +1,34 @@
+# title: Metabolites in pathways of a species
+# category: PlantMetWiki
+# description: Find metabolites in pathways that contain DataNodes annotated for a given species. Because metabolites themselves are rarely species-specific, this query finds all metabolites that co-occur in pathways with the requested species' genes/proteins.
+#
+# PMWQ017 version 1.0.0, https://plantmetwiki.bioinformatics.nl/.well-known/sparql-examples/PMWQ017
+# Generated from 2.PlantMetWiki/Metabolites_in_Pathway_for_SpeciesName.ttl in pathway-lod/SPARQLQueries at d1bc97e6f915; edit the .ttl file, not this one.
+
+# Edit the rdfs:label filter to change the species.
+
+PREFIX wp:      <http://vocabularies.wikipathways.org/wp#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT ?metabolite ?inchikey (STR(?titleLit) AS ?title)
+WHERE {
+  # Resolve species name
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/ncbitaxon> {
+    ?taxon rdfs:label "Solanum tuberosum" .  # change species name here
+  }
+  # Find a DataNode annotated with that species — gives us the pathway
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/gpml-taxonomy-extra> {
+    ?speciesNode wp:organism ?taxon .
+  }
+  GRAPH <http://rdf-plantmetwiki.bioinformatics.nl/graph/pathways> {
+    ?speciesNode dcterms:isPartOf ?pw .
+    # Find metabolites in the same pathway
+    ?metabolite a wp:Metabolite ;
+                dcterms:isPartOf ?pw .
+    OPTIONAL { ?metabolite wp:bdbInChIKey ?inchikey . }
+    ?pw dc:title ?titleLit .
+  }
+}
+ORDER BY ASC(?metabolite)
